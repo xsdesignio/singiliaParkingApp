@@ -5,7 +5,7 @@ import { Link } from 'expo-router';
 
 
 export default function HomeView() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
     const loggedInStatus = checkLogin();
@@ -14,26 +14,22 @@ export default function HomeView() {
 
   function checkLogin() {
     // Simulated login check
-    return false;
+    return true;
   }
 
   return (
     <View style={styles.container}>
       {loggedIn ? (
         <View style={styles.container_element}>
-          <Text>¡Hola Pablo! ¿Estás listo para imprimir tickets?</Text>
-          <Link  style={styles.link_button}href="/printing">Lanzar aplicación</Link>
+          <Text style={{textAlign: 'center'}}>¡Hola Pablo! ¿Estás listo para imprimir tickets?</Text>
+          <Link style={styles.link_button}href="/printing">Lanzar aplicación</Link>
         </View>
       ) : (
         <View style={styles.container_element}>
-          <Text>Para acceder a la aplicación necesitas iniciar sesión</Text>
+          <Text style={{textAlign: 'center'}}>Para acceder a la aplicación necesitas iniciar sesión</Text>
           <Link style={styles.link_button} href="/login">Iniciar Sesión</Link>
         </View>
       )}
-      <Button
-        title="Cambiar status" 
-        onPress={() => setLoggedIn(!loggedIn)}
-      />
     </View>
   );
 }
@@ -41,6 +37,7 @@ export default function HomeView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 20,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F9FFFF',
@@ -48,6 +45,7 @@ const styles = StyleSheet.create({
   },
   container_element: {
     flex: 1,
+    gap: 20,
     alignItems: 'center',
     justifyContent: 'center',
     width: "80%",
@@ -55,5 +53,10 @@ const styles = StyleSheet.create({
   link_button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
+    backgroundColor: '#2196F3',
+    color: 'white',
+    height: 48,
+    borderRadius: 8,
+    fontSize: 18
   }
 });

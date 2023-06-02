@@ -6,7 +6,7 @@ import { Link } from 'expo-router'
 export default function Menu() {
     return (<View style={styles.pages}>
         <Link href='/tickets' style={styles.page_link}>Tickets</Link>
-        <Link href='/printing' style={styles.page_link}>Impresión</Link>
+        <Link href='/printing' style={styles.selected_page_link}>Impresión</Link>
         <Link href='/zones' style={styles.page_link}>Zonas</Link>
     </View>)
 }
@@ -16,17 +16,26 @@ export default function Menu() {
 let styles = StyleSheet.create({
     pages: {
         flexDirection: 'row',
+        gap: 20,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         width: '100%',
         paddingHorizontal: 40,
         paddingVertical: 10,
-        backgroundColor: '#EBEDFF',
     },
     page_link: {
-        marginLeft: 10,
-        marginRight: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         borderRadius: 18,
+        textAlign: "center",
+        backgroundColor: '#EBEDFF',
+    },
+    selected_page_link: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 18,
+        textAlign: "center",
+        backgroundColor: '#5670E5',
     }
     
 })
