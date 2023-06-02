@@ -15,11 +15,13 @@ export default function ticketsView() {
                     <Text>Localización: Plaza de Toros.</Text>
                     <Text>Responsable: Pablo Cortés</Text>
                     <Text>Duración: 2 horas</Text>
+                    <Text>Creado el: 19-07-2023 18:00</Text>
                 </View>
                 <View style={styles.ticket}>
                     <Text>Localización: Plaza de Toros.</Text>
                     <Text>Responsable: Pablo Cortés</Text>
-                    <Text>Duración: 2 horas</Text>
+                    <Text>Duración: 1 horas</Text>
+                    <Text>Creado el: 22-07-2023 16:00</Text>
                 </View>
             </View>
         </View>

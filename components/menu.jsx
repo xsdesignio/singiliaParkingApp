@@ -6,7 +6,7 @@ import { Link } from 'expo-router'
 export default function Menu() {
     return (<View style={styles.pages}>
         <Link href='/tickets' style={styles.page_link}>Tickets</Link>
-        <Link href='/printing' style={styles.selected_page_link}>Impresión</Link>
+        <Link href='/printing' style={styles.page_link}>Impresión</Link>
         <Link href='/zones' style={styles.page_link}>Zonas</Link>
     </View>)
 }
@@ -35,7 +35,7 @@ let styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 18,
         textAlign: "center",
-        backgroundColor: '#5670E5',
+        backgroundColor: '#CBC7F7',
     }
     
 })

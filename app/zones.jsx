@@ -4,12 +4,12 @@ import Menu from "../components/menu";
 
 export default function zonesView() {
     return(<View style={styles.container}>
-        <Text style={styles.title}>Actualmente en Plaza de Toros</Text>
         <View style={styles.container}>
+            <Text style={styles.title}>Actualmente en Plaza de Toros</Text>
             <Text>Cambiar Zona:</Text>
-            <Text>Plaza de toros</Text>
-            <Text>Coso Viejo</Text>
-            <Text>Plaza del Pino</Text>
+            <Text style={styles.selected_zone}>Plaza de toros</Text>
+            <Text style={styles.zone}>Coso Viejo</Text>
+            <Text style={styles.zone}>Plaza del Pino</Text>
         </View>
         <Menu/>
     </View>)
@@ -27,11 +27,24 @@ const styles = {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
+        textAlign: "center",
+        width: "50%",
     },
     zone: {
-        fontSize: 22,
+        fontSize: 20,
+        padding: 10,
+        backgroundColor: "#C1DFDC",
+        borderRadius: 8,
     },
-
+    selected_zone: {
+        fontSize: 20,
+        padding: 10,
+        backgroundColor: "#C1DFDC",
+        borderRadius: 8,
+        borderWidth: 2, 
+        borderColor: 'lightblue',
+        borderRadius:  4,
+    },
     buttonContainer: {
         marginTop: 20,
     },
