@@ -32,7 +32,7 @@ export default function loginView() {
             'password': password
         }
 
-        fetch("http://192.168.1.39:5000/auth/login", {
+        fetch("http://192.168.1.42:5000/auth/login", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

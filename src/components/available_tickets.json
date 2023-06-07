@@ -1,0 +1,22 @@
+{
+    "Yellow": {
+        "duration": 60,
+        "color": "Yellow",
+        "price": 70
+    },
+    "Green": {
+        "duration": 60,
+        "color": "Yellow",
+        "price": 70
+    },
+    "Red": {
+        "duration": 60,
+        "color": "Yellow",
+        "price": 70
+    },
+    "Orange": {
+        "duration": 60,
+        "color": "Yellow",
+        "price": 70
+    }
+}

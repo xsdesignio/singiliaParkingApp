@@ -26,7 +26,6 @@ let styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#F9FFFF',
         marginTop: 40,
-        height: '100%'
     },
     pages: {
         flexDirection: 'row',

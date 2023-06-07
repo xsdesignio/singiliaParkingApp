@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Button } from "react-native";
-import Menu from "../components/menu";
+import Menu from "../src/components/menu";
 
 
 export default function zonesView() {

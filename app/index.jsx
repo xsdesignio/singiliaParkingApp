@@ -5,7 +5,7 @@ import { Link } from 'expo-router';
 
 
 export default function HomeView() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
     const loggedInStatus = checkLogin();
@@ -14,7 +14,7 @@ export default function HomeView() {
 
   function checkLogin() {
     // Simulated login check
-    return false;
+    return true;
   }
 
   return (
