@@ -1,5 +1,5 @@
 
 
-export function printTicket() {
+export function printTicket(registration) {
 
 }

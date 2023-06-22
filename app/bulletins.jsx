@@ -1,19 +1,16 @@
-import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
-
-import PrintingScreen from "../src/screens/PrintingScreen";
+import { StyleSheet, View, Text, Button } from "react-native";
 import Menu from "../src/components/menu";
 import SettingsButton from "../src/components/header";
+import BulletinsScreen from "../src/screens/BulletinsScreen";
 
 
-export default function printing() {
-
+export default function bulletinsView() {
     return(<View style={styles.container}>
         <SettingsButton/>
-        <PrintingScreen/>
+        <BulletinsScreen/>
         <Menu/>
     </View>)
 }
-
 
 
 const styles = {
@@ -21,7 +18,5 @@ const styles = {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width: "100%",
-        height: "100%",
-    },
+    }
 }

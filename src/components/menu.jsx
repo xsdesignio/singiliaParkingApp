@@ -1,8 +1,7 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native"
 import { Link, usePathname } from 'expo-router'
-import { useEffect, useState } from "react";
-
-
+import { useEffect, useState, useRef } from "react"
+import { Animated } from 'react-native'
 
 export default function Menu() {
     let path_name = usePathname()
@@ -13,38 +12,40 @@ export default function Menu() {
             name: 'Tickets',
             href: '/tickets',
             active: false,
-            source: require('../../assets/ticket.png'),
+            source: require('../assets/ticket.png'),
         },
         {
             name: 'Printing',
             href: '/printing',
             active: false,
-            source: require('../../assets/printing.png'),
+            source: require('../assets/printing.png'),
         },
         {
-            name: 'Zones',
-            href: '/zones',
+            name: 'Bulletins',
+            href: '/bulletins',
             active: false,
-            source: require('../../assets/map.png'),
+            source: require('../assets/map.png'),
         }
     ])
 
     useEffect(() => {
         setLinks(links.map(el => {
-            if( path_name == el.href) {
+            if (path_name == el.href) {
                 el.active = true
             }
             return el
         }))
 
-        setJsxLinks(links.map((link) => (
-            <Link key={link.name} href={ link.href } style={ link.active? styles.selected_page_link : styles.page_link}>
-                <Image style={styles.link_icon} source={link.source} />
-                {link.active? (<Text> {link.name}</Text>) : "" }
-        </Link>)))
-    }, [])
-    
+        setJsxLinks(links.map((link) => {
+            return (
+                <Link key={link.name} href={link.href} style={link.active ? styles.selected_page_link : styles.page_link}>
+                    <Image style={styles.link_icon} source={link.source} />
+                    {link.active ? (<Text> {link.name}</Text>) : ""}
+                </Link>
+            );
+        }));
 
+    }, []);
 
     return (
         <View style={styles.pages}>
@@ -52,7 +53,6 @@ export default function Menu() {
         </View>
     )
 }
-
 
 
 let styles = StyleSheet.create({
@@ -63,17 +63,19 @@ let styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 10,
         paddingHorizontal: 60,
+        borderTopColor: "#C2D9C9",
+        borderTopWidth: 1,
         backgroundColor: '#F9FFFF'
     },
     page_link: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
+        padding: 2,
         paddingHorizontal: 20,
-        height: 60,
-        borderRadius: 12,
-        backgroundColor: '#EBEDFF',
+        height: 50,
+        borderRadius: 28,
+        backgroundColor: '#d4faec',
     },
     link_icon: {
         width: 28,
@@ -84,12 +86,12 @@ let styles = StyleSheet.create({
         paddingLeft: 20,
     },
     selected_page_link: {
-        padding: 10,
+        padding: 8,
         paddingHorizontal: 20,
         height: 60,
-        borderRadius: 12,
+        borderRadius: 28,
         textAlign: "center",
-        backgroundColor: '#CBC7F7',
+        backgroundColor: '#95e8c9',
     }
     
 })
