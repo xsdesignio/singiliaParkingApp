@@ -24,7 +24,7 @@ export default function Menu() {
             name: 'Bulletins',
             href: '/bulletins',
             active: false,
-            source: require('../assets/map.png'),
+            source: require('../assets/ticket.png'),
         }
     ])
 

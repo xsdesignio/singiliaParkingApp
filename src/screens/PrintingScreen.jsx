@@ -1,31 +1,32 @@
-import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
 import { Link } from 'expo-router';
 import { useState } from "react";
 
-import {printTicket} from "../components/ticketsPrinting";
+import { printTicket } from "../controllers/tickets";
+
 export default function PrintingScreen() {
 
-    const [duration, setDuration] = useState(0)
+    const [registration, setRegistration] = useState("")
 
     const [availableTickets, setAvailableTickets] = useState([
         {
-            imageUrl: require("../assets/ticket_yellow.png"),
-            duration: "",
+            imageUrl: require("../assets/tickets/30.png"),
+            duration: 30,
             color: "yellow",
         },
         {
-            imageUrl: require("../assets/ticket_green.png"),
-            duration: "",
+            imageUrl: require("../assets/tickets/60.png"),
+            duration: 60,
             color: "green",
         },
         {
-            imageUrl: require("../assets/ticket_yellow.png"),
-            duration: "",
+            imageUrl: require("../assets/tickets/90.png"),
+            duration: 90,
             color: "red",
         },
         {
-            imageUrl: require("../assets/ticket_green.png"),
-            duration: "",
+            imageUrl: require("../assets/tickets/120.png"),
+            duration: 120,
             color: "orange",
         },
     ])
@@ -37,7 +38,7 @@ export default function PrintingScreen() {
         setDuration(numericValue);
     }
     function handleRegistration(value) {
-
+        registration = value;
     }
 
     return(
@@ -69,12 +70,12 @@ export default function PrintingScreen() {
             <View style={styles.ticket_info}>
                 <TextInput
                     style={styles.input}
-                    onChangeText={(values) => handleDuration(values)}
+                    onChangeText={(value) => setRegistration(value)}
                     placeholder="Matricula"
                 />
                 <TouchableOpacity
                     style={styles.print_button}
-                    onPress={() => printTicket(duration)}
+                    onPress={() => printTicket(selectedTicket.registration, registration, false)}
                 >
                     <Text style={styles.print_button_text}>
                         Imprimir

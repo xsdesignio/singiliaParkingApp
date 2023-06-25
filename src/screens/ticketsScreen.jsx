@@ -8,22 +8,33 @@ export default function TicketsScreen() {
             <ScrollView style={styles.tickets}>
                 <View style={styles.ticket}>
                     <TouchableOpacity style={styles.ticket_button}>
-                        <Image style={styles.ticket_selector_image} source={require("../assets/ticket_green.png")} />
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/30.png")} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.ticket}>
                     <TouchableOpacity style={styles.ticket_button}>
-                        <Image style={styles.ticket_selector_image} source={require("../assets/ticket_green.png")} />
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/30.png")} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.ticket}>
                     <TouchableOpacity style={styles.ticket_button}>
-                        <Image style={styles.ticket_selector_image} source={require("../assets/ticket_green.png")} />
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/90.png")} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.ticket}>
                     <TouchableOpacity style={styles.ticket_button}>
-                        <Image style={styles.ticket_selector_image} source={require("../assets/ticket_green.png")} />
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/60.png")} />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.ticket}>
+                    <TouchableOpacity style={styles.ticket_button}>
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/120.png")} />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.ticket}>
+                    <TouchableOpacity style={styles.ticket_button}>
+                        <Image style={styles.ticket_selector_image} source={require("../assets/tickets/90.png")} />
                     </TouchableOpacity>
                 </View>
             </ScrollView>

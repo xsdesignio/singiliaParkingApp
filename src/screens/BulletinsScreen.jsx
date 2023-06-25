@@ -1,15 +1,13 @@
 import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
-import {printTicket} from "../components/ticketsPrinting";
-
 export default function bulletinsScreen() {
 
     const [duration, setDuration] = useState(0)
 
     const [availableTickets, setAvailableTickets] = useState([
         {
-            imageUrl: require("../assets/bulletin.png"),
+            imageUrl: require("../assets/bulletins/bulletin.png"),
             duration: "",
             color: "yellow",
         },
@@ -28,7 +26,7 @@ export default function bulletinsScreen() {
     return(
         <View style={styles.container}>
             <View style={styles.bulletin}>
-                <Image style={styles.bulletin_image} source={require("../assets/bulletin.png")} />
+                <Image style={styles.bulletin_image} source={require("../assets/bulletins/bulletin.png")} />
             </View>
             <View style={styles.bulletin_info_form}>
 
@@ -78,7 +76,7 @@ export default function bulletinsScreen() {
                 <View>
                     <TouchableOpacity
                         style={styles.print_button}
-                        onPress={() => printTicket(duration)}
+                        // onPress={() => printTicket(duration)}
                     >
                         <Text style={styles.print_button_text}>
                             Imprimir
