@@ -8,6 +8,13 @@ export default function PrintingScreen() {
 
     const [registration, setRegistration] = useState("")
 
+    const payment_methods = {
+        CASH: "cash",
+        CARD: "credit card"
+    }
+
+    const [paymentMethod, setPaymentMethod] = useState(payment_methods.CARD)
+
     const [availableTickets, setAvailableTickets] = useState([
         {
             imageUrl: require("../assets/tickets/30.png"),
@@ -73,6 +80,18 @@ export default function PrintingScreen() {
                     onChangeText={(value) => setRegistration(value)}
                     placeholder="Matricula"
                 />
+                <View>
+                    <Text>Métodos de pago:</Text>
+                    <TouchableOpacity
+                        onPress={() => setPaymentMethod(payment_methods.CASH)}>
+                        <Text>Efectivo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setPaymentMethod(payment_methods.CARD)}>
+                        <Text>Tarjeta</Text>
+                    </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity
                     style={styles.print_button}
                     onPress={() => printTicket(selectedTicket.registration, registration, false)}

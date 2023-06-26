@@ -7,7 +7,7 @@ export function getDatabase() {
     return db;
 }
 
-export function createTables() {
+export function createSQLiteTables() {
     // Open or create the SQLite database
     const db = getDatabase()
     
@@ -56,7 +56,7 @@ export function createTables() {
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         )
-    })
+    }, null, null)
 }
 
 /* 

@@ -1,11 +1,21 @@
 import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
 
-export default function SettingsScreen() {
+import { logoutUser } from "../controllers/session";
+import { useNavigation } from "expo-router";
 
-    async function logout() {
-        await fetch( `${ apiHost }/auth/logout`)
-        await deleteSession()
-        setLoggedIn(false)
+export default function SettingsScreen() {
+    const navigation = useNavigation();
+
+    function logout() {
+        logoutUser().then(logout_successfull => {
+            if(logout_successfull)
+                navigation.reset( {
+                    index: 0,
+                    routes: [{
+                        name: 'index'
+                    }]
+                })
+        })
     }
 
     return(

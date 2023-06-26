@@ -1,9 +1,13 @@
-import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Alert, TextInput, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
+
+import { Picker } from '@react-native-picker/picker';
 
 export default function bulletinsScreen() {
 
     const [duration, setDuration] = useState(0)
+
+    const [precept, setPrecept] = useState("Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.")
 
     const [availableTickets, setAvailableTickets] = useState([
         {
@@ -12,6 +16,8 @@ export default function bulletinsScreen() {
             color: "yellow",
         },
     ])
+
+    
 
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
@@ -58,21 +64,37 @@ export default function bulletinsScreen() {
                         />
                     </View>
                 </View>
-
-                <Text style={styles.label}>Datos del vehículo:</Text>
-
                 <View style={styles.bulletin_inputs}>
                     <TextInput
                         style={styles.input}
                         onChangeText={(values) => handleDuration(values)}
-                        placeholder="Modelo"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(values) => handleDuration(values)}
-                        placeholder="Color"
+                        placeholder="Tiempo estacionado"
+
                     />
                 </View>
+                <View>
+                    <Text style={styles.label}>Precepto Infringido:</Text>
+                    <Picker
+                        selectedValue={"A ver"}
+                        onValueChange={(itemValue, itemIndex) =>
+                            setPrecept(itemValue)
+                        }
+                    >
+                        <Picker.Item
+                            label="Estacionar sin ticket de aparcamiento"
+                            value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
+                        />
+                        <Picker.Item
+                            label="Estacionar sin ticket de aparcamiento"
+                            value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
+                        />
+                        <Picker.Item
+                            label="Estacionar sin ticket de aparcamiento"
+                            value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
+                        />
+                    </Picker>
+                </View>
+
                 <View>
                     <TouchableOpacity
                         style={styles.print_button}

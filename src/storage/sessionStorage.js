@@ -6,18 +6,20 @@ export async function storeSession(session) {
     try {
       const jsonValue = JSON.stringify(session)
       await AsyncStorage.setItem('@session', jsonValue)
+      return true
     } catch (e) {
       throw Error("No se ha podido guardar la sesión")
     }
   }
 
-  
+
+
 export async function getSession() {
     try {
         session = await AsyncStorage.getItem("@session")
-        if(session!=null)
+        if(session != null)
           return JSON.parse(session)
-        return null
+        return session
     } catch(e) {
         return null
     }
@@ -32,3 +34,4 @@ export async function deleteSession() {
       return false
   }
 }
+
