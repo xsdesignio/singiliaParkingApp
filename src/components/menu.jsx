@@ -7,24 +7,25 @@ export default function Menu() {
     let path_name = usePathname()
 
     const [jsxLinks, setJsxLinks] = useState()
+
     const [links, setLinks] = useState([
         {
-            name: 'Tickets',
-            href: '/tickets',
+            name: 'Historial',
+            href: '/record',
             active: false,
             source: require('../assets/ticket.png'),
         },
         {
-            name: 'Printing',
+            name: 'Tickets',
             href: '/printing',
             active: false,
             source: require('../assets/printing.png'),
         },
         {
-            name: 'Bulletins',
+            name: 'Boletines',
             href: '/bulletins',
             active: false,
-            source: require('../assets/ticket.png'),
+            source: require('../assets/printing.png'),
         }
     ])
 
@@ -80,7 +81,6 @@ let styles = StyleSheet.create({
     link_icon: {
         width: 28,
         height: 28,
-        
     },
     link_text: {
         paddingLeft: 20,

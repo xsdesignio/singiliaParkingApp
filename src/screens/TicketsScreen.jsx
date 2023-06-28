@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { printTicket } from "../controllers/tickets";
 
-export default function PrintingScreen() {
+export default function TicketsScreen() {
 
     const [registration, setRegistration] = useState("")
 
@@ -80,21 +80,34 @@ export default function PrintingScreen() {
                     onChangeText={(value) => setRegistration(value)}
                     placeholder="Matricula"
                 />
-                <View>
-                    <Text>Métodos de pago:</Text>
-                    <TouchableOpacity
-                        onPress={() => setPaymentMethod(payment_methods.CASH)}>
-                        <Text>Efectivo</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+
+                <Text>Métodos de pago:</Text>
+                
+                <View style={styles.selector}>
+                    <TouchableOpacity 
+                        style={[
+                            styles.selector_button, 
+                            {backgroundColor: (paymentMethod==payment_methods.CARD) ? "#95e8c9": "#d4faec"}]
+                        }
                         onPress={() => setPaymentMethod(payment_methods.CARD)}>
                         <Text>Tarjeta</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[
+                            styles.selector_button, 
+                            {backgroundColor: (paymentMethod==payment_methods.CASH) ? "#95e8c9": "#d4faec"}]
+                        }
+                        onPress={() => setPaymentMethod(payment_methods.CASH)}>
+                        <Text>Efectivo</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity
                     style={styles.print_button}
-                    onPress={() => printTicket(selectedTicket.registration, registration, false)}
+                    onPress={() => {
+                        printTicket(selectedTicket.registration, registration, false)
+                        setRegistration("")
+                    }}
                 >
                     <Text style={styles.print_button_text}>
                         Imprimir
@@ -133,6 +146,15 @@ let styles = StyleSheet.create({
         padding: 20,
         borderWidth: 2,
         borderColor: '#00b3ff',
+    },
+    selector: {
+        flexDirection: "row"
+    },
+    selector_button: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        marginHorizontal: 6,
+        borderRadius: 20
     },
     available_tickets: {
         justifyContent: "center",

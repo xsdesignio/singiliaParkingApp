@@ -14,15 +14,6 @@ export function createSQLiteTables() {
     
     // Execute SQL statements to create the tables
     db.transaction(transaction => {
-        // Create the 'zones' table
-        transaction.executeSql(`
-            CREATE TABLE IF NOT EXISTS zones (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
-            );`
-        );
-
         // Create the 'tickets' table
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS tickets (
@@ -32,23 +23,23 @@ export function createSQLiteTables() {
                 registration TEXT NOT NULL,
                 price REAL NOT NULL,
                 paid INTEGER NOT NULL DEFAULT 0,
+                location TEXT NOT NULL,
                 sent_to_server INTEGER NOT NULL DEFAULT 0,
-                zone_id INTEGER NOT NULL,
-                FOREIGN KEY (zone_id) REFERENCES zones (id),
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         );
 
         // Create the 'bulletins' table
-        tx.executeSql(`
+        transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS bulletins (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 responsible TEXT NOT NULL,
                 location TEXT NOT NULL,
-                registration TEXT NOT NULL,
                 duration INTEGER NOT NULL,
                 price REAL NOT NULL,
                 paid INTEGER NOT NULL DEFAULT 0,
+                precept TEXT NOT NULL,
+                registration TEXT NOT NULL,
                 brand TEXT,
                 model TEXT,
                 signature TEXT NOT NULL,

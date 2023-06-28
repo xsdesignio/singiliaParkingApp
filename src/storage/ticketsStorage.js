@@ -3,21 +3,20 @@ import { getSession } from "./sessionStorage";
 
 
 
-function getTicketsSaved(duration) {
-    let db = getDatabase()
-    
-    let results
-
-    db.transaction((tx) => {
-        tx.executeSql(
-        `select * from items where duration = ?;`,
-        [30],
-        (_, { rows: { _array } }) => results = _array
-        );
-    });
-
-    console.log(results)
-    return results
+export function getTicketsSaved(duration) {
+    return new Promise((resolve, reject) => {
+        let db = getDatabase()
+        db.transaction((tx) => {
+            tx.executeSql(
+            `SELECT * FROM tickets WHERE duration = ?;`,
+            [duration],
+            (_, { rows: { _array } }) => resolve(_array),
+            (_, error) => reject(error.message))
+        }, 
+        (error) => {
+            reject(error.message)
+        });
+    })
 }
 
 
@@ -49,20 +48,21 @@ export function saveTicket(ticket_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO tickets (responsible, duration, registration, price, paid, zone_id) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (responsible, duration, registration, price, paid, location) VALUES (?, ?, ?, ?, ?, ?)",
                 [
                     ticket_info["responsible"], 
                     ticket_info["duration"], 
                     ticket_info["registration"], 
                     ticket_info["price"], 
                     ticket_info["paid"], 
-                    ticket_info["zone_id"]
+                    ticket_info["location"]
                 ], 
-                (result) => resolve(result),
-                (error) => reject(null));
+                (_, result) => resolve(result),
+                (_, error) => reject(error.message));
             },
-            null,
-            null
+            (error) => {
+                reject(error.message)
+            }
         );
     })
 }

@@ -1,19 +1,19 @@
-import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Button, TouchableOpacity, Image, ScrollView } from "react-native";
 
-import PrintingScreen from "../src/screens/PrintingScreen";
 import Menu from "../src/components/menu";
 import SettingsButton from "../src/components/header";
+import RecordScreen from "../src/screens/RecordScreen";
 
 
-export default function printing() {
+
+export default function recordView() {
 
     return(<View style={styles.container}>
         <SettingsButton/>
-        <PrintingScreen/>
+        <RecordScreen/>
         <Menu/>
     </View>)
 }
-
 
 
 const styles = {

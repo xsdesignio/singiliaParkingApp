@@ -1,20 +1,19 @@
-import { StyleSheet, View, Text, Button, TouchableOpacity, Image, ScrollView } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, TouchableOpacity } from "react-native";
 
+import TicketsScreen from "../src/screens/TicketsScreen";
 import Menu from "../src/components/menu";
 import SettingsButton from "../src/components/header";
-import TicketsScreen from "../src/screens/ticketsScreen";
 
 
-
-export default function ticketsView() {
-
+export default function tickets() {
 
     return(<View style={styles.container}>
         <SettingsButton/>
-        <TicketsScreen/>
+        <PrintingScreen/>
         <Menu/>
     </View>)
 }
+
 
 
 const styles = {

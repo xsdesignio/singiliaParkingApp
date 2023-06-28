@@ -1,7 +1,7 @@
 import { storeSession, deleteSession  } from "../storage/sessionStorage";
 
 
-const apiHost = "http://192.168.0.24:5000"
+const apiHost = "http://192.168.0.96:5000"
 
 
 // Login user, store the session and redirect to printing page

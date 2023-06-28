@@ -2,9 +2,12 @@ import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
 
 import { logoutUser } from "../controllers/session";
 import { useNavigation } from "expo-router";
+import { useState } from "react";
 
 export default function SettingsScreen() {
     const navigation = useNavigation();
+
+    const [bulletinsAmount, setBulletinsAmount] = useState(1)
 
     function logout() {
         logoutUser().then(logout_successfull => {
@@ -23,18 +26,32 @@ export default function SettingsScreen() {
 
             <Text style={styles.title}>Ajustes:</Text>
 
+            <Text>Número de boletines a imprimit</Text>
             <View>
-                <Text>Impresión</Text>
+                <View style={styles.selector}>
+                    <TouchableOpacity 
+                        style={[
+                            styles.selector_button, 
+                            {backgroundColor: (bulletinsAmount==1) ? "#95e8c9": "#d4faec"}]
+                        }
+                        onPress={() => setBulletinsAmount(1)}>
+                        <Text>1</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[
+                            styles.selector_button, 
+                            {backgroundColor: (bulletinsAmount==2) ? "#95e8c9": "#d4faec"}]
+                        }
+                        onPress={() => setBulletinsAmount(2)}>
+                        <Text>2</Text>
+                    </TouchableOpacity>
+                </View>
+                
             </View>
 
-            <View>
-                <Text>Boletines</Text>
-                <Text>Número de copias de impresión:</Text>
-            </View>
+            <Text>Sesión</Text>
 
             <View>
-                <Text>Sesión</Text>
-
                 <TouchableOpacity
                     style={styles.button}
                     onPress={logout}
@@ -75,5 +92,14 @@ const styles = {
         fontWeight: 'bold',
         textAlign: 'center',
         borderRadius: 8,
-    }
+    },
+    selector: {
+        flexDirection: "row"
+    },
+    selector_button: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        marginHorizontal: 6,
+        borderRadius: 20
+    },
 }

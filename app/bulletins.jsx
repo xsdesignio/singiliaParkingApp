@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text, Button } from "react-native";
 import Menu from "../src/components/menu";
-import SettingsButton from "../src/components/header";
+import Header from "../src/components/header";
 import BulletinsScreen from "../src/screens/BulletinsScreen";
 
 
 export default function bulletinsView() {
     return(<View style={styles.container}>
-        <SettingsButton/>
+        <Header/>
         <BulletinsScreen/>
         <Menu/>
     </View>)

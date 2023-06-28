@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Function to start all background processes required to run the app
 export async function initApp() {
-    let app_already_started = await firstTimeAppStarts()
+    /* let app_already_started = await firstTimeAppStarts()
 
     if(!app_already_started) {
         // If it is the first time the app is loaded SQLite tables are created
@@ -16,7 +16,8 @@ export async function initApp() {
         } catch(error) {
             
         }
-    }
+    } */
+    createSQLiteTables()
 
     // Saving default config object
     saveConfigDict({

@@ -1,13 +1,19 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import { Link  } from 'expo-router'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { Link, useNavigation, usePathname  } from 'expo-router'
 
 import { useEffect, useState } from 'react';
 
 export default function Header() {
     const [settingsPageActive, setSettingsPageActive] = useState(false);
 
-    useEffect(() => {
+    const navigation = useNavigation()
+    
+    const path_name = usePathname()
 
+    useEffect(() => {
+        // set settingsPageActive true of false depending on the comparation
+        setSettingsPageActive((path_name == "/settings"))
+    
     }, [])
 
 
@@ -18,8 +24,14 @@ export default function Header() {
             <View>
                 <Link 
                     href={"/settings"}
-                    style={styles.settings_button}>
-                    <Image style={styles.settings_image} source={require('../assets/settings.png')} />
+                    style={styles.settings_button}
+                    onPress= {() => {
+                        if (settingsPageActive){
+                            navigation.goBack()
+                            setSettingsPageActive(false)
+                        }
+                    }}>
+                    <Image style={styles.settings_image} source={settingsPageActive ? require('../assets/cross.png') : require('../assets/settings.png')} />
                 </Link>
             </View>
         </View>
@@ -40,7 +52,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingHorizontal: 8,
         paddingVertical: 0,
-        marginBottom: 40,
+        marginBottom: 0,
         zIndex: 10,
     },
     settings_button: {
