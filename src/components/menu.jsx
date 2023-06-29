@@ -17,7 +17,7 @@ export default function Menu() {
         },
         {
             name: 'Tickets',
-            href: '/printing',
+            href: '/tickets',
             active: false,
             source: require('../assets/printing.png'),
         },

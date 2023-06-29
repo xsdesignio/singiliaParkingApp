@@ -8,23 +8,10 @@ export default function RecordScreen() {
 
     const [ticketsActive, setTicketsActive] = useState(true);
 
-    const [tickets, setTickets] = useState()
+    const [tickets, setTickets] = useState([])
 
 
-    const [bulletins, setBulletins] = useState()
-
-    const tickets_list = (<FlatList
-        data={tickets}
-        renderItem={renderTicket}
-        keyExtractor={(item) => item.id.toString()}
-    />)
-
-    const bulletins_list = (<FlatList
-        data={bulletins}
-        renderItem={renderBulletin}
-        keyExtractor={(item) => item.id.toString()}
-    />)
-
+    const [bulletins, setBulletins] = useState([])
 
     useEffect(() => {
         setData()
@@ -33,12 +20,15 @@ export default function RecordScreen() {
     async function setData() {
         try {
             let _tickets = await getTicketsSaved()
-            setTickets(_tickets)
-
+            if(_tickets.length > 0)
+                setTickets(_tickets)
+            
             let _bulletins = await getBulletinsSaved()
-            setBulletins(_bulletins)
+
+            if(_bulletins.length > 0)
+                setBulletins(_bulletins)
         } catch(error) {
-            Alert.alert("Ha ocurrido un error obteniendo los tickets", error.message, 
+            Alert.alert("Ha ocurrido un error obteniendo los tickets", error, 
             [
                 {
                     text: 'Cerrar',
@@ -47,6 +37,8 @@ export default function RecordScreen() {
             ])
         }
     }
+
+    
 
     const renderTicket = ({ item }) => {
         let img = getTicketAppareanceByDuration(item.duration)
@@ -65,6 +57,19 @@ export default function RecordScreen() {
                 <Text>{item.id}</Text>
             </TouchableOpacity>
         </View>)
+
+    const tickets_list = (<FlatList
+        data={tickets}
+        renderItem={renderTicket}
+        keyExtractor={(item) => item.id.toString()}
+    />)
+
+    const bulletins_list = (<FlatList
+        data={bulletins}
+        renderItem={renderBulletin}
+        keyExtractor={(item) => item.id.toString()}
+    />)
+
 
     function getTicketAppareanceByDuration(duration) {
         switch(duration) {
@@ -93,9 +98,7 @@ export default function RecordScreen() {
                     <Text>Boletines</Text>
                 </TouchableOpacity>
             </View>
-            <ScrollView style={styles.tickets}>
-                { ticketsActive? tickets_list: bulletins_list }
-            </ScrollView>
+            { ticketsActive? tickets_list: bulletins_list }
         </View>)
 }
 

@@ -27,7 +27,7 @@ export default function LoginScreen() {
         loginUser(form).then((session) => {
             navigation.reset({
                 index: 0,
-                routes: [{ name: 'printing' }],
+                routes: [{ name: 'tickets' }],
             });
         })
         .catch( error => {

@@ -1,11 +1,11 @@
 import { Alert } from "react-native"
 import { getSession } from "../storage/sessionStorage"
-import { saveTicket } from "../storage/ticketsStorage"
 import { saveBulletin } from "../storage/bulletinsStorage";
 
 
 
-export function printBulletin(registration, duration, created_at) {
+// Create a dialog to print the ticket and close the dialog after 6 seconds
+export function printBulletin(bulletin_info) {
     // Simulate printing by the moment;
     return new Promise((resolve, reject) => {
         let printing = true;
@@ -23,7 +23,8 @@ export function printBulletin(registration, duration, created_at) {
     })
 }
 
-
+//@param bulletin_info, dictionary with required information to create the bulletin
+//(responsible, duration, registration, price, paid, location)
 export function createBulletin(bulletin_info) {
     return new Promise((resolve, reject) => {
 
@@ -38,4 +39,28 @@ export function createBulletin(bulletin_info) {
             reject(error.message)
         })
     })
+}
+
+
+
+function check_information(bulletin_info) {
+    // Check if bulletin_info has all required information
+    if (!bulletin_info["responsible"] || bulletin_info["responsible"] == "") 
+        throw new Error("No se ha encontrado el nombre del responsable.")
+    
+    if (!bulletin_info["duration"] || bulletin_info["duration"] == "") 
+        throw new Error("No se ha encontrado la duración del boletín.")
+    
+    if (!bulletin_info["registration"] || bulletin_info["registration"] == "") 
+        throw new Error("No se ha encontrado la matrícula del vehículo.")
+    
+    if (!bulletin_info["price"] || bulletin_info["price"] == "") 
+        throw new Error("No se ha encontrado el precio del boletín.")
+    
+    if (!bulletin_info["paid"] || bulletin_info["paid"] == "") 
+        throw new Error("No se ha encontrado el estado de pago del boletín.")
+    
+    if (!bulletin_info["location"] || bulletin_info["location"] == "") 
+        throw new Error("No se ha encontrado la ubicación del boletín.")
+    
 }

@@ -20,6 +20,25 @@ export function printTicket(registration, duration, created_at) {
 }
 
 export function createTicket(duration, registration, paid = false) {
+    return new Promise((resolve, reject) => {
+
+        let session = getSession()
+
+        let ticket_info = {
+            "responsible": session["name"],
+            "duration": duration,
+            "registration": registration,
+            "paid": paid,
+            "location": "La Moraleda",
+        }
+
+        saveTicket(ticket_info).then((result) => {
+            printTicket(result["registration"], result["duration"], result["created_at"])
+            resolve(result)
+        }).catch((error) => {
+            reject(error.message)
+        })
+    })
     let session = getSession()
 
     let ticket_info = {
@@ -32,6 +51,11 @@ export function createTicket(duration, registration, paid = false) {
     
     saveTicket(ticket_info).then((result) => {
         printTicket(result["registration"], result["duration"], result["created_at"])
+    }).catch((e) => {
+        Alert.alert('Ha ocurrido un error creando el ticket', e.message, [
+            {
+                text: 'Cerrar',
+            }]);
     })
 
     return ticket

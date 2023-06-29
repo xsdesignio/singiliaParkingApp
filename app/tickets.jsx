@@ -9,7 +9,7 @@ export default function tickets() {
 
     return(<View style={styles.container}>
         <SettingsButton/>
-        <PrintingScreen/>
+        <TicketsScreen/>
         <Menu/>
     </View>)
 }

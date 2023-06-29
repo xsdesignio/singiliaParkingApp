@@ -40,7 +40,7 @@ export function deleteOldTickets() {
 
 // Save a ticket into database
 // @param ticket_info : dictionary with all ticket info 
-// (responsible, duration, registration, price, paid, zone_id, created_at)
+// (responsible, duration, registration, price, paid, location)
 export function saveBulletin(bulletin_info) {
     return new Promise((resolve, reject) => {
         let db = getDatabase()
@@ -55,7 +55,7 @@ export function saveBulletin(bulletin_info) {
                     bulletin_info["registration"], 
                     bulletin_info["price"], 
                     bulletin_info["paid"], 
-                    bulletin_info["zone_id"]
+                    bulletin_info["location"]
                 ], 
                 (result) => resolve(result),
                 (error) => reject(null));

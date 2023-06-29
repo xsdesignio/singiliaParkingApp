@@ -37,7 +37,7 @@ export default function IndexScreen() {
         <View style={styles.container_element}>
           <Text style={styles.title}>¡Hola { userName }!</Text>
           <Text style={styles.text}>¿Estás listo para imprimir tickets?</Text>
-          <Link style={styles.link_button} href='/printing' replace="/printing">Lanzar aplicación</Link>
+          <Link style={styles.link_button} href='/tickets' replace="/tickets">Lanzar aplicación</Link>
         </View>
       ) : (
         <View style={styles.container_element}>
