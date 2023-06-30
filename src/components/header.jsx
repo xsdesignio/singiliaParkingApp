@@ -1,21 +1,23 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native'
-import { Link, useRouter, usePathname  } from 'expo-router'
+import { Link, useNavigation, usePathname, useRouter, useRootNavigation } from 'expo-router'
 
-import { useNavigation } from 'expo-router';
+import { useNavigationState } from '@react-navigation/native';
 
 import { useEffect, useState } from 'react';
 
 export default function Header() {
     const [settingsPageActive, setSettingsPageActive] = useState(false);
 
-    const navigation = useNavigation()
     const path_name = usePathname()
+
+    const navigation = useNavigation()
 
     useEffect(() => {
         // set settingsPageActive true of false depending on the comparation
         setSettingsPageActive((path_name == "/settings"))
-    
-    }, [])
+
+    }, [path_name])
+
 
 
     return(
@@ -23,22 +25,17 @@ export default function Header() {
             <View>
             </View>
             <View>
-                <Link 
-                    href={"/settings"}
+                <TouchableOpacity
                     style={styles.settings_button}
                     onPress= {() => {
                         if (settingsPageActive){
-                            setSettingsPageActive(false)
-                            if(!navigation.canGoBack())
-                                Alert.alert("Error", "No se puede volver por algún motivo", [
-                                    {
-                                        text: "Cerrar"
-                                    }
-                                ])
+                            navigation.goBack()
+                        } else {
+                            navigation.navigate("settings")    
                         }
                     }}>
                     <Image style={styles.settings_image} source={settingsPageActive ? require('../../assets/cross.png') : require('../../assets/settings.png')} />
-                </Link>
+                </TouchableOpacity>
             </View>
         </View>
     )
