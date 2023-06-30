@@ -1,4 +1,4 @@
-import { storeSession, deleteSession  } from "../storage/sessionStorage";
+import { storeSession, deleteSession, getSessionFromDatabase  } from "./sessionStorage";
 
 
 const apiHost = "http://192.168.0.96:5000"
@@ -56,3 +56,4 @@ export async function logoutUser() {
     else
         return false
 }
+

@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View, Text, Alert, TextInput, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
-import { printBulletin } from "../controllers/bulletins";
+import { printBulletin } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 
@@ -40,7 +40,7 @@ export default function bulletinsScreen() {
     return(
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.bulletin}>
-                <Image style={styles.bulletin_image} source={require("../assets/bulletins/bulletin.png")} />
+                <Image style={styles.bulletin_image} source={require("../../assets/bulletins/bulletin.png")} />
             </View>
             <View style={styles.bulletin_info_form}>
 

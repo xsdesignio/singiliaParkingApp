@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity 
 import { Link } from 'expo-router';
 import { useState } from "react";
 
-import { printTicket } from "../controllers/tickets";
+import { printTicket } from "../tickets/ticketsController";
 
 export default function TicketsScreen() {
 
@@ -17,22 +17,22 @@ export default function TicketsScreen() {
 
     const [availableTickets, setAvailableTickets] = useState([
         {
-            imageUrl: require("../assets/tickets/30.png"),
+            imageUrl: require("../../assets/tickets/30.png"),
             duration: 30,
             color: "yellow",
         },
         {
-            imageUrl: require("../assets/tickets/60.png"),
+            imageUrl: require("../../assets/tickets/60.png"),
             duration: 60,
             color: "green",
         },
         {
-            imageUrl: require("../assets/tickets/90.png"),
+            imageUrl: require("../../assets/tickets/90.png"),
             duration: 90,
             color: "red",
         },
         {
-            imageUrl: require("../assets/tickets/120.png"),
+            imageUrl: require("../../assets/tickets/120.png"),
             duration: 120,
             color: "orange",
         },

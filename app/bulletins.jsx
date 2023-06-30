@@ -3,8 +3,8 @@ import Menu from "../src/components/menu";
 import Header from "../src/components/header";
 import BulletinsScreen from "../src/screens/BulletinsScreen";
 
-
 export default function bulletinsView() {
+
     return(<View style={styles.container}>
         <Header/>
         <BulletinsScreen/>

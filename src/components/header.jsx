@@ -1,5 +1,7 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native'
-import { Link, useNavigation, usePathname  } from 'expo-router'
+import { Link, useRouter, usePathname  } from 'expo-router'
+
+import { useNavigation } from 'expo-router';
 
 import { useEffect, useState } from 'react';
 
@@ -7,7 +9,6 @@ export default function Header() {
     const [settingsPageActive, setSettingsPageActive] = useState(false);
 
     const navigation = useNavigation()
-    
     const path_name = usePathname()
 
     useEffect(() => {
@@ -27,11 +28,16 @@ export default function Header() {
                     style={styles.settings_button}
                     onPress= {() => {
                         if (settingsPageActive){
-                            navigation.goBack()
                             setSettingsPageActive(false)
+                            if(!navigation.canGoBack())
+                                Alert.alert("Error", "No se puede volver por algún motivo", [
+                                    {
+                                        text: "Cerrar"
+                                    }
+                                ])
                         }
                     }}>
-                    <Image style={styles.settings_image} source={settingsPageActive ? require('../assets/cross.png') : require('../assets/settings.png')} />
+                    <Image style={styles.settings_image} source={settingsPageActive ? require('../../assets/cross.png') : require('../../assets/settings.png')} />
                 </Link>
             </View>
         </View>

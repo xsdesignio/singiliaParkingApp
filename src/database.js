@@ -50,26 +50,13 @@ export function createSQLiteTables() {
     }, null, null)
 }
 
-/* 
-db.transaction((tx) => {
-    tx.executeSql(
-      `select * from items where price = ?;`,
-      [doneHeading ? 1 : 0],
-      (_, { rows: { _array } }) => setItems(_array)
-    );
-  });
 
 
+export function deleteAllTables() {
+    const db = getDatabase()
 
-db.transaction(
-    (tx) => {
-      tx.executeSql("insert into items (done, value) values (0, ?)", [text]);
-      tx.executeSql("select * from items", [], (_, { rows }) =>
-        console.log(JSON.stringify(rows))
-      );
-    },
-    null,
-    forceUpdate
-);
-
- */
+    db.transaction(transaction => {
+        transaction.executeSql(`DROP TABLE tickets;`)
+        transaction.executeSql(`DROP TABLE bulletins;`)
+    }, null, null)
+}

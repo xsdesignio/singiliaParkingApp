@@ -2,13 +2,13 @@ import { ScrollView, StyleSheet, View, Text, Button, TextInput, Image, Touchable
 
 import TicketsScreen from "../src/screens/TicketsScreen";
 import Menu from "../src/components/menu";
-import SettingsButton from "../src/components/header";
+import Header from "../src/components/header";
 
 
 export default function tickets() {
 
     return(<View style={styles.container}>
-        <SettingsButton/>
+        <Header/>
         <TicketsScreen/>
         <Menu/>
     </View>)

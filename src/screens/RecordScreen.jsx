@@ -1,8 +1,8 @@
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 import { useEffect, useState } from "react";
 
-import { getTicketsSaved } from "../storage/ticketsStorage"
-import { getBulletinsSaved } from "../storage/bulletinsStorage"
+import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
+import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 
 export default function RecordScreen() {
 
@@ -10,32 +10,33 @@ export default function RecordScreen() {
 
     const [tickets, setTickets] = useState([])
 
-
+    
     const [bulletins, setBulletins] = useState([])
 
     useEffect(() => {
         setData()
     }, [])
 
+    // Set the data to the states if data is not empty
     async function setData() {
         try {
-            let _tickets = await getTicketsSaved()
-            if(_tickets.length > 0)
-                setTickets(_tickets)
-            
-            let _bulletins = await getBulletinsSaved()
-
-            if(_bulletins.length > 0)
-                setBulletins(_bulletins)
-        } catch(error) {
-            Alert.alert("Ha ocurrido un error obteniendo los tickets", error, 
-            [
+            let tickets = await getTicketsSaved()
+            let bulletins = await getBulletinsSaved()
+            if (tickets.length > 0) {
+                setTickets(tickets)
+            }
+            if (bulletins.length > 0) {
+                setBulletins(bulletins)
+            }
+        }
+        catch(error) {
+            Alert.alert("Error Al cargar los datos", "Error", [
                 {
-                    text: 'Cerrar',
-                    onPress: () => console.log(''),
+                    text: "Ok",
                 }
             ])
         }
+        
     }
 
     
@@ -53,7 +54,7 @@ export default function RecordScreen() {
     const renderBulletin = ({item}) =>
         (<View style={styles.ticket}>
             <TouchableOpacity style={styles.ticket_button}>
-                <Image style={styles.ticket_selector_image} source={require("../assets/bulletins/bulletin.png")} />
+                <Image style={styles.ticket_selector_image} source={require("../../assets/bulletins/bulletin.png")} />
                 <Text>{item.id}</Text>
             </TouchableOpacity>
         </View>)
@@ -74,13 +75,13 @@ export default function RecordScreen() {
     function getTicketAppareanceByDuration(duration) {
         switch(duration) {
             case 30:
-                return require("../assets/tickets/30.png")
+                return require("../../assets/tickets/30.png")
             case 60:
-                return require("../assets/tickets/60.png")
+                return require("../../assets/tickets/60.png")
             case 90:
-                return require("../assets/tickets/90.png")
+                return require("../../assets/tickets/90.png")
             case 120:
-                return require("../assets/tickets/120.png")
+                return require("../../assets/tickets/120.png")
         }
     }
 

@@ -1,6 +1,6 @@
-import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Button, Alert } from "react-native";
 
-import { logoutUser } from "../controllers/session";
+import { logoutUser } from "../session/sessionControler";
 import { useNavigation } from "expo-router";
 import { useState } from "react";
 
@@ -18,6 +18,9 @@ export default function SettingsScreen() {
                         name: 'index'
                     }]
                 })
+            else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
+        }).catch(error => {
+            Alert.alert("Error al cerrar la sesión", error, [{text: "OK"}])
         })
     }
 

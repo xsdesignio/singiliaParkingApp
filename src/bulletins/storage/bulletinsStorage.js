@@ -1,8 +1,7 @@
-import { getDatabase } from "./database";
-import { getSession } from "./sessionStorage";
+import { getDatabase } from "../../database";
 
 
-
+// Get all bulletins from database
 export function getBulletinsSaved(duration) {
     let db = getDatabase()
 
@@ -20,12 +19,12 @@ export function getBulletinsSaved(duration) {
 }
 
 
-function payTicket(id) {
+function payBulletin(id) {
     let db =  getDatabase()
 }
 
 
-export function deleteOldTickets() {
+export function deleteOldBulletins() {
     let db = getDatabase()
     db.transaction((tx) => {
         tx.executeSql(`

@@ -6,6 +6,7 @@ import Header from "../src/components/header";
 
 
 export default function settingsView() {
+    
     return(<View style={styles.container}>
         <Header/>
         <SettingsScreen/>

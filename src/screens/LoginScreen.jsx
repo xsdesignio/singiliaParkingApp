@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { useFocusEffect, useNavigation  } from "expo-router";
 
-import { loginUser } from "../controllers/session";
+import { loginUser } from "../session/sessionControler";
 
 
 export default function LoginScreen() {

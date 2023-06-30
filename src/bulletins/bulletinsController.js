@@ -1,6 +1,6 @@
 import { Alert } from "react-native"
-import { getSession } from "../storage/sessionStorage"
-import { saveBulletin } from "../storage/bulletinsStorage";
+import { getSession } from "../session/sessionStorage"
+import { saveBulletin } from "./storage/bulletinsStorage";
 
 
 
@@ -32,8 +32,13 @@ export function createBulletin(bulletin_info) {
 
         bulletin_info["responsible"] = session["name"]
 
+        // Check if bulletin_info has all required information
+        check_information(bulletin_info)
+
+        // Try to save the ticket on database
+        // If creation is successful, print the ticket
         saveBulletin(bulletin_info).then((result) => {
-            printTicket(result["registration"], result["duration"], result["created_at"])
+            printBulletin(bulletin_info)
             resolve(result)
         }).catch((error) => {
             reject(error.message)

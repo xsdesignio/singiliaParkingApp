@@ -13,19 +13,19 @@ export default function Menu() {
             name: 'Historial',
             href: '/record',
             active: false,
-            source: require('../assets/ticket.png'),
+            source: require('../../assets/ticket.png'),
         },
         {
             name: 'Tickets',
             href: '/tickets',
             active: false,
-            source: require('../assets/printing.png'),
+            source: require('../../assets/printing.png'),
         },
         {
             name: 'Boletines',
             href: '/bulletins',
             active: false,
-            source: require('../assets/printing.png'),
+            source: require('../../assets/printing.png'),
         }
     ])
 

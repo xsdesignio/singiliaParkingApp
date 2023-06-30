@@ -1,7 +1,7 @@
-import { saveConfigDict } from "../storage/configStorage";
-import { createSQLiteTables } from "../storage/database";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { saveConfigDict } from "./bulletins/storage/configStorage";
+import { createSQLiteTables, deleteAllTables } from "./database";
 
 
 // Function to start all background processes required to run the app
@@ -17,6 +17,8 @@ export async function initApp() {
             
         }
     } */
+
+    deleteAllTables()
     createSQLiteTables()
 
     // Saving default config object

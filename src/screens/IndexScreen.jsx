@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
-import { Link, useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
 
-import { getSession, deleteSession } from '../storage/sessionStorage';
-import { initApp } from '../controllers/app';
+import { getSession, deleteSession } from '../session/sessionStorage';
+import { initApp } from '../app';
 
 
 const apiHost = "http://192.168.1.40:5000"

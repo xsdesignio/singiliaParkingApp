@@ -1,15 +1,15 @@
 import { StyleSheet, View, Text, Button, TouchableOpacity, Image, ScrollView } from "react-native";
 
 import Menu from "../src/components/menu";
-import SettingsButton from "../src/components/header";
 import RecordScreen from "../src/screens/RecordScreen";
+import Header from "../src/components/header";
 
 
 
 export default function recordView() {
 
     return(<View style={styles.container}>
-        <SettingsButton/>
+        <Header/>
         <RecordScreen/>
         <Menu/>
     </View>)

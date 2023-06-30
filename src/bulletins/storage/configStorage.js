@@ -5,7 +5,7 @@ import AsyncStorage  from "@react-native-async-storage/async-storage"
 // @returns the config dict or null if it doesn't exists or any error happened
 export async function getConfigDict() {
     try {
-        let configJSON = await AsyncStorage.getItem("@config")
+        let configJSON = await AsyncStorage.getItem("@bulletins-config")
         
         if(configJSON!=null)
             return JSON.parse(configJSON)
@@ -23,7 +23,7 @@ export async function getConfigDict() {
 export async function saveConfigDict(configDict) {
     try {
         const config = JSON.stringify(configDict)
-        await AsyncStorage.setItem("@config", config)
+        await AsyncStorage.setItem("@bulletins-config", config)
         return true
     } catch {
         return false
