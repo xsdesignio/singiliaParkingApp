@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity 
 import { Link } from 'expo-router';
 import { useState } from "react";
 
-import { printTicket } from "../tickets/ticketsController";
+import { createTicket, printTicket } from "../tickets/ticketsController";
 
 export default function TicketsScreen() {
 
@@ -105,8 +105,7 @@ export default function TicketsScreen() {
                 <TouchableOpacity
                     style={styles.print_button}
                     onPress={() => {
-                        printTicket(selectedTicket.registration, registration, false)
-                        setRegistration("")
+                        createTicket(selectedTicket.registration, registration, false)
                     }}
                 >
                     <Text style={styles.print_button_text}>

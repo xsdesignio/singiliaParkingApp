@@ -29,7 +29,7 @@ export default function SettingsScreen() {
 
             <Text style={styles.title}>Ajustes:</Text>
 
-            <Text>Número de boletines a imprimit</Text>
+            <Text>Número de boletines a imprimir</Text>
             <View>
                 <View style={styles.selector}>
                     <TouchableOpacity 

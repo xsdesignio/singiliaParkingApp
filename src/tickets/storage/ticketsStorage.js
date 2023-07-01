@@ -1,31 +1,75 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getDatabase } from "../../database";
 import { getSession } from "../../session/sessionStorage";
 
 
+
+
+
 // Get all tickets saved in the database
 // @returns a promise with the tickets array
-// @param duration: duration of the tickets to be returned
-export function getTicketsSaved(duration) {
+export function getTicketsSaved() {
     return new Promise((resolve, reject) => {
-        let db = getDatabase()
+      let db = getDatabase();
+  
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            "SELECT * FROM tickets;",
+            [],
+            (_, result) => {
+              resolve(result.rows._array);
+            },
+            (_, error) => {
+                reject(error.message)
+                return true
+            }
+          );
+        },
+        (error) => reject(error.message),
+        () => {}
+      );
+    });
+  }
 
-        db.transaction((tx) => {
-            tx.executeSql(
-                "SELECT * FROM tickets WHERE duration = ?",
-                [duration],
-                (_, result) => resolve(result.rows._array),
-                (_, error) => reject(error.message)
-            )
-        })
-    })
-    
-}
+// Get all tickets saved in the database
+// @returns a promise with the tickets array
+// @param duration: if given, only tickets with the given duration will be returned
+export function getTicketsFilteredByDuration(duration = null) {
+
+    if(duration != null && duration != undefined && duration <= 0)
+        return getTicketsSaved()
+
+    return new Promise((resolve, reject) => {
+      let db = getDatabase();
+      let query = "SELECT * FROM tickets WHERE duration = ?";
+
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            query,
+            [duration],
+            (_, result) => {
+              resolve(result.rows._array);
+            },
+            (_, error) => {
+                reject(error.message)
+                return true
+            }
+          );
+        },
+        (error) => reject(error.message), // Manejo de errores de la transacción
+        () => {} // Opcional: función de éxito para la transacción
+      );
+    });
+  }
+  
 
 // Set the ticket with the given id as paid
 // @param id: id of the ticket to be paid
 // @returns a promise with the ticket paid
 // @throws an error if the ticket doesn't exist or the ticket is already paid
-function payTicket(id) {
+export function payTicket(id) {
     // check if the ticket exists and is not paid
     return new Promise((resolve, reject) => {
         let db = getDatabase()
@@ -96,13 +140,14 @@ export function saveTicket(ticket_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO tickets (responsible, duration, registration, price, paid, location) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (responsible, duration, registration, price, paid, sent_to_server, location) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     ticket_info["responsible"], 
                     ticket_info["duration"], 
                     ticket_info["registration"], 
                     ticket_info["price"], 
                     ticket_info["paid"], 
+                    ticket_info["sent_to_server"], 
                     ticket_info["location"]
                 ], 
                 (_, result) => resolve(result),

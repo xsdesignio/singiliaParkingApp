@@ -18,24 +18,32 @@ export default function RecordScreen() {
     }, [])
 
     // Set the data to the states if data is not empty
-    async function setData() {
-        try {
-            let tickets = await getTicketsSaved()
-            let bulletins = await getBulletinsSaved()
+    function setData() {
+
+        getTicketsSaved().then((tickets) => {
             if (tickets.length > 0) {
                 setTickets(tickets)
             }
-            if (bulletins.length > 0) {
-                setBulletins(bulletins)
-            }
-        }
-        catch(error) {
-            Alert.alert("Error Al cargar los datos", "Error", [
+        }).catch((error) => {
+            Alert.alert("Error al cargar los datos", error, [
                 {
                     text: "Ok",
                 }
             ])
-        }
+        })
+
+        getBulletinsSaved().then((bulletins) => {
+            if (bulletins.length > 0) {
+                console.log("Si hay boletines")
+                setBulletins(bulletins)
+            }
+        }).catch((error) => {
+            Alert.alert("Error al cargar los datos", error, [
+                {
+                    text: "Ok",
+                }
+            ])
+        })
         
     }
 

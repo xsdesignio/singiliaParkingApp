@@ -42,6 +42,7 @@ export function createSQLiteTables() {
                 registration TEXT NOT NULL,
                 brand TEXT,
                 model TEXT,
+                color TEXT,
                 signature TEXT NOT NULL,
                 sent_to_server INTEGER NOT NULL DEFAULT 0,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))

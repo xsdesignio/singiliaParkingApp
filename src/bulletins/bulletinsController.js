@@ -4,16 +4,17 @@ import { saveBulletin } from "./storage/bulletinsStorage";
 
 
 
-// Create a dialog to print the ticket and close the dialog after 6 seconds
+
+
+// Just simulated by the moment
 export function printBulletin(bulletin_info) {
-    // Simulate printing by the moment;
+    
     return new Promise((resolve, reject) => {
         let printing = true;
 
         Alert.alert('El boletín se está imprimiendo', 'Debería tardar tan solo unos segundos...', [
             {
                 text: 'Cerrar',
-                onPress: () => console.log(''),
             }]);
         
         setTimeout(() => {
@@ -22,6 +23,8 @@ export function printBulletin(bulletin_info) {
         }, 6000)
     })
 }
+
+
 
 //@param bulletin_info, dictionary with required information to create the bulletin
 //(responsible, duration, registration, price, paid, location)
