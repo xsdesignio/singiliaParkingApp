@@ -66,7 +66,8 @@ let styles = StyleSheet.create({
         paddingHorizontal: 60,
         borderTopColor: "#C2D9C9",
         borderTopWidth: 1,
-        backgroundColor: '#F9FFFF'
+        backgroundColor: '#F9FFFF',
+        zIndex: -10,
     },
     page_link: {
         flexDirection: 'row',
@@ -77,6 +78,7 @@ let styles = StyleSheet.create({
         height: 50,
         borderRadius: 28,
         backgroundColor: '#d4faec',
+        zIndex: -10,
     },
     link_icon: {
         width: 28,

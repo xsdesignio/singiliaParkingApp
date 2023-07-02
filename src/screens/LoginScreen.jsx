@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFocusEffect, useNavigation  } from "expo-router";
 
 import { loginUser } from "../session/sessionControler";
+import DefaultButton from "../components/atoms/default-button";
 
 
 export default function LoginScreen() {
@@ -59,14 +60,7 @@ export default function LoginScreen() {
             />
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    style={styles.print_button}
-                        onPress={login}
-                    >
-                    <Text style={styles.print_button_text}>
-                        Iniciar sesión
-                    </Text>
-                </TouchableOpacity>
+                <DefaultButton onPress={login} text={"Iniciar Sesión"} />
             </View>
 
             <Text style={styles.error}>{errorMessage}</Text>
@@ -99,16 +93,4 @@ const styles = {
         borderColor: 'gray',
         borderRadius:  12,
     },
-    print_button: {
-        backgroundColor: "#559f97",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        color: 'white',
-    },
-    print_button_text: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        borderRadius: 8,
-    }
 }

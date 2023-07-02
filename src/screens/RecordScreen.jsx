@@ -46,7 +46,6 @@ export default function RecordScreen() {
         })
         
     }
-
     
 
     const renderTicket = ({ item }) => {
@@ -67,17 +66,18 @@ export default function RecordScreen() {
             </TouchableOpacity>
         </View>)
 
-    const tickets_list = (<FlatList
+
+    const tickets_list = (tickets==[]? (<Text>Aún no has imprimido ningún ticket</Text>) : (<FlatList
         data={tickets}
         renderItem={renderTicket}
         keyExtractor={(item) => item.id.toString()}
-    />)
+    />))
 
-    const bulletins_list = (<FlatList
+    const bulletins_list = (bulletins==[]? (<Text>Aún no has imprimido ningún boletín</Text>) : (<FlatList
         data={bulletins}
         renderItem={renderBulletin}
         keyExtractor={(item) => item.id.toString()}
-    />)
+    />))
 
 
     function getTicketAppareanceByDuration(duration) {
@@ -117,9 +117,6 @@ const styles = {
         flex: 1,
         justifyContent: 'center',
         alignItems: "center",
-        width: "100%",
-        height: "100%",
-        gap: 0,
     },
     selector: {
         flexDirection: "row"

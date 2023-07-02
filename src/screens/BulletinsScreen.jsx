@@ -5,6 +5,7 @@ import { createBulletin, printBulletin } from "../bulletins/bulletinsController"
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
+import BigCard from "../components/atoms/big-card";
 
 export default function bulletinsScreen() {
     
@@ -42,7 +43,11 @@ export default function bulletinsScreen() {
     function print() {
         createBulletin(bulletinInfo)
         .then((bulletin) => {
-            printBulletin(bulletin)
+            
+            printBulletin(bulletin).catch((error) => {
+                Alert.alert("No se ha podido imprimir el boletín.", error)
+            })
+
             Alert.alert("Boletín impreso", bulletin["brand"] + " " + bulletin["model"] + " " + bulletin["registration"])
         })
         .catch((error) => {
@@ -53,12 +58,11 @@ export default function bulletinsScreen() {
 
     return(
         <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.bulletin}>
-                <Image style={styles.bulletin_image} source={require("../../assets/bulletins/bulletin.png")} />
-            </View>
+            <BigCard imageUrl={require("../../assets/bulletins/bulletin.png")} />
+            
             <View style={styles.bulletin_info_form}>
 
-                <Text style={styles.label}>Datos del vehículo:</Text>
+                <Text style={styles.label}>Datos requeridos</Text>
 
                 <View style={styles.bulletin_inputs}>
                     <View>
@@ -148,45 +152,25 @@ export default function bulletinsScreen() {
                     </TouchableOpacity>
                 </View>
 
-                <View>
-                    <DefaultButton onPress={print} text="Imprimir" />
-                </View>
+                <DefaultButton onPress={print} text="Imprimir" />
+                
                 
             </View> 
-            <View style={styles.bottom_margin}></View>
         </ScrollView>)
 }
 
 let styles = StyleSheet.create({
     container: {
-        flex: 2,
-        gap: 100,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#F9FFFF',
+        justifyContent: 'center',
         marginTop: 0,
         marginBottom: 0,
-    },
-    bulletin: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        width: "100%",
-        margin: 12,
-        padding: 0,
-    },
-    bulletin_image: {
-        height: 200,
-        width: 350,
-        borderRadius: 4,
-        padding: 20,
-        borderWidth: 2,
-        borderColor: '#00b3ff',
     },
     bulletin_info_form: {
         justifyContent: "center",
         alignItems: "center",
-        height: 180,
+        minHeight: 180,
         gap: 0,
         marginTop: 0,
         marginBottom: 20,
@@ -210,6 +194,7 @@ let styles = StyleSheet.create({
         paddingVertical: 5,
         width: 180,
         marginVertical: 4,
+        backgroundColor: 'white'
     },
     print_button: {
         backgroundColor: "#559f97",
@@ -234,7 +219,8 @@ let styles = StyleSheet.create({
         borderRadius: 5,
         padding: 0,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: 'white'
     },
     picker: {
         width: "100%",

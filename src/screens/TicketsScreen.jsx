@@ -1,9 +1,10 @@
-import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
-import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Alert } from "react-native";
+
 import { useState } from "react";
 
 import { createTicket, printTicket } from "../tickets/ticketsController";
 import DefaultButton from "../components/atoms/default-button";
+import BigCard from "../components/atoms/big-card";
 
 export default function TicketsScreen() {
 
@@ -47,22 +48,19 @@ export default function TicketsScreen() {
     function print() {
         createTicket(selectedTicket.duration, registration, paymentMethod)
         .then((ticket) => {
-            printTicket(ticket)
+            printTicket(ticket).catch((error) => {
+                Alert.alert("No se ha podido imprimir el ticket.", error)
+            })
             Alert.alert("Ticket impreso", ticket["registration"])
         })
         .catch((error) => {
-            Alert.alert("No se ha podido imprimir el ticket.", error)
+            Alert.alert("No se ha podido crear el ticket.", error)
         })
     }
 
     return(
         <View style={styles.container}>
-            
-            <View 
-                style={styles.tickets}>
-
-                <Image style={styles.ticket_image} source={selectedTicket.imageUrl} />
-            </View>
+            <BigCard imageUrl={selectedTicket.imageUrl} />
 
             <View style={styles.available_tickets}>
                 <ScrollView style={styles.tickets_selector} horizontal={true}>
@@ -82,13 +80,14 @@ export default function TicketsScreen() {
             </View>
                 
             <View style={styles.ticket_info}>
+
                 <TextInput
                     style={styles.input}
                     onChangeText={(value) => setRegistration(value)}
                     placeholder="Matricula"
                 />
 
-                <Text>Métodos de pago:</Text>
+                <Text style={styles.normal_text}>Métodos de pago:</Text>
                 
                 <View style={styles.selector}>
                     <TouchableOpacity 
@@ -108,6 +107,7 @@ export default function TicketsScreen() {
                         <Text>Efectivo</Text>
                     </TouchableOpacity>
                 </View>
+
                 <DefaultButton onPress={print} text={"imprimir"}/>
             </View>
         </View>)
@@ -119,29 +119,11 @@ let styles = StyleSheet.create({
         gap: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#F9FFFF',
-        marginTop: 60,
-        marginBottom: 40
+        paddingVertical: 20,
     },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        textAlign: "center",
-        width: "60%"
-    },
-    subtitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: "center",
-        width: "80%"
-    },
-    ticket_image: {
-        height: 200,
-        width: 350,
-        borderRadius: 4,
-        padding: 20,
-        borderWidth: 2,
-        borderColor: '#00b3ff',
+    normal_text: {
+        fontSize: 16,
+        color: 'white',
     },
     selector: {
         flexDirection: "row"
@@ -155,11 +137,9 @@ let styles = StyleSheet.create({
     available_tickets: {
         justifyContent: "center",
         alignItems: "center",
-        height: 140,
+        height: 142,
         width: "110%",
-        marginVertical: 20,
-        paddingVertical: 4,
-        backgroundColor: "white",
+        marginBottom: 10,
     },
     tickets_selector: {
         flexDirection: 'row',
@@ -167,11 +147,12 @@ let styles = StyleSheet.create({
         paddingHorizontal: 4,
         marginHorizontal: 40,
         marginVertical: 0,
+        backgroundColor: "#35523e",
         gap: 10,
     },
     ticket_selector_image: {
-        height: 100,
-        width: 175,
+        height: 110,
+        width: 192.5,
         borderRadius: 4,
         padding: 20,
     },
@@ -181,7 +162,7 @@ let styles = StyleSheet.create({
     ticket_info: {
         flex: 1,
         gap: 10,
-        marginTop: -20,
+        alignItems: 'center',
         minHeight: 40
     },
     tickets: {
@@ -194,9 +175,11 @@ let styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'darkblue',
         borderRadius: 5,
+        backgroundColor: 'white',
+        textAlign: 'center',
         paddingHorizontal: 10,
         paddingVertical: 5,
-        width: 200,
+        width: 280,
     },
     
 })

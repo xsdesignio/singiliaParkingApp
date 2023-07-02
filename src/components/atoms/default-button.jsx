@@ -23,7 +23,18 @@ const style = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         color: 'white',
-        borderRadius: 20
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.36,
+        shadowRadius: 6.68,
+
+        elevation: 11,
     },
     print_button_text: {
         color: 'white',

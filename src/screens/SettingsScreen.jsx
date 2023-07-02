@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Button, Alert } from "react-n
 import { logoutUser } from "../session/sessionControler";
 import { useNavigation } from "expo-router";
 import { useState } from "react";
+import DefaultButton from "../components/atoms/default-button";
 
 export default function SettingsScreen() {
     const navigation = useNavigation();
@@ -55,14 +56,7 @@ export default function SettingsScreen() {
             <Text>Sesión</Text>
 
             <View>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={logout}
-                >
-                    <Text style={styles.button_text}>
-                        Cerrar sesión
-                    </Text>
-                </TouchableOpacity>
+                <DefaultButton onPress={logout} text={"Cerrar sesión"} />
             </View>
             
         </View>)
@@ -82,19 +76,6 @@ const styles = {
         marginBottom: 20,
         textAlign: "center",
         width: "50%",
-    },
-    button: {
-        backgroundColor: "#559f97",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        color: 'white',
-        borderRadius: 20
-    },
-    button_text: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        borderRadius: 8,
     },
     selector: {
         flexDirection: "row"

@@ -24,7 +24,7 @@ export default function Header() {
         <View style={styles.settings_header}>
             <View>
             </View>
-            <View>
+            <View style={styles.button_wrapper}>
                 <TouchableOpacity
                     style={styles.settings_button}
                     onPress= {() => {
@@ -45,18 +45,22 @@ export default function Header() {
 const styles = StyleSheet.create({
     settings_header: {
         flexDirection: "row",
-        height: 92,
         paddingTop:40,
-        width: 400,
-        backgroundColor: "#FFFFFF",
         justifyContent: "space-between",
         alignContent: "center",
-        borderColor: "#C2D9C9",
-        borderBottomWidth: 1,
-        paddingHorizontal: 8,
+        paddingHorizontal: 20,
         paddingVertical: 0,
         marginBottom: 0,
         zIndex: 10,
+    },
+    button_wrapper: {
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center",
+        width: 50,
+        height: 50,
+        margin: 10,
+        borderRadius: 25,
     },
     settings_button: {
         width: 40,
