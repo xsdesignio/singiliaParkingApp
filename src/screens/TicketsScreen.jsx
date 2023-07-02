@@ -3,19 +3,22 @@ import { Link } from 'expo-router';
 import { useState } from "react";
 
 import { createTicket, printTicket } from "../tickets/ticketsController";
+import DefaultButton from "../components/atoms/default-button";
 
 export default function TicketsScreen() {
 
     const [registration, setRegistration] = useState("")
 
+    // cash set bulletin "paid" property to false
+    // card set bulletin "paid" property to true
     const payment_methods = {
-        CASH: "cash",
-        CARD: "credit card"
+        CASH: false,
+        CARD: true
     }
 
     const [paymentMethod, setPaymentMethod] = useState(payment_methods.CARD)
 
-    const [availableTickets, setAvailableTickets] = useState([
+    const availableTickets = [
         {
             imageUrl: require("../../assets/tickets/30.png"),
             duration: 30,
@@ -36,16 +39,20 @@ export default function TicketsScreen() {
             duration: 120,
             color: "orange",
         },
-    ])
+    ]
 
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
-    function handleDuration (value) {
-        const numericValue = value.replace(/[^0-9]/g, '');
-        setDuration(numericValue);
-    }
-    function handleRegistration(value) {
-        registration = value;
+    
+    function print() {
+        createTicket(selectedTicket.duration, registration, paymentMethod)
+        .then((ticket) => {
+            printTicket(ticket)
+            Alert.alert("Ticket impreso", ticket["registration"])
+        })
+        .catch((error) => {
+            Alert.alert("No se ha podido imprimir el ticket.", error)
+        })
     }
 
     return(
@@ -101,17 +108,7 @@ export default function TicketsScreen() {
                         <Text>Efectivo</Text>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                    style={styles.print_button}
-                    onPress={() => {
-                        createTicket(selectedTicket.registration, registration, false)
-                    }}
-                >
-                    <Text style={styles.print_button_text}>
-                        Imprimir
-                    </Text>
-                </TouchableOpacity>
+                <DefaultButton onPress={print} text={"imprimir"}/>
             </View>
         </View>)
 }
@@ -165,10 +162,10 @@ let styles = StyleSheet.create({
         backgroundColor: "white",
     },
     tickets_selector: {
-        height: 0,
         flexDirection: 'row',
-        padding: 4,
-        marginHorizontal: 20,
+        paddingVertical: 4,
+        paddingHorizontal: 4,
+        marginHorizontal: 40,
         marginVertical: 0,
         gap: 10,
     },
@@ -201,18 +198,5 @@ let styles = StyleSheet.create({
         paddingVertical: 5,
         width: 200,
     },
-    print_button: {
-        backgroundColor: "#559f97",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        color: 'white',
-        borderRadius: 20
-    },
-    print_button_text: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        borderRadius: 8,
-    }
     
 })

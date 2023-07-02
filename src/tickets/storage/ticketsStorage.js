@@ -35,7 +35,7 @@ export function getTicketsSaved() {
 // Get all tickets saved in the database
 // @returns a promise with the tickets array
 // @param duration: if given, only tickets with the given duration will be returned
-export function getTicketsFilteredByDuration(duration = null) {
+export function getTicketsByDuration(duration = null) {
 
     if(duration != null && duration != undefined && duration <= 0)
         return getTicketsSaved()
@@ -140,14 +140,14 @@ export function saveTicket(ticket_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO tickets (responsible, duration, registration, price, paid, sent_to_server, location) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (responsible, duration, registration, price, paid, reference_id, location) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     ticket_info["responsible"], 
                     ticket_info["duration"], 
                     ticket_info["registration"], 
                     ticket_info["price"], 
                     ticket_info["paid"], 
-                    ticket_info["sent_to_server"], 
+                    ticket_info["reference_id"], 
                     ticket_info["location"]
                 ], 
                 (_, result) => resolve(result),

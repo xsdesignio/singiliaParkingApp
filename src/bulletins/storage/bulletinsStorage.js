@@ -32,7 +32,7 @@ export function getBulletinsSaved() {
 // Get all bulletins saved in the database
 // @returns a promise with the bulletins array
 // @param duration: if given, only bulletins with the given duration will be returned
-export function getBulletinsFilteredByDuration(duration = null) {
+export function getBulletinsByDuration(duration = null) {
 
     if(duration != null && duration != undefined && duration <= 0)
         return getBulletinsSaved()
@@ -124,7 +124,7 @@ export function deleteOldBulletins() {
 
 // Save a bulletin into database
 // @param bulletin_info : dictionary with all bulletin information
-// (responsible, duration, registration, price, paid, location)
+// (responsible, duration, registration, price, paid, precept, brand, model, color, signature, reference_id, location)
 export function saveBulletin(bulletin_info) {
     return new Promise((resolve, reject) => {
         let db = getDatabase()
@@ -132,19 +132,29 @@ export function saveBulletin(bulletin_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO bulletins (responsible, duration, registration, price, paid, zone_id) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO bulletins (responsible, duration, registration, price, paid, precept, brand, model, color, signature, reference_id, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     bulletin_info["responsible"], 
                     bulletin_info["duration"], 
                     bulletin_info["registration"], 
                     bulletin_info["price"], 
                     bulletin_info["paid"], 
+                    bulletin_info["precept"], 
+                    bulletin_info["brand"], 
+                    bulletin_info["model"], 
+                    bulletin_info["color"], 
+                    bulletin_info["signature"], 
+                    bulletin_info["reference_id"], 
                     bulletin_info["location"]
                 ], 
-                (result) => resolve(result),
-                (error) => reject(null));
+                (_, result) => {
+                  resolve(result)
+                },
+                (_, error) => reject(error.message));
             },
-            null,
+            (error) => {
+              reject(error.message)
+            }, 
             null
         );
     })

@@ -24,7 +24,7 @@ export function createSQLiteTables() {
                 price REAL NOT NULL,
                 paid INTEGER NOT NULL DEFAULT 0,
                 location TEXT NOT NULL,
-                sent_to_server INTEGER NOT NULL DEFAULT 0,
+                reference_id INTEGER NOT NULL DEFAULT -1,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         );
@@ -34,17 +34,17 @@ export function createSQLiteTables() {
             CREATE TABLE IF NOT EXISTS bulletins (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 responsible TEXT NOT NULL,
-                location TEXT NOT NULL,
                 duration INTEGER NOT NULL,
+                registration TEXT NOT NULL,
                 price REAL NOT NULL,
                 paid INTEGER NOT NULL DEFAULT 0,
                 precept TEXT NOT NULL,
-                registration TEXT NOT NULL,
                 brand TEXT,
                 model TEXT,
                 color TEXT,
-                signature TEXT NOT NULL,
-                sent_to_server INTEGER NOT NULL DEFAULT 0,
+                signature TEXT,
+                location TEXT NOT NULL,
+                reference_id INTEGER NOT NULL DEFAULT -1,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         )

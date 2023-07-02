@@ -1,7 +1,4 @@
-import { StyleSheet, View, Text, TextInput, Button, TouchableOpacity } from "react-native";
-import { useState } from "react";
-
-
+import { View } from "react-native";
 import LoginScreen from "../src/screens/LoginScreen";
 
 

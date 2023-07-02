@@ -1,31 +1,33 @@
 import { ScrollView, StyleSheet, View, Text, Alert, TextInput, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
-import { printBulletin } from "../bulletins/bulletinsController";
+import { createBulletin, printBulletin } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
+import DefaultButton from "../components/atoms/default-button";
 
 export default function bulletinsScreen() {
     
     const [bulletinInfo, setBulletinInfo] = useState({
-        "responsible": undefined,
-        "location": undefined,
-        "registration": undefined,
-        "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-        "duration": undefined,
-        "price": undefined,
+        "responsible": "",
+        "duration": "",
+        "registration": "",
+        "price": "",
         "paid": true,
-        "brand": undefined,
-        "model": undefined,
-        "signature": undefined,
-        "sent_to_server": undefined
+        "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
+        "brand": "",
+        "model": "",
+        "color": "",
+        "signature": "",
+        "reference_id": "",
+        "location": "Plaza de Toros"
     })
 
 
 
     const payment_methods = {
-        CASH: "cash",
-        CARD: "credit card"
+        CASH: false,
+        CARD: true
     }
     
 
@@ -34,6 +36,18 @@ export default function bulletinsScreen() {
           ...prevBulletinInfo,
           [key]: value,
         }));
+    }
+
+
+    function print() {
+        createBulletin(bulletinInfo)
+        .then((bulletin) => {
+            printBulletin(bulletin)
+            Alert.alert("Boletín impreso", bulletin["brand"] + " " + bulletin["model"] + " " + bulletin["registration"])
+        })
+        .catch((error) => {
+            Alert.alert("No se ha podido imprimir el boletín.", error)
+        })
     }
 
 
@@ -135,14 +149,7 @@ export default function bulletinsScreen() {
                 </View>
 
                 <View>
-                    <TouchableOpacity
-                        style={styles.print_button}
-                        onPress={() => printBulletin(bulletinInfo)}
-                    >
-                        <Text style={styles.print_button_text}>
-                            Imprimir
-                        </Text>
-                    </TouchableOpacity>
+                    <DefaultButton onPress={print} text="Imprimir" />
                 </View>
                 
             </View> 

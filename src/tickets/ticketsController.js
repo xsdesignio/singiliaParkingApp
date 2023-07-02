@@ -23,7 +23,7 @@ export function createTicket(duration, registration, paid = false) {
                 "registration": registration,
                 "price": price,
                 "paid": paid,
-                "sent_to_server": false,
+                "reference_id": -1,
                 "location": "La Moraleda",
             }
 
@@ -38,6 +38,7 @@ export function createTicket(duration, registration, paid = false) {
                 
                 printTicket(result["registration"], result["duration"], result["created_at"])
                 resolve(result)
+
             }).catch((error) => {
                 Alert.alert('Ha habido un error creando el ticket', error, [
                 {
@@ -80,10 +81,9 @@ export function getTicketPrice(duration) {
 }
 
 
-
-// Print the ticket
+// Just simulated by the moment
 export function printTicket(registration, duration, created_at) {
-    // Simulating printing by the moment;
+    
     return new Promise((resolve, reject) => {
         Alert.alert('El ticket se está imprimiendo', 'Debería tardar tan solo unos segundos...', [
         {
@@ -94,4 +94,29 @@ export function printTicket(registration, duration, created_at) {
             resolve("Ticket printed successfully")
         }, 6000)
     })
+}
+
+
+
+// Check if ticket_info has all required information
+function check_information(ticket_info) {
+    // Check if ticket_info has all required information
+    if (!ticket_info["responsible"] || ticket_info["responsible"] == "") 
+        throw new Error("No se ha encontrado el nombre del responsable.")
+    
+    if (!ticket_info["duration"] || ticket_info["duration"] == "") 
+        throw new Error("No se ha encontrado la duración del boletín.")
+    
+    if (!ticket_info["registration"] || ticket_info["registration"] == "") 
+        throw new Error("No se ha encontrado la matrícula del vehículo.")
+    
+    if (!ticket_info["price"] || ticket_info["price"] == "") 
+        throw new Error("No se ha encontrado el precio del boletín.")
+    
+    if (!ticket_info["paid"] || ticket_info["paid"] == "") 
+        throw new Error("No se ha encontrado el estado de pago del boletín.")
+    
+    if (!ticket_info["location"] || ticket_info["location"] == "") 
+        throw new Error("No se ha encontrado la ubicación del boletín.")
+    
 }

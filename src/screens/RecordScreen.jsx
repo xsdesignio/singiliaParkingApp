@@ -115,7 +115,7 @@ export default function RecordScreen() {
 const styles = {
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: "center",
         width: "100%",
         height: "100%",

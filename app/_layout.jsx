@@ -1,7 +1,6 @@
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, SafeAreaView  } from "react-native";
+import { Slot } from "expo-router";
 
-import { Link, Slot } from "expo-router";
-import { useRouter, useNavigation } from 'expo-router'
 
 
 export const unstable_settings = {
@@ -9,17 +8,18 @@ export const unstable_settings = {
 } 
 
 export default function Layout() {
-    return(<View style={styles.container}>
+    return(<SafeAreaView style={styles.container}>
         <Slot/>
-    </View>)
+    </SafeAreaView>)
 }
 
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#F9FFFF",
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: "100%",
+        height: "100%",
     },
 })
