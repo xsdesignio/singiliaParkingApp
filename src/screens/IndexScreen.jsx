@@ -55,16 +55,17 @@ const styles = StyleSheet.create({
     gap: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F9FFFF',
     marginTop: 40,
   },
   text: {
     textAlign: 'center',
+    color: 'white',
   },
   title: {
     textAlign: 'center', 
     fontSize: 22, 
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: 'white',
   },
   container_element: {
     flex: 1,
@@ -79,6 +80,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: 'white',
     borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 5,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
+
+    elevation: 10,
   }
   
 });

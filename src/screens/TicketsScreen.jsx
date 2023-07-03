@@ -163,7 +163,8 @@ let styles = StyleSheet.create({
         flex: 1,
         gap: 10,
         alignItems: 'center',
-        minHeight: 40
+        minHeight: 40,
+        backgroundColor: "#60826a",
     },
     tickets: {
         flex: 1,

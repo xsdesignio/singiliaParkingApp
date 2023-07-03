@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native"
+import { Image, Keyboard, StyleSheet, Text, View } from "react-native"
 import { Link, usePathname } from 'expo-router'
 import { useEffect, useState, useRef } from "react"
 import { Animated } from 'react-native'
@@ -13,21 +13,24 @@ export default function Menu() {
             name: 'Historial',
             href: '/record',
             active: false,
-            source: require('../../assets/ticket.png'),
+            source: require('../../assets/icons/ticket.png'),
         },
         {
             name: 'Tickets',
             href: '/tickets',
             active: false,
-            source: require('../../assets/printing.png'),
+            source: require('../../assets/icons/printing.png'),
         },
         {
             name: 'Boletines',
             href: '/bulletins',
             active: false,
-            source: require('../../assets/printing.png'),
+            source: require('../../assets/icons/printing.png'),
         }
     ])
+
+
+    const [isShown, setIsShown] = useState(true)
 
     useEffect(() => {
         setLinks(links.map(el => {
@@ -46,23 +49,45 @@ export default function Menu() {
             );
         }));
 
+        const keyboardShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setIsShown(false)
+            }
+        );
+
+        const keyboardHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setIsShown(true)
+            }
+        );
+
     }, []);
 
-    return (
-        <View style={styles.pages}>
-            {jsxLinks}
-        </View>
-    )
+    return (<>
+        { isShown ? 
+            (<View style={styles.pages}>
+                {jsxLinks}
+            </View>) 
+            : (<View style={styles.content_moved}></View>)
+        }
+    </>)
 }
 
 
 let styles = StyleSheet.create({
+    content_moved: {
+        height: 120,
+        backgroundColor: '#60826a',
+        zIndex: -10,
+    },
     pages: {
         flexDirection: 'row',
-        gap: 20,
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 10,
+        paddingVertical: 8,
+        gap: 20,
         paddingHorizontal: 60,
         borderTopColor: "#C2D9C9",
         borderTopWidth: 1,
@@ -94,6 +119,15 @@ let styles = StyleSheet.create({
         borderRadius: 28,
         textAlign: "center",
         backgroundColor: '#95e8c9',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.44,
+        shadowRadius: 6.68,
+
+        elevation: 10,
     }
     
 })

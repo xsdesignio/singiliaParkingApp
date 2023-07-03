@@ -23,6 +23,7 @@ export default function Header() {
     return(
         <View style={styles.settings_header}>
             <View>
+                <Image style={styles.logo} source={require('../../assets/icons/logo.png')} />
             </View>
             <View style={styles.button_wrapper}>
                 <TouchableOpacity
@@ -34,7 +35,7 @@ export default function Header() {
                             navigation.navigate("settings")    
                         }
                     }}>
-                    <Image style={styles.settings_image} source={settingsPageActive ? require('../../assets/cross.png') : require('../../assets/settings.png')} />
+                    <Image style={styles.settings_image} source={settingsPageActive ? require('../../assets/icons/cross.png') : require('../../assets/icons/settings.png')} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -48,19 +49,35 @@ const styles = StyleSheet.create({
         paddingTop:40,
         justifyContent: "space-between",
         alignContent: "center",
+        backgroundColor: "white",
         paddingHorizontal: 20,
         paddingVertical: 0,
-        marginBottom: 0,
+        marginBottom: 10,
         zIndex: 10,
     },
+    logo: {
+        width: 44,
+        height: 44,
+        margin: 10,
+    },
     button_wrapper: {
-        backgroundColor: "white",
+        backgroundColor: "#d4faec",
         justifyContent: "center",
         alignItems: "center",
-        width: 50,
-        height: 50,
+        width: 44,
+        height: 44,
         margin: 10,
         borderRadius: 25,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.44,
+        shadowRadius: 6.68,
+
+        elevation: 12,
     },
     settings_button: {
         width: 40,

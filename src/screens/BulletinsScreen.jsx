@@ -61,11 +61,13 @@ export default function bulletinsScreen() {
             <BigCard imageUrl={require("../../assets/bulletins/bulletin.png")} />
             
             <View style={styles.bulletin_info_form}>
+                
+                {/* --------- Required Information --------- */}
+                <View>
+                    <Text style={styles.label}>Datos requeridos</Text>
 
-                <Text style={styles.label}>Datos requeridos</Text>
-
-                <View style={styles.bulletin_inputs}>
-                    <View>
+                                
+                    <View style={styles.bulletin_inputs}>
                         <TextInput
                             style={styles.input}
                             onChangeText={(registration) => 
@@ -75,82 +77,91 @@ export default function bulletinsScreen() {
                         />
                         <TextInput
                             style={styles.input}
-                            onChangeText={(model) => 
-                                updateBulletinInfo("model", model)}
-                            placeholder="Modelo"
+                            onChangeText={(duration) => 
+                                updateBulletinInfo("duration", duration)}
+                            placeholder="Tiempo estacionado"
+                            keyboardType="numeric"
                         />
                     </View>
+
+                    {/* --------- Precept --------- */}
                     <View>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(brand) => 
-                                updateBulletinInfo("brand", brand)}
-                            placeholder="Marca"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(color) => 
-                                updateBulletinInfo("color", color)}
-                            placeholder="Color"
-                        />
+                        <Text style={styles.label}>Precepto Infringido:</Text>
+
+                        <View style={styles.picker_wraper}>
+                            <Picker
+                                style={styles.picker}
+                                selectedValue={bulletinInfo["precept"]}
+                                onValueChange={(precept) => 
+                                    updateBulletinInfo("precept", precept)
+                                }
+                                itemStyle={styles.picker_item}
+                            >
+                                <Picker.Item
+                                    label="Estacionar sin ticket de aparcamiento"
+                                    value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
+                                />
+                                <Picker.Item
+                                    label="Rebosar el horario de permanencia asociado"
+                                    value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
+                                />
+                                <Picker.Item
+                                    label="No colocar el ticket de forma visible"
+                                    value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
+                                />
+                            </Picker>
+                        </View>
                     </View>
+
+                    {/* --------- Payment Method --------- */}
+                    <View>
+                        <Text style={styles.label}>Método de pago:</Text>
+
+                        <View style={styles.selector}>
+                            <TouchableOpacity 
+                                style={[
+                                    styles.selector_button, 
+                                    {backgroundColor: (bulletinInfo["paid"]==true) ? "#95e8c9": "#d4faec"}]
+                                }
+                                onPress={() => updateBulletinInfo("paid", true)}>
+                                <Text>Tarjeta</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                    styles.selector_button, 
+                                    {backgroundColor: (bulletinInfo["paid"]==false) ? "#95e8c9": "#d4faec"}]
+                                }
+                                onPress={() => updateBulletinInfo("paid", false)}>
+                                <Text>Efectivo</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
                 </View>
+
+
+                {/* --------- Vehicle Details (Not required) --------- */}
                 <View style={styles.bulletin_inputs}>
                     <TextInput
                         style={styles.input}
-                        onChangeText={(duration) => 
-                            updateBulletinInfo("duration", duration)}
-                        placeholder="Tiempo estacionado"
-                        keyboardType="numeric"
+                        onChangeText={(model) => 
+                            updateBulletinInfo("model", model)}
+                        placeholder="Modelo"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(brand) => 
+                            updateBulletinInfo("brand", brand)}
+                        placeholder="Marca"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(color) => 
+                            updateBulletinInfo("color", color)}
+                        placeholder="Color"
                     />
                 </View>
-
-                <Text style={styles.label}>Precepto Infringido:</Text>
-
-                <View style={styles.picker_wraper}>
-                    <Picker
-                        style={styles.picker}
-                        selectedValue={bulletinInfo["precept"]}
-                        onValueChange={(precept) => 
-                            updateBulletinInfo("precept", precept)
-                        }
-                        itemStyle={styles.picker_item}
-                    >
-                        <Picker.Item
-                            label="Estacionar sin ticket de aparcamiento"
-                            value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
-                        />
-                        <Picker.Item
-                            label="Rebosar el horario de permanencia asociado"
-                            value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
-                        />
-                        <Picker.Item
-                            label="No colocar el ticket de forma visible"
-                            value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
-                        />
-                    </Picker>
-                </View>
-
-                <Text style={styles.label}>Método de pago:</Text>
-
-                <View style={styles.selector}>
-                    <TouchableOpacity 
-                        style={[
-                            styles.selector_button, 
-                            {backgroundColor: (bulletinInfo["paid"]==true) ? "#95e8c9": "#d4faec"}]
-                        }
-                        onPress={() => updateBulletinInfo("paid", true)}>
-                        <Text>Tarjeta</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.selector_button, 
-                            {backgroundColor: (bulletinInfo["paid"]==false) ? "#95e8c9": "#d4faec"}]
-                        }
-                        onPress={() => updateBulletinInfo("paid", false)}>
-                        <Text>Efectivo</Text>
-                    </TouchableOpacity>
-                </View>
+        
 
                 <DefaultButton onPress={print} text="Imprimir" />
                 
@@ -177,8 +188,8 @@ let styles = StyleSheet.create({
     },
     bulletin_inputs: {
         flexDirection: "row",
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
+        justifyContent: "center",
+        alignItems: "center",
         gap: 10,
         minHeight: 40
     },
