@@ -1,13 +1,24 @@
-import { ScrollView, StyleSheet, View, Text, Alert, TextInput, Image, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 
-import { createBulletin, printBulletin } from "../bulletins/bulletinsController";
+import { print } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
 import BigCard from "../components/atoms/big-card";
+import { colors } from "../styles/colorPalette";
+
+import { getConfigValue } from "../configStorage";
 
 export default function bulletinsScreen() {
+    
+    // If paid with card, set bulletin "paid" property to true
+    // If paid with cash, set bulletin "paid" property to false, so the money have to be collected by the responsible and delivered to the administer
+    const payment_methods = {
+        CASH: false,
+        CARD: true
+    }
     
     const [bulletinInfo, setBulletinInfo] = useState({
         "responsible": "",
@@ -25,13 +36,19 @@ export default function bulletinsScreen() {
     })
 
 
-
-    const payment_methods = {
-        CASH: false,
-        CARD: true
-    }
+    useEffect(() => {
+        getConfigValue("location")
+            .then((location) => {
+                updateBulletinInfo("location", location);
+            })
+            .catch((error) => {
+                console.log(error)
+                Alert.alert("Ha ocurrido un error obteniendo tu localización", "Por favor, añádela desde los ajustes y vuelve a esta página.");
+            });
+    }, []);
     
-
+    
+    // Simple function to update the bulletinInfo state
     function updateBulletinInfo(key, value) {
         setBulletinInfo((prevBulletinInfo) => ({
           ...prevBulletinInfo,
@@ -40,30 +57,16 @@ export default function bulletinsScreen() {
     }
 
 
-    function print() {
-        createBulletin(bulletinInfo)
-        .then((bulletin) => {
-            
-            printBulletin(bulletin).catch((error) => {
-                Alert.alert("No se ha podido imprimir el boletín.", error)
-            })
-
-            Alert.alert("Boletín impreso", bulletin["brand"] + " " + bulletin["model"] + " " + bulletin["registration"])
-        })
-        .catch((error) => {
-            Alert.alert("No se ha podido imprimir el boletín.", error)
-        })
-    }
 
 
     return(
-        <ScrollView contentContainerStyle={styles.container}>
-            <BigCard imageUrl={require("../../assets/bulletins/bulletin.png")} />
+        <View style={styles.container}>
+            <BigCard imageUrl={ require("../../assets/bulletins/bulletin.png") } />
             
             <View style={styles.bulletin_info_form}>
                 
                 {/* --------- Required Information --------- */}
-                <View>
+                <View style={styles.bulletin_info_section}>
                     <Text style={styles.label}>Datos requeridos</Text>
 
                                 
@@ -85,7 +88,7 @@ export default function bulletinsScreen() {
                     </View>
 
                     {/* --------- Precept --------- */}
-                    <View>
+                    <View style={styles.centered_element}>
                         <Text style={styles.label}>Precepto Infringido:</Text>
 
                         <View style={styles.picker_wraper}>
@@ -114,25 +117,33 @@ export default function bulletinsScreen() {
                     </View>
 
                     {/* --------- Payment Method --------- */}
-                    <View>
+                    <View style={styles.centered_element}>
                         <Text style={styles.label}>Método de pago:</Text>
 
                         <View style={styles.selector}>
                             <TouchableOpacity 
                                 style={[
                                     styles.selector_button, 
-                                    {backgroundColor: (bulletinInfo["paid"]==true) ? "#95e8c9": "#d4faec"}]
-                                }
+                                    {
+                                        backgroundColor: (bulletinInfo["paid"]==payment_methods.CARD) ? 
+                                            colors.light_green_selected: colors.light_green
+                                    }
+                                ]}
                                 onPress={() => updateBulletinInfo("paid", true)}>
                                 <Text>Tarjeta</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[
                                     styles.selector_button, 
-                                    {backgroundColor: (bulletinInfo["paid"]==false) ? "#95e8c9": "#d4faec"}]
-                                }
+                                    {
+                                        backgroundColor: (bulletinInfo["paid"]==payment_methods.CASH) ? 
+                                            colors.light_green_selected: colors.light_green
+                                    }
+                                ]}
+
                                 onPress={() => updateBulletinInfo("paid", false)}>
                                 <Text>Efectivo</Text>
+                            
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -141,19 +152,23 @@ export default function bulletinsScreen() {
 
 
                 {/* --------- Vehicle Details (Not required) --------- */}
-                <View style={styles.bulletin_inputs}>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(model) => 
-                            updateBulletinInfo("model", model)}
-                        placeholder="Modelo"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(brand) => 
-                            updateBulletinInfo("brand", brand)}
-                        placeholder="Marca"
-                    />
+                <View style={styles.centered_element}>
+                    <Text style={styles.label}>Datos Opcionales</Text>
+                    <View style={styles.bulletin_inputs}>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(model) => 
+                                updateBulletinInfo("model", model)}
+                            placeholder="Modelo"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(brand) => 
+                                updateBulletinInfo("brand", brand)}
+                            placeholder="Marca"
+                        />
+                    </View>
+
                     <TextInput
                         style={styles.input}
                         onChangeText={(color) => 
@@ -163,90 +178,91 @@ export default function bulletinsScreen() {
                 </View>
         
 
-                <DefaultButton onPress={print} text="Imprimir" />
+                <DefaultButton onPress={() => print(bulletinInfo)} text="Imprimir" />
                 
                 
             </View> 
-        </ScrollView>)
+        </View>)
 }
 
 let styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 0,
-        marginBottom: 0,
-    },
     bulletin_info_form: {
-        justifyContent: "center",
         alignItems: "center",
-        minHeight: 180,
-        gap: 0,
-        marginTop: 0,
+        backgroundColor: colors.green,
+        flex: 1,
+        justifyContent: "center",
         marginBottom: 20,
+        marginTop: 0,
+        minHeight: 180,
+        zIndex: 10,
+    },
+    bulletin_info_section: {
+        alignItems: "center",
+        justifyContent: "center",
     },
     bulletin_inputs: {
-        flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center",
+        flexDirection: "row",
         gap: 10,
-        minHeight: 40
+        justifyContent: "center",
+        minHeight: 40,
     },
-    label: {
-        marginTop: 8,
-        marginBottom: 4
+    centered_element: {
+        alignItems:"center"
+    },
+
+    container: {
+        alignItems: 'center',
+        flex: 1,
+        gap: 20,
+        justifyContent: 'center',
+        paddingVertical: 20,
     },
     input: {
-        borderWidth: 1,
-        borderColor: 'darkblue',
+        backgroundColor: colors.white,
+        borderColor: colors.dark_blue,
         borderRadius: 5,
+        borderWidth: 1,
+        marginVertical: 4,
         paddingHorizontal: 10,
         paddingVertical: 5,
         width: 180,
-        marginVertical: 4,
-        backgroundColor: 'white'
     },
-    print_button: {
-        backgroundColor: "#559f97",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 18,
-        color: 'white',
-        width: 180,
-        margin: 20
+    label: {
+        color: colors.white,
+        fontSize: 16,
+        marginBottom: 4,
+        marginTop: 8,
     },
-    print_button_text: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        borderRadius: 8,
-    },
-    picker_wraper: {
-        height: 40,
-        width: 320,
-        borderWidth: 1,
-        borderColor: 'darkblue',
-        borderRadius: 5,
-        padding: 0,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: 'white'
-    },
+
     picker: {
         width: "100%",
     },
+
+
     picker_item: {
         fontSize: 8,
+    },
+
+    picker_wraper: {
+        alignItems: "center",
+        backgroundColor: colors.white,
+        borderColor: colors.dark_blue,
+        borderRadius: 5,
+        borderWidth: 1,
+        height: 40,
+        justifyContent: "center",
+        padding: 0,
+        width: 320,
     },
     selector: {
         flexDirection: "row"
     },
     selector_button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        borderRadius: 20,
         marginHorizontal: 6,
-        borderRadius: 20
+        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
     
 })

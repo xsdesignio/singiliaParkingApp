@@ -1,31 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { saveConfigDict } from "./bulletins/storage/configStorage";
+import { saveConfigDict } from "./configStorage";
 import { createSQLiteTables, deleteAllTables } from "./database";
 
 
 // Function to start all background processes required to run the app
 export async function initApp() {
-    /* let app_already_started = await firstTimeAppStarts()
+    let app_already_started = await firstTimeAppStarts()
 
     if(!app_already_started) {
         // If it is the first time the app is loaded SQLite tables are created
         createSQLiteTables()
         try {
             await AsyncStorage.setItem("@started", "true")
+            // Saving default config object
+            saveConfigDict({
+                "bulletins_amount": 1,
+                "printer_identifier": "qeqjiwi",
+                "location": "Plaza de Toros"
+            })
         } catch(error) {
             
         }
-    } */
-
-    deleteAllTables()
-    createSQLiteTables()
-
-    // Saving default config object
-    saveConfigDict({
-        "bulletins_amount": 1,
-        "printer_identifier": "qeqjiwi"
-    })
+    }
+    
 }
 
 

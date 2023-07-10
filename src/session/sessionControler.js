@@ -1,7 +1,7 @@
 import { storeSession, deleteSession, getSessionFromDatabase  } from "./sessionStorage";
 
 
-const apiHost = "http://192.168.0.96:5000"
+const apiHost = "http://192.168.0.24:5000"
 
 
 // Login user, store the session and redirect to printing page
@@ -49,11 +49,19 @@ export function loginUser(form) {
 
 
 export async function logoutUser() {
-    await fetch( `${ apiHost }/auth/logout`)
-    let session_deleted = await deleteSession()
-    if(session_deleted)
-        return true
-    else
-        return false
+    return new Promise( (resolve, reject) => {
+        fetch( `${ apiHost }/auth/logout`)
+        .then( response_json => {
+            // Throw an error when server returns an error
+            if(response_json.status != 200)
+                throw new Error("Ha ocurrido un error cerrando sesión, si no ha sido cerrada inténtelo de nuevo.")
+            
+            deleteSession()
+            resolve(true)
+
+        }).catch(error => {
+            reject(error)
+        })
+    })
 }
 

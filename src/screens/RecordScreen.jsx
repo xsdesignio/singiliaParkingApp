@@ -1,8 +1,13 @@
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
+import React from "react";
+import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
 import { useEffect, useState } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
+
+import { colors } from "../styles/colorPalette";
+
+
 
 export default function RecordScreen() {
 
@@ -21,8 +26,9 @@ export default function RecordScreen() {
     function setData() {
 
         getTicketsSaved().then((tickets) => {
+            
             if (tickets.length > 0) {
-                setTickets(tickets)
+                setTickets(tickets.reverse())
             }
         }).catch((error) => {
             Alert.alert("Error al cargar los datos", error, [
@@ -33,9 +39,9 @@ export default function RecordScreen() {
         })
 
         getBulletinsSaved().then((bulletins) => {
+            console.log("bulletins", bulletins.length)
             if (bulletins.length > 0) {
-                console.log("Si hay boletines")
-                setBulletins(bulletins)
+                setBulletins(bulletins.reverse())
             }
         }).catch((error) => {
             Alert.alert("Error al cargar los datos", error, [
@@ -46,6 +52,10 @@ export default function RecordScreen() {
         })
         
     }
+
+    function openItem(item) {
+        console.log(item)
+    }
     
 
     const renderTicket = ({ item }) => {
@@ -53,27 +63,27 @@ export default function RecordScreen() {
         return (<View style={styles.ticket}>
             <TouchableOpacity style={styles.ticket_button}>
                 <Image style={styles.ticket_selector_image} source={img} />
-                <Text>{item.id}</Text>
             </TouchableOpacity>
         </View>);
     }
+    
 
-    const renderBulletin = ({item}) =>
-        (<View style={styles.ticket}>
-            <TouchableOpacity style={styles.ticket_button}>
+    const renderBulletin = ({item}) => {
+        return(<View style={styles.ticket}>
+            <TouchableOpacity style={styles.ticket_button} onPress={openItem(item)}>
                 <Image style={styles.ticket_selector_image} source={require("../../assets/bulletins/bulletin.png")} />
-                <Text>{item.id}</Text>
             </TouchableOpacity>
         </View>)
+    }
 
 
-    const tickets_list = (tickets==[]? (<Text>Aún no has imprimido ningún ticket</Text>) : (<FlatList
+    const tickets_list = (tickets==[]? (<Text>Aún no has impreso ningún ticket</Text>) : (<FlatList
         data={tickets}
         renderItem={renderTicket}
         keyExtractor={(item) => item.id.toString()}
     />))
 
-    const bulletins_list = (bulletins==[]? (<Text>Aún no has imprimido ningún boletín</Text>) : (<FlatList
+    const bulletins_list = (bulletins==[]? (<Text>Aún no has impreso ningún boletín</Text>) : (<FlatList
         data={bulletins}
         renderItem={renderBulletin}
         keyExtractor={(item) => item.id.toString()}
@@ -95,19 +105,32 @@ export default function RecordScreen() {
 
     return(<View style={styles.container}>
             <Text style={styles.title} horizontal="true">Historial de impresión:</Text>
+            
             <View style={styles.selector}>
                 <TouchableOpacity 
-                    style={[styles.selector_button, {backgroundColor: ticketsActive ? "#95e8c9": "#d4faec"}]}
+                    style={[styles.selector_button, {
+                        backgroundColor: ticketsActive ? 
+                            colors.light_green_selected : colors.light_green
+                        }
+                    ]}
                     onPress={() => setTicketsActive(true)}>
                     <Text>Tickets</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                    style={[styles.selector_button, {backgroundColor: ticketsActive ? "#d4faec": "#95e8c9"}]}
+                    style={[styles.selector_button, {
+                        backgroundColor: ticketsActive ? 
+                            colors.light_green : colors.light_green_selected
+                        }
+                    ]}
                     onPress={() => setTicketsActive(false)}>
                     <Text>Boletines</Text>
                 </TouchableOpacity>
+
             </View>
-            { ticketsActive? tickets_list: bulletins_list }
+            <View style={styles.tickets_list}>
+                { ticketsActive? tickets_list: bulletins_list }
+            </View>
         </View>)
 }
 
@@ -117,6 +140,7 @@ const styles = {
         flex: 1,
         justifyContent: 'center',
         alignItems: "center",
+        zIndex: -20,
     },
     selector: {
         flexDirection: "row"
@@ -125,6 +149,7 @@ const styles = {
         paddingVertical: 10,
         paddingHorizontal: 20,
         marginHorizontal: 6,
+        marginTop: 20,
         borderRadius: 20
     },
     title: {
@@ -133,16 +158,26 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 10,
+        color: "white",
         padding: 0,
     },
     tickets: {
-        borderRadius:  4,
         width: "100%",
         height: "100%",
         marginTop: 20,
         padding: 20,
         paddingBottom: 60,
         backgroundColor: '#f5f5f5',
+    },
+
+    tickets_list: {
+        borderRadius:  40,
+        width: "80%",
+        height: "90%",
+        paddingTop: 20,
+        marginTop: 10,
+        marginBottom: 40,
+        backgroundColor: colors.dark_green
     },
     ticket: {
         borderRadius:  4,

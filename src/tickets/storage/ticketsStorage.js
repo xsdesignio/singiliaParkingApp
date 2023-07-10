@@ -1,8 +1,4 @@
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getDatabase } from "../../database";
-import { getSession } from "../../session/sessionStorage";
-
-
 
 
 

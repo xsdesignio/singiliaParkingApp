@@ -1,13 +1,17 @@
-import { getTicketPrice } from "../utils"
-import { getConfigValue, check_information } from "../utils"
+
+
+
 
 
 const apiHost = "http://192.168.0.24:5000"
 
 
-export function createTicketOnServer(duration, registration, paid = false) {
+
+
+
+export function createBulletinOnServer(duration, registration, paid = false) {
     return new Promise((resolve, reject) => {
-        let price = getTicketPrice(duration)
+        let price = getBulletinPrice(duration)
 
         let location = getConfigValue("location")
         
@@ -45,21 +49,21 @@ export function createTicketOnServer(duration, registration, paid = false) {
 }
 
 
-export function payTicket(ticket_id) {
+export function payBulletin(bulletin_id) {
     return new Promise((resolve, reject) => {
 
 
-        fetch( `${ apiHost }/tickets/pay/${ticket_id}` , {
+        fetch( `${ apiHost }/bulletins/pay/${bulletin_id}` , {
             method: 'POST',
         })
         .then( response => {
             // Throw an error when server returns an error
 
             if(response.status == 400)
-                throw new Error("El ticket introducido no existe.")
+                throw new Error("El boletín introducido no existe.")
             
             if(response.status != 200)
-                throw new Error("Ha ocurrido un error al pagar el ticket.")
+                throw new Error("Ha ocurrido un error al pagar el boletín.")
             
             // If request was made successfully
             return response.json()

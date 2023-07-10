@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Link } from 'expo-router';
 
-import { getSession, deleteSession } from '../session/sessionStorage';
+import { getSession } from '../session/sessionStorage';
 import { initApp } from '../app';
+import { colors } from '../styles/colorPalette';
 
 
-const apiHost = "http://192.168.1.40:5000"
 
 export default function IndexScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -19,7 +19,7 @@ export default function IndexScreen() {
   }, []);
 
   async function checkLogin() {
-    session = await getSession();
+    let session = await getSession();
 
     if(session != null)
       if ("id" in session && "role" in session && "name" in session && "email" in session) {
@@ -37,12 +37,20 @@ export default function IndexScreen() {
         <View style={styles.container_element}>
           <Text style={styles.title}>¡Hola { userName }!</Text>
           <Text style={styles.text}>¿Estás listo para imprimir tickets?</Text>
-          <Link style={styles.link_button} href='/tickets' replace="/tickets">Lanzar aplicación</Link>
+          <Link style={styles.link_button} href='/tickets' replace="/tickets">
+            <Text>
+              Lanzar aplicación
+            </Text>
+          </Link>
         </View>
       ) : (
         <View style={styles.container_element}>
           <Text style={styles.text}>Para acceder a la aplicación necesitas iniciar sesión</Text>
-          <Link style={styles.link_button} href='/login' replace="/login">Iniciar Sesión</Link>
+          <Link style={styles.link_button} href='/login' replace="/login">
+            <Text>
+              Iniciar Sesión
+            </Text>
+          </Link>
         </View>
       )}
     </View>
@@ -51,44 +59,48 @@ export default function IndexScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
     gap: 20,
-    alignItems: 'center',
     justifyContent: 'center',
     marginTop: 40,
   },
-  text: {
-    textAlign: 'center',
-    color: 'white',
-  },
-  title: {
-    textAlign: 'center', 
-    fontSize: 22, 
-    fontWeight: 'bold',
-    color: 'white',
-  },
   container_element: {
+    alignItems: 'center',
     flex: 1,
     gap: 20,
-    alignItems: 'center',
     justifyContent: 'center',
     width: "80%",
   },
   link_button: {
-    backgroundColor: "#559f97",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    color: 'white',
+    backgroundColor: colors.green_button,
+    borderColor: colors.white,
     borderRadius: 20,
-    shadowColor: "#000",
+    borderWidth: 1,
+    color: colors.white,
+    elevation: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+
+    shadowColor: colors.black,
     shadowOffset: {
         width: 0,
         height: 5,
     },
+    
     shadowOpacity: 0.36,
     shadowRadius: 6.68,
 
-    elevation: 10,
-  }
+  },
+  text: {
+    color: colors.white,
+    textAlign: 'center',
+  },
+  title: {
+    color: colors.white,
+    fontSize: 22, 
+    fontWeight: 'bold',
+    textAlign: 'center', 
+  },
   
 });

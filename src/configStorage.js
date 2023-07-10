@@ -29,3 +29,36 @@ export async function saveConfigDict(configDict) {
         return false
     }
 }
+
+export async function setConfigValue(key, value) {
+    try {
+        let configJSON = getConfigDict()
+        
+        if(configJSON!=null)
+            configJSON[key] = value
+
+        let successfully_saved = saveConfigDict(configJSON)
+
+        return successfully_saved
+    }
+    catch {
+        return false
+    }
+}
+
+export async function getConfigValue(key) {
+    try {
+        let configJSON = await AsyncStorage.getItem("@bulletins-config")
+        
+        if(configJSON!=null)
+            configJSON = JSON.parse(configJSON)
+
+        if(configJSON[key]!=null && configJSON[key]!=undefined)
+            return configJSON[key]
+
+        return null
+    }
+    catch {
+        return null
+    }
+}

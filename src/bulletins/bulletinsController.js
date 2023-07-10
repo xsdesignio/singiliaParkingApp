@@ -3,25 +3,21 @@ import { getSession } from "../session/sessionStorage"
 import { saveBulletin } from "./storage/bulletinsStorage";
 
 
+import { printBulletin } from "./printing/bulletinsPrinting";
 
 
 
-// Just simulated by the moment
-export function printBulletin(bulletin_info) {
-    /* 
-    return new Promise((resolve, reject) => {
-        let printing = true;
-
-        Alert.alert('El boletín se está imprimiendo', 'Debería tardar tan solo unos segundos...', [
-            {
-                text: 'Cerrar',
-            }]);
+export function print(bulletinInfo) {
+    createBulletin(bulletinInfo)
+    .then((bulletin) => {
         
-        setTimeout(() => {
-            printing = false
-            resolve("Bulletin printed successfully")
-        }, 6000)
-    }) */
+        printBulletin(bulletin)
+
+        Alert.alert("Boletín impreso", "El boletín ha sido impreso con éxito")
+    })
+    .catch((error) => {
+        Alert.alert("No se ha podido imprimir el boletín.", error.message)
+    })
 }
 
 
@@ -46,13 +42,14 @@ export function createBulletin(bulletin_info) {
 
             // Try to save the ticket on database
             saveBulletin(bulletin_info).then((result) => {
-                resolve(bulletin_info)
+                console.log(result)
+                resolve(result)
             }).catch((error) => {
-                reject(error)
+                reject(error.message)
             })
 
         }).catch((error) => {
-            reject(error)
+            reject(error.message)
         })
 
     })
