@@ -16,7 +16,7 @@ export async function storeSession(session) {
 
 export async function getSession() {
     try {
-        session = await AsyncStorage.getItem("@session")
+        let session = await AsyncStorage.getItem("@session")
         if(session != null)
           return JSON.parse(session)
         return session

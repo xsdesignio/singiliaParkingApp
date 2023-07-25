@@ -1,4 +1,4 @@
-import { storeSession, deleteSession, getSessionFromDatabase  } from "./sessionStorage";
+import { storeSession, deleteSession  } from "./sessionStorage";
 
 
 const apiHost = "http://192.168.0.24:5000"
@@ -23,7 +23,7 @@ export function loginUser(form) {
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
             
             // If request was made successfully
-            session_response = response_json.json()
+            let session_response = response_json.json()
             return session_response
         })
         .then( session => {

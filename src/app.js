@@ -6,23 +6,27 @@ import { createSQLiteTables, deleteAllTables } from "./database";
 
 // Function to start all background processes required to run the app
 export async function initApp() {
+    deleteAllTables()
     let app_already_started = await firstTimeAppStarts()
 
+    app_already_started = false
+
     if(!app_already_started) {
+        
         // If it is the first time the app is loaded SQLite tables are created
         createSQLiteTables()
         try {
             await AsyncStorage.setItem("@started", "true")
             // Saving default config object
-            saveConfigDict({
+            await saveConfigDict({
                 "bulletins_amount": 1,
                 "printer_identifier": "qeqjiwi",
-                "location": "Plaza de Toros"
+                "zone": "Plaza de Toros"
             })
         } catch(error) {
-            
+            console.log(error)
         }
-    }
+    } 
     
 }
 

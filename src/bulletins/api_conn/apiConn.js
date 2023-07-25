@@ -1,52 +1,55 @@
 
-
-
+import { check_information, getBulletinPrice } from "../utils";
+import { getConfigValue } from "../../configStorage";
+import { getSession } from "../../session/sessionStorage";
 
 
 const apiHost = "http://192.168.0.24:5000"
 
 
-
-
-
-export function createBulletinOnServer(duration, registration, paid = false) {
+export function createBulletinOnServer(bulletin_info) {
     return new Promise((resolve, reject) => {
-        let price = getBulletinPrice(duration)
+        let price = getBulletinPrice(bulletin_info["duration"])
 
-        let location = getConfigValue("location")
-        
-        let ticket_info = {
-            "duration": duration || 30,
-            "registration": registration,
-            "price": price || 0.7,
-            "paid": paid,
-            "location": location,
-        }
+        getSession().then((session) => {
 
-        check_information(ticket_info)
+            getConfigValue("zone").then((zone) => {
 
-        fetch( `${ apiHost }/tickets/create` , {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(ticket_info)
-        })
-        .then( response => {
-            // Throw an error when server returns an error
+                bulletin_info["responsible_id"] = session["id"]
+                bulletin_info["price"] = price || 0.7
+                bulletin_info["zone"] = zone
 
-            if(response.status != 200)
-                throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
-            
-            // If request was made successfully
-            return response.json()
-        })
-        .then( ticket => {
-            resolve(ticket)
-        })
-        .catch(error => reject(error.message))
+
+                console.log(bulletin_info)
+
+                check_information(bulletin_info)
+
+                fetch( `${ apiHost }/bulletins/create` , {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bulletin_info)
+                })
+                .then( response => {
+                    // Throw an error when server returns an error
+
+                    if(response.status != 200)
+                        throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
+                    
+                    // If request was made successfully
+                    return response.json()
+                })
+                .then( ticket => resolve(ticket))
+                .catch(error => reject(error.message))
+
+            }).catch((error) => reject(error.message))
+
+        }).catch((error) =>  reject(error.message))
     })
 }
+
+
 
 
 export function payBulletin(bulletin_id) {

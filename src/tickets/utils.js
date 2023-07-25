@@ -24,23 +24,24 @@ export function getTicketPrice(duration) {
 
 // Check if ticket_info has all required information
 export function check_information(ticket_info) {
+    print(ticket_info)
     
-    if (!ticket_info["responsible"] || ticket_info["responsible"] == "") 
+    if (!ticket_info["responsible_id"] || ticket_info["responsible_id"] == "") 
         throw new Error("No se ha encontrado el nombre del responsable.")
     
     if (!ticket_info["duration"] || ticket_info["duration"] == "") 
-        throw new Error("No se ha encontrado la duración del boletín.")
+        throw new Error("No se ha encontrado la duración del ticket.")
     
     if (!ticket_info["registration"] || ticket_info["registration"] == "") 
         throw new Error("No se ha encontrado la matrícula del vehículo.")
     
     if (!ticket_info["price"] || ticket_info["price"] == "") 
-        throw new Error("No se ha encontrado el precio del boletín.")
+        throw new Error("No se ha encontrado el precio del ticket.")
     
-    if (!ticket_info["paid"] || ticket_info["paid"] == "") 
-        throw new Error("No se ha encontrado el estado de pago del boletín.")
+    if (!("paid" in ticket_info) || ticket_info["paid"] == "") 
+        throw new Error("No se ha encontrado el estado de pago del ticket.")
     
-    if (!ticket_info["location"] || ticket_info["location"] == "") 
-        throw new Error("No se ha encontrado la ubicación del boletín.")
+    if (!ticket_info["zone"] || ticket_info["zone"] == "") 
+        throw new Error("No se ha encontrado la ubicación del ticket.")
     
 }

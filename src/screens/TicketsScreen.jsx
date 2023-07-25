@@ -17,12 +17,12 @@ export default function TicketsScreen() {
 
     // cash set bulletin "paid" property to false
     // card set bulletin "paid" property to true
-    const payment_methods = {
-        CASH: false,
-        CARD: true
-    }
+    const payment_methods = Object.freeze({
+        CASH: "CASH",
+        CARD: "CARD"
+    })
 
-    const [paymentMethod, setPaymentMethod] = useState(payment_methods.CARD)
+    const [paymentMethod, setPaymentMethod] = useState(null)
 
     const availableTickets = [
         {
@@ -49,7 +49,9 @@ export default function TicketsScreen() {
 
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
-    
+    function printManager() {
+        print(selectedTicket.duration, registration, paymentMethod)
+    }
     
 
     return(<View style={styles.container}>
@@ -88,7 +90,7 @@ export default function TicketsScreen() {
                             styles.selector_button, 
                             {
                                 backgroundColor: (paymentMethod==payment_methods.CARD) ? 
-                                    colors.light_green_selected : colors.light_green_selected
+                                    colors.light_green_selected : colors.light_green
                             }
                         ]}
                         onPress={() => setPaymentMethod(payment_methods.CARD)}>
@@ -99,7 +101,7 @@ export default function TicketsScreen() {
                             styles.selector_button, 
                             {
                                 backgroundColor: (paymentMethod==payment_methods.CASH) ? 
-                                    colors.light_green_selected : colors.light_green_selected
+                                    colors.light_green_selected : colors.light_green
                             }
                         ]}
                         onPress={() => setPaymentMethod(payment_methods.CASH)}>
@@ -107,7 +109,7 @@ export default function TicketsScreen() {
                     </TouchableOpacity>
                 </View>
 
-                <DefaultButton onPress={() => print(selectedTicket.duration, registration, paymentMethod)} text={"imprimir"}/>
+                <DefaultButton onPress={() => printManager()} text={"imprimir"}/>
             </View>
         </View>)
 }

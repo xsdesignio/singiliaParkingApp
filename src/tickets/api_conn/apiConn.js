@@ -1,24 +1,12 @@
-import { getTicketPrice } from "../utils"
-import { getConfigValue, check_information } from "../utils"
+import { check_information } from "../utils"
 
 
 const apiHost = "http://192.168.0.24:5000"
 
 
-export function createTicketOnServer(duration, registration, paid = false) {
+export function createTicketOnServer(ticket_info) {
+    
     return new Promise((resolve, reject) => {
-        let price = getTicketPrice(duration)
-
-        let location = getConfigValue("location")
-        
-        let ticket_info = {
-            "duration": duration || 30,
-            "registration": registration,
-            "price": price || 0.7,
-            "paid": paid,
-            "location": location,
-        }
-
         check_information(ticket_info)
 
         fetch( `${ apiHost }/tickets/create` , {
@@ -29,12 +17,9 @@ export function createTicketOnServer(duration, registration, paid = false) {
             body: JSON.stringify(ticket_info)
         })
         .then( response => {
-            // Throw an error when server returns an error
-
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
-            
-            // If request was made successfully
+                    
             return response.json()
         })
         .then( ticket => {

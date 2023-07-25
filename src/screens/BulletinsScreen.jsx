@@ -1,51 +1,46 @@
-import React, { useEffect } from "react";
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import React from "react";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
 import { print } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
-import BigCard from "../components/atoms/big-card";
+/* import BigCard from "../components/atoms/big-card"; */
 import { colors } from "../styles/colorPalette";
 
-import { getConfigValue } from "../configStorage";
+// import { getConfigValue } from "../configStorage";
 
 export default function bulletinsScreen() {
     
-    // If paid with card, set bulletin "paid" property to true
-    // If paid with cash, set bulletin "paid" property to false, so the money have to be collected by the responsible and delivered to the administer
-    const payment_methods = {
-        CASH: false,
-        CARD: true
-    }
+    const payment_methods = Object.freeze({
+        CASH: "CASH",
+        CARD: "CARD"
+    })
     
     const [bulletinInfo, setBulletinInfo] = useState({
-        "responsible": "",
-        "duration": "",
-        "registration": "",
-        "price": "",
-        "paid": true,
+        "duration": 30,
+        "registration": undefined,
+        "price": undefined,
+        "payment_method": undefined,
+        "paid": undefined,
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-        "brand": "",
-        "model": "",
-        "color": "",
-        "signature": "",
-        "reference_id": "",
-        "location": "Plaza de Toros"
+        "brand": undefined,
+        "model": undefined,
+        "color": undefined,
     })
 
 
-    useEffect(() => {
-        getConfigValue("location")
-            .then((location) => {
-                updateBulletinInfo("location", location);
+    /* useEffect(() => {
+        getConfigValue("zone")
+            .then((zone) => {
+                updateBulletinInfo("zone_name", zone);
             })
             .catch((error) => {
                 console.log(error)
                 Alert.alert("Ha ocurrido un error obteniendo tu localización", "Por favor, añádela desde los ajustes y vuelve a esta página.");
             });
-    }, []);
+    }, []); */
     
     
     // Simple function to update the bulletinInfo state
@@ -61,9 +56,10 @@ export default function bulletinsScreen() {
 
     return(
         <View style={styles.container}>
-            <BigCard imageUrl={ require("../../assets/bulletins/bulletin.png") } />
+            {/* <BigCard imageUrl={ require("../../assets/bulletins/bulletin.png") } /> */}
             
             <View style={styles.bulletin_info_form}>
+                <Text style={styles.title}>Creación de Boletines</Text>
                 
                 {/* --------- Required Information --------- */}
                 <View style={styles.bulletin_info_section}>
@@ -78,13 +74,34 @@ export default function bulletinsScreen() {
                             }
                             placeholder="Matricula"
                         />
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(duration) => 
-                                updateBulletinInfo("duration", duration)}
-                            placeholder="Tiempo estacionado"
-                            keyboardType="numeric"
-                        />
+
+                        <View style={styles.duration_picker_wraper}>
+                            <Picker
+                                style={styles.picker}
+                                selectedValue={bulletinInfo["duration"]}
+                                onValueChange={(duration) => 
+                                    updateBulletinInfo("duration", parseInt(duration))
+                                }
+                                itemStyle={styles.picker_item}
+                            >
+                                <Picker.Item
+                                    label="30 minutos"
+                                    value="30"
+                                />
+                                <Picker.Item
+                                    label="60 minutos"
+                                    value="60"
+                                />
+                                <Picker.Item
+                                    label="90 minutos"
+                                    value="90"
+                                />
+                                <Picker.Item
+                                    label="120 minutos"
+                                    value="120"
+                                />
+                            </Picker>
+                        </View>
                     </View>
 
                     {/* --------- Precept --------- */}
@@ -218,6 +235,20 @@ let styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 20,
     },
+
+
+    duration_picker_wraper: {
+        alignItems: "center",
+        backgroundColor: colors.white,
+        borderColor: colors.dark_blue,
+        borderRadius: 5,
+        borderWidth: 1,
+        height: 40,
+        justifyContent: "center",
+        padding: 0,
+        width: 100,
+    },
+
     input: {
         backgroundColor: colors.white,
         borderColor: colors.dark_blue,
@@ -244,6 +275,7 @@ let styles = StyleSheet.create({
         fontSize: 8,
     },
 
+    
     picker_wraper: {
         alignItems: "center",
         backgroundColor: colors.white,
@@ -255,6 +287,9 @@ let styles = StyleSheet.create({
         padding: 0,
         width: 320,
     },
+
+
+
     selector: {
         flexDirection: "row"
     },
@@ -263,6 +298,14 @@ let styles = StyleSheet.create({
         marginHorizontal: 6,
         paddingHorizontal: 20,
         paddingVertical: 10,
+    },
+
+    title: {
+        color: colors.white,
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+        marginTop: 10,
     },
     
 })
