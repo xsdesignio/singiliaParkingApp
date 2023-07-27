@@ -1,29 +1,28 @@
 import React from "react";
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TextInput } from "react-native";
 import { useState } from "react";
 
 import { print } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
-/* import BigCard from "../components/atoms/big-card"; */
 import { colors } from "../styles/colorPalette";
 
 // import { getConfigValue } from "../configStorage";
 
 export default function bulletinsScreen() {
     
-    const payment_methods = Object.freeze({
+    /* const payment_methods = Object.freeze({
         CASH: "CASH",
         CARD: "CARD"
-    })
+    }) */
     
     const [bulletinInfo, setBulletinInfo] = useState({
         "duration": 30,
         "registration": undefined,
         "price": undefined,
-        "payment_method": undefined,
-        "paid": undefined,
+        /* "payment_method": undefined, */
+        "paid": false,
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
         "brand": undefined,
         "model": undefined,
@@ -56,7 +55,6 @@ export default function bulletinsScreen() {
 
     return(
         <View style={styles.container}>
-            {/* <BigCard imageUrl={ require("../../assets/bulletins/bulletin.png") } /> */}
             
             <View style={styles.bulletin_info_form}>
                 <Text style={styles.title}>Creación de Boletines</Text>
@@ -66,42 +64,41 @@ export default function bulletinsScreen() {
                     <Text style={styles.label}>Datos requeridos</Text>
 
                                 
-                    <View style={styles.bulletin_inputs}>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(registration) => 
-                                updateBulletinInfo("registration", registration)
-                            }
-                            placeholder="Matricula"
-                        />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(registration) => 
+                            updateBulletinInfo("registration", registration)
+                        }
+                        placeholder="Matricula"
+                    />
 
-                        <View style={styles.duration_picker_wraper}>
-                            <Picker
-                                style={styles.picker}
-                                selectedValue={bulletinInfo["duration"]}
-                                onValueChange={(duration) => 
-                                    updateBulletinInfo("duration", parseInt(duration))
-                                }
-                                itemStyle={styles.picker_item}
-                            >
-                                <Picker.Item
-                                    label="30 minutos"
-                                    value="30"
-                                />
-                                <Picker.Item
-                                    label="60 minutos"
-                                    value="60"
-                                />
-                                <Picker.Item
-                                    label="90 minutos"
-                                    value="90"
-                                />
-                                <Picker.Item
-                                    label="120 minutos"
-                                    value="120"
-                                />
-                            </Picker>
-                        </View>
+                    <Text style={styles.label}>Duración</Text>
+                    <View style={styles.duration_picker_wraper}>
+                        <Picker
+                            style={styles.picker}
+                            selectedValue={bulletinInfo["duration"]}
+                            onValueChange={(duration) => 
+                                updateBulletinInfo("duration", parseInt(duration))
+                            }
+                            itemStyle={styles.picker_item}
+                        >
+                            <Picker.Item
+                                label="30 minutos"
+                                value="30"
+                            />
+                            <Picker.Item
+                                label="60 minutos"
+                                value="60"
+                            />
+                            <Picker.Item
+                                label="90 minutos"
+                                value="90"
+                            />
+                            <Picker.Item
+                                label="120 minutos"
+                                value="120"
+                            />
+                        </Picker>
                     </View>
 
                     {/* --------- Precept --------- */}
@@ -134,7 +131,7 @@ export default function bulletinsScreen() {
                     </View>
 
                     {/* --------- Payment Method --------- */}
-                    <View style={styles.centered_element}>
+                    {/* <View style={styles.centered_element}>
                         <Text style={styles.label}>Método de pago:</Text>
 
                         <View style={styles.selector}>
@@ -142,7 +139,7 @@ export default function bulletinsScreen() {
                                 style={[
                                     styles.selector_button, 
                                     {
-                                        backgroundColor: (bulletinInfo["paid"]==payment_methods.CARD) ? 
+                                        backgroundColor: (bulletinInfo["payment_method"]==payment_methods.CARD) ? 
                                             colors.light_green_selected: colors.light_green
                                     }
                                 ]}
@@ -153,7 +150,7 @@ export default function bulletinsScreen() {
                                 style={[
                                     styles.selector_button, 
                                     {
-                                        backgroundColor: (bulletinInfo["paid"]==payment_methods.CASH) ? 
+                                        backgroundColor: (bulletinInfo["payment_method"]==payment_methods.CASH) ? 
                                             colors.light_green_selected: colors.light_green
                                     }
                                 ]}
@@ -163,7 +160,7 @@ export default function bulletinsScreen() {
                             
                             </TouchableOpacity>
                         </View>
-                    </View>
+                    </View> */}
 
                 </View>
 
@@ -171,34 +168,32 @@ export default function bulletinsScreen() {
                 {/* --------- Vehicle Details (Not required) --------- */}
                 <View style={styles.centered_element}>
                     <Text style={styles.label}>Datos Opcionales</Text>
-                    <View style={styles.bulletin_inputs}>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(model) => 
-                                updateBulletinInfo("model", model)}
-                            placeholder="Modelo"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(brand) => 
-                                updateBulletinInfo("brand", brand)}
-                            placeholder="Marca"
-                        />
-                    </View>
-
                     <TextInput
                         style={styles.input}
-                        onChangeText={(color) => 
-                            updateBulletinInfo("color", color)}
-                        placeholder="Color"
+                        onChangeText={(model) => 
+                            updateBulletinInfo("model", model)}
+                        placeholder="Modelo"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(brand) => 
+                            updateBulletinInfo("brand", brand)}
+                        placeholder="Marca"
                     />
                 </View>
-        
 
-                <DefaultButton onPress={() => print(bulletinInfo)} text="Imprimir" />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(color) => 
+                        updateBulletinInfo("color", color)}
+                    placeholder="Color"
+                />
+            </View>
+    
+
+            <DefaultButton onPress={() => print(bulletinInfo)} text="Imprimir" />
                 
                 
-            </View> 
         </View>)
 }
 
@@ -216,13 +211,6 @@ let styles = StyleSheet.create({
     bulletin_info_section: {
         alignItems: "center",
         justifyContent: "center",
-    },
-    bulletin_inputs: {
-        alignItems: "center",
-        flexDirection: "row",
-        gap: 10,
-        justifyContent: "center",
-        minHeight: 40,
     },
     centered_element: {
         alignItems:"center"
@@ -246,7 +234,7 @@ let styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         padding: 0,
-        width: 100,
+        width: 200,
     },
 
     input: {
@@ -257,7 +245,7 @@ let styles = StyleSheet.create({
         marginVertical: 4,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        width: 180,
+        width: 200,
     },
     label: {
         color: colors.white,
@@ -290,7 +278,7 @@ let styles = StyleSheet.create({
 
 
 
-    selector: {
+    /* selector: {
         flexDirection: "row"
     },
     selector_button: {
@@ -299,7 +287,7 @@ let styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
     },
-
+    */
     title: {
         color: colors.white,
         fontSize: 20,

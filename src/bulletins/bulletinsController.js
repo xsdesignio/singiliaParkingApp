@@ -2,65 +2,120 @@ import { Alert } from "react-native"
 import { getSession } from "../session/sessionStorage"
 import { saveBulletin } from "./storage/bulletinsStorage";
 
-import { check_information, getBulletinPrice } from "./utils";
 import { createBulletinOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage";
-/* 
-import { printBulletin } from "./printing/bulletinsPrinting";
 
- */
 
 export function print(bulletinInfo) {
-    createBulletinOnServer(bulletinInfo).then((bulletin) => {
+    getSession().then((session) => {
         
-        bulletinInfo["responsible_id"] = bulletin["id"]
-        createBulletin(bulletinInfo)
-        .then(() => {
-            Alert.alert("Boletín impreso", "El boletín ha sido impreso con éxito")
+        getConfigValue("zone").then((zone) => {
+
+            let price = getBulletinPrice(bulletinInfo["duration"])
+
+            let bulletin_dict = {
+                ...bulletinInfo,
+                "responsible_id": session["id"],
+                "zone": zone,
+                "price": price,
+            }
+
+            check_information(bulletin_dict)
+  
+            createBulletinOnServer(bulletin_dict).then((bulletin) => {
+                bulletin_dict["reference_id"] = bulletin["id"]
+                bulletin_dict["created_at"] = bulletin["created_at"]
+                
+                saveBulletin(bulletin_dict).then((result) => {
+                    
+                    if(result == null) {
+                        throw new Error("Error al guardar el boletín")
+                    } 
+                    Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
+
+                }).catch((error) => {
+                    console.log(error)
+                    Alert.alert(`Error al crear el boletín`, error.message)
+                })
+
+            // Server Catch
+            }).catch((error) => {
+                console.log(error)
+                bulletin_dict["reference_id"] = -1
+                
+                saveBulletin(bulletin_dict).then((result) => {
+                    
+                    if(result == null) {
+                        throw new Error("Error al guardar el boletín")
+                    } 
+                    Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
+
+                }).catch((error) => {
+                    console.log(error)
+                    Alert.alert(`Error al crear el boletín`, error.message)
+                })
+            })
+
+    
+        // Zone Catch
+        }).catch((error) => {
+            console.log(error)
+            Alert.alert("Error al imprimir el boletín", "No se ha podido obtener la zona.")
         })
-        .catch((error) => {
-            Alert.alert("No se ha podido imprimir el boletín.", error.message)
-        })
+
+    // Session Catch
     }).catch((error) => {
         console.log(error)
-        Alert.alert("Error de conexión con el servidor", "No se ha podido conectar con el servidor")
+        Alert.alert("Error al imprimir el boletín", "No se ha podido obtener el responsable.")
     })
 }
 
 
 
-//@param bulletin_info, dictionary with required information to create the bulletin
-// (responsible, duration, registration, price, paid, precept, brand, model, color, signature, reference_id, location)
-export function createBulletin(bulletin_info) {
-    return new Promise((resolve, reject) => {
 
-        getSession().then((session) => {
-            getConfigValue("zone").then((zone) => {
 
-                bulletin_info["responsible_id"] = session["id"]
+function check_information(bulletin_info) {
+    // Check if bulletin_info has all required information
+    if (!bulletin_info["responsible_id"] || bulletin_info["responsible_id"] == "") 
+        throw new Error("No se ha encontrado el nombre del responsable.")
+    
+    if (!bulletin_info["duration"] || bulletin_info["duration"] == "") 
+        throw new Error("No se ha encontrado la duración del boletín.")
+    
+    if (!bulletin_info["registration"] || bulletin_info["registration"] == "") 
+        throw new Error("No se ha encontrado la matrícula del vehículo.")
+    
+    if (!bulletin_info["price"] || bulletin_info["price"] == "") 
+        throw new Error("No se ha encontrado el precio del boletín.")
+    
+    if (bulletin_info["paid"] == undefined || bulletin_info["paid"] == null)
+        throw new Error("No se ha encontrado el estado de pago del boletín.")
+    
+    if (!bulletin_info["location"] || bulletin_info["location"] == "") 
+        throw new Error("No se ha encontrado la ubicación del boletín.")
+    
+}
 
-                bulletin_info["reference_id"] = bulletin_info["reference_id"] || -1
 
-                bulletin_info["price"] = getBulletinPrice(bulletin_info["duration"])
 
-                bulletin_info["zone"] = zone
+// get the bulletin price depending on the duration
+// @param duration, duration of the bulletin
+// @return price of the bulletin
+export function getBulletinPrice(duration) {
+    if(duration == null || 
+        duration == undefined || 
+        duration <= 0) 
+        return 0
 
-                // Check if bulletin_info has all required information
-                check_information(bulletin_info)
-
-                // Try to save the ticket on database
-                saveBulletin(bulletin_info).then((result) => {
-                    console.log(result)
-                    resolve(result)
-                }).catch((error) => {
-                    reject(error.message)
-                })
-
-            }).catch((error) => {
-                reject(error.message)
-            })
-        }).catch((error) => {
-            reject(error.message)
-        })
-    })
+    if(duration <= 30) 
+        return 0.7
+    
+    if(duration <= 60) 
+        return 0.9
+    
+    if(duration <= 90) 
+        return 1.4
+    
+    return 1.8
+    
 }

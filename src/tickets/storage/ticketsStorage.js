@@ -136,16 +136,16 @@ export function saveTicket(ticket_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO tickets (responsible, zone_name, duration, registration, price, payment_method, paid, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (responsible_id, zone_name, duration, registration, price, payment_method, paid, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
-                    ticket_info["responsible"], 
+                    ticket_info["responsible_id"], 
                     ticket_info["zone"], 
                     ticket_info["duration"], 
                     ticket_info["registration"], 
                     ticket_info["price"], 
                     ticket_info["payment_method"], 
                     ticket_info["paid"], 
-                    ticket_info.get("reference_id", -1), 
+                    ticket_info["reference_id"] || -1, 
                 ], 
                 (_, result) => resolve(result),
                 (_, error) => reject(error.message));

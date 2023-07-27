@@ -18,7 +18,7 @@ export function createSQLiteTables() {
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS tickets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                responsible TEXT NOT NULL,
+                responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
                 duration INTEGER NOT NULL,
                 registration TEXT NOT NULL,
@@ -34,7 +34,7 @@ export function createSQLiteTables() {
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS bulletins (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                responsible TEXT NOT NULL,
+                responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
                 duration INTEGER NOT NULL,
                 registration TEXT NOT NULL,

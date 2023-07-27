@@ -1,4 +1,3 @@
-import { check_information } from "../utils"
 
 
 const apiHost = "http://192.168.0.24:5000"
@@ -7,7 +6,6 @@ const apiHost = "http://192.168.0.24:5000"
 export function createTicketOnServer(ticket_info) {
     
     return new Promise((resolve, reject) => {
-        check_information(ticket_info)
 
         fetch( `${ apiHost }/tickets/create` , {
             method: 'POST',
