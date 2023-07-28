@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { colors } from "../styles/colorPalette";
 
-import { print } from "../tickets/ticketsController";
+import { createAndPrintTicket } from "../tickets/ticketsController";
 
 import DefaultButton from "../components/atoms/default-button";
 import BigCard from "../components/atoms/big-card";
@@ -15,8 +15,6 @@ export default function TicketsScreen() {
 
     const [registration, setRegistration] = useState("")
 
-    // cash set bulletin "paid" property to false
-    // card set bulletin "paid" property to true
     const payment_methods = Object.freeze({
         CASH: "CASH",
         CARD: "CARD"
@@ -50,7 +48,7 @@ export default function TicketsScreen() {
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
     function printManager() {
-        print(selectedTicket.duration, registration, paymentMethod)
+        createAndPrintTicket(selectedTicket.duration, registration, paymentMethod)
     }
     
 

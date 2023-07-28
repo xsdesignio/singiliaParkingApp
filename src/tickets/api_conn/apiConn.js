@@ -5,7 +5,7 @@ const apiHost = "http://192.168.0.24:5000"
 
 export function createTicketOnServer(ticket_info) {
     
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
         fetch( `${ apiHost }/tickets/create` , {
             method: 'POST',
@@ -20,14 +20,12 @@ export function createTicketOnServer(ticket_info) {
                     
             return response.json()
         })
-        .then( ticket => {
-            resolve(ticket)
-        })
-        .catch(error => reject(error.message))
+        .then(ticket => resolve(ticket))
+        .catch(() => resolve(null))
     })
 }
 
-
+/* 
 export function payTicket(ticket_id) {
     return new Promise((resolve, reject) => {
 
@@ -57,3 +55,4 @@ export function payTicket(ticket_id) {
     })
 
 }
+ */

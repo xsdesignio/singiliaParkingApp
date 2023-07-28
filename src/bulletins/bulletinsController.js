@@ -6,71 +6,49 @@ import { createBulletinOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage";
 
 
-export function print(bulletinInfo) {
-    getSession().then((session) => {
+
+export async function createAndPrintBulletin(bulletinInfo) {
+    try {
+        let session = await getSession()
+        let zone = await getConfigValue("zone")
+
+        let price = getBulletinPrice(bulletinInfo["duration"])
+
+        let bulletin_dict = {
+            ...bulletinInfo,
+            "responsible_id": session["id"],
+            "zone": zone,
+            "price": price,
+        }
+
+         // Check if ticket_info has all required information and create the ticket on the server
+        check_information(bulletin_dict)
+        let server_bulletin = await createBulletinOnServer(bulletin_dict)
+
+
+        // If the bulletin has been successfully created on the server, saave it locally
+        // Otherwise, save it locally with a reference_id of -1 so it can be uploaded later
+        if(server_bulletin) {
+            bulletin_dict["reference_id"] = server_bulletin["id"]
+            bulletin_dict["created_at"] = server_bulletin["created_at"]
+        } else {
+            bulletin_dict["reference_id"] = -1
+        }
         
-        getConfigValue("zone").then((zone) => {
-
-            let price = getBulletinPrice(bulletinInfo["duration"])
-
-            let bulletin_dict = {
-                ...bulletinInfo,
-                "responsible_id": session["id"],
-                "zone": zone,
-                "price": price,
-            }
-
-            check_information(bulletin_dict)
-  
-            createBulletinOnServer(bulletin_dict).then((bulletin) => {
-                bulletin_dict["reference_id"] = bulletin["id"]
-                bulletin_dict["created_at"] = bulletin["created_at"]
-                
-                saveBulletin(bulletin_dict).then((result) => {
-                    
-                    if(result == null) {
-                        throw new Error("Error al guardar el boletín")
-                    } 
-                    Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
-
-                }).catch((error) => {
-                    console.log(error)
-                    Alert.alert(`Error al crear el boletín`, error.message)
-                })
-
-            // Server Catch
-            }).catch((error) => {
-                console.log(error)
-                bulletin_dict["reference_id"] = -1
-                
-                saveBulletin(bulletin_dict).then((result) => {
-                    
-                    if(result == null) {
-                        throw new Error("Error al guardar el boletín")
-                    } 
-                    Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
-
-                }).catch((error) => {
-                    console.log(error)
-                    Alert.alert(`Error al crear el boletín`, error.message)
-                })
-            })
-
-    
-        // Zone Catch
-        }).catch((error) => {
-            console.log(error)
-            Alert.alert("Error al imprimir el boletín", "No se ha podido obtener la zona.")
-        })
-
-    // Session Catch
-    }).catch((error) => {
+        let result = await saveBulletin(bulletin_dict)
+            
+        if(result == null) {
+            throw new Error("Error al guardar el boletín")
+        } 
+ 
+        // If everything went well, show a success message
+        Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
+    }
+    catch(error) {
         console.log(error)
-        Alert.alert("Error al imprimir el boletín", "No se ha podido obtener el responsable.")
-    })
+        Alert.alert("Error al imprimir el boletín", error.message)
+    }
 }
-
-
 
 
 
@@ -91,7 +69,7 @@ function check_information(bulletin_info) {
     if (bulletin_info["paid"] == undefined || bulletin_info["paid"] == null)
         throw new Error("No se ha encontrado el estado de pago del boletín.")
     
-    if (!bulletin_info["location"] || bulletin_info["location"] == "") 
+    if (!bulletin_info["zone"] || bulletin_info["zone"] == "") 
         throw new Error("No se ha encontrado la ubicación del boletín.")
     
 }

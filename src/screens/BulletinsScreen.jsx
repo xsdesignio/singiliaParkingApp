@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
 import { useState } from "react";
 
-import { print } from "../bulletins/bulletinsController";
+import { createAndPrintBulletin } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
@@ -48,6 +48,11 @@ export default function bulletinsScreen() {
           ...prevBulletinInfo,
           [key]: value,
         }));
+    }
+
+
+    function printManager() {
+        createAndPrintBulletin(bulletinInfo);
     }
 
 
@@ -191,7 +196,7 @@ export default function bulletinsScreen() {
             </View>
     
 
-            <DefaultButton onPress={() => print(bulletinInfo)} text="Imprimir" />
+            <DefaultButton onPress={printManager} text="Imprimir" />
                 
                 
         </View>)

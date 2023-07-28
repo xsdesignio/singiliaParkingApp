@@ -132,9 +132,9 @@ export function saveBulletin(bulletin_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO bulletins (responsible, zone_name, duration, registration, price, payment_method, paid, precept, brand, model, color, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO bulletins (responsible_id, zone_name, duration, registration, price, payment_method, paid, precept, brand, model, color, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
-                    bulletin_info["responsible"], 
+                    bulletin_info["responsible_id"], 
                     bulletin_info["zone"], 
                     bulletin_info["duration"], 
                     bulletin_info["registration"], 
@@ -142,10 +142,10 @@ export function saveBulletin(bulletin_info) {
                     bulletin_info["payment_method"], 
                     bulletin_info["paid"], 
                     bulletin_info["precept"],
-                    bulletin_info.get("brand", ""), 
-                    bulletin_info.get("model", ""), 
-                    bulletin_info.get("color", ""),
-                    bulletin_info.get("reference_id", -1), 
+                    bulletin_info["brand"] || "", 
+                    bulletin_info["model"] || "", 
+                    bulletin_info["color"] || "",
+                    bulletin_info["reference_id"] || -1 
                 ], 
                 (_, result) => {
                   resolve(result)

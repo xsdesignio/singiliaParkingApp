@@ -10,73 +10,51 @@ import { Alert } from "react-native";
 // Print a ticket
 // @param duration, duration of the ticket
 // @param registration, registration of the vehicle
-// @param paymentMethod, payment method used to pay the ticket (true for card and false for cash)
+// @param paymentMethod, payment method used to pay the ticket ('CASH' or 'CARD')
 // @return Promise with the created ticket information
-export function print(duration, registration, paymentMethod) {
+export async function createAndPrintTicket(duration, registration, paymentMethod) {
 
-    getSession().then((session) => {
-        
-        getConfigValue("zone").then((zone) => {
+    try {
+        // Obtaining required data to create the ticket
+        let session = await getSession()
+        let zone = await getConfigValue("zone")
 
-            let ticket_dict = {
-                "responsible_id": session["id"],
-                "zone": zone,
-                "duration": duration,
-                "registration": registration,
-                "price": getTicketPrice(duration),
-                "payment_method": paymentMethod,
-                "paid": true,
-            }
+        let ticket_dict = {
+            "responsible_id": session["id"],
+            "zone": zone,
+            "duration": duration,
+            "registration": registration,
+            "price": getTicketPrice(duration),
+            "payment_method": paymentMethod,
+            "paid": true,
+        }
 
-            check_information(ticket_dict)
+        // Check if ticket_info has all required information and create the ticket on the server
+        check_information(ticket_dict)
+        let server_ticket = await createTicketOnServer(ticket_dict)
 
-            createTicketOnServer(ticket_dict).then((ticket) => {
-                ticket_dict["created_at"] = ticket["created_at"]
-                ticket_dict["reference_id"] = ticket["id"]
-                
-                saveTicket(ticket_dict).then((result) => {
-                    
-                    if(result == null) {
-                        throw new Error("Error al guardar el ticket")
-                    } 
-                    Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
+        // If the ticket has been created on the server, save it on the local storage with the server id
+        // If not, save it with a negative id so it can be identified as a local ticket that has not been created on the server yet
+        if (server_ticket) {
+            ticket_dict["created_at"] = server_ticket["created_at"]
+            ticket_dict["reference_id"] = server_ticket["id"]
+        } else {
+            ticket_dict["reference_id"] = -1
+        }
 
-                }).catch((error) => {
-                    console.log(error)
-                    Alert.alert(`Error al crear el ticket`, error.message)
-                })
+        let result_ticket = await saveTicket(ticket_dict)
 
-            // Server Catch
-            }).catch((error) => {
-                console.log(error)
+        if(result_ticket == null) {
+            throw new Error("Error al guardar el ticket")
+        }
 
-                ticket_dict["reference_id"] = -1
-                
-                saveTicket(ticket_dict).then((result) => {
-                    
-                    if(result == null) {
-                        throw new Error("Error al guardar el ticket")
-                    } 
-                    Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
-
-                }).catch((error) => {
-                    console.log(error)
-                    Alert.alert(`Error al crear el ticket`, error.message)
-                })
-            })
-
-        
-        // Zone Catch
-        }).catch((error) => {
-            console.log(error)
-            Alert.alert("Error al imprimir el ticket", "No se ha podido obtener la zona.")
-        })
-
-    // Session Catch
-    }).catch((error) => {
+        // If everything went well, show a success message
+        Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
+    }
+    catch(error) {
         console.log(error)
-        Alert.alert("Error al imprimir el ticket", "No se ha podido obtener el responsable.")
-    })
+        Alert.alert(`Ha ocurrido un error al crear el ticket`, error.message)
+    }
 }
 
 
@@ -120,7 +98,6 @@ function check_information(ticket_info) {
 
     if (!ticket_info["payment_method"] || ticket_info["payment_method"] == "") 
         throw new Error("No se ha seleccionado ningún método de pago.")
-    
     
     if (!ticket_info["price"] || ticket_info["price"] == "") 
         throw new Error("No se ha encontrado el precio del ticket.")

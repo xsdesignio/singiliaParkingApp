@@ -39,25 +39,34 @@ export function createSQLiteTables() {
                 duration INTEGER NOT NULL,
                 registration TEXT NOT NULL,
                 price REAL NOT NULL,
-                payment_method TEXT NOT NULL,
+                payment_method TEXT,
                 paid INTEGER NOT NULL DEFAULT 0,
                 reference_id INTEGER NOT NULL DEFAULT -1,
+                precept TEXT NOT NULL DEFAULT 'Estacionar sin ticket de aparcamiento',
                 brand TEXT,
                 model TEXT,
                 color TEXT,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         )
-    }, null, null)
+    }, (error) => {
+        console.log("Error at creating tables: ", error)
+    }, () => {
+        console.log("Tables created successfully")
+    })
 }
 
 
 
 export function deleteAllTables() {
     const db = getDatabase()
-
+    console.log("Deleting tables")
     db.transaction(transaction => {
         transaction.executeSql(`DROP TABLE tickets;`)
         transaction.executeSql(`DROP TABLE bulletins;`)
-    }, null, null)
+    }, (error) => {
+        console.log("Error at deleting tables: ", error)
+    }, () => {
+        console.log("Tables deleted")
+    })
 }

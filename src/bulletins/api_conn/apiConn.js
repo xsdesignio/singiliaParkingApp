@@ -4,7 +4,7 @@ const apiHost = "http://192.168.0.24:5000"
 
 
 export function createBulletinOnServer(bulletin_info) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         
         fetch( `${ apiHost }/bulletins/create` , {
             method: 'POST',
@@ -14,16 +14,14 @@ export function createBulletinOnServer(bulletin_info) {
             body: JSON.stringify(bulletin_info)
         })
         .then( response => {
-            // Throw an error when server returns an error
-
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
                     
             // If request was made successfully
             return response.json()
         })
-        .then( ticket => resolve(ticket))
-        .catch(error => reject(error.message))
+        .then(ticket => resolve(ticket))
+        .catch(() => resolve(null))
     })
 }
 

@@ -9,7 +9,6 @@ import { logoutUser } from "../session/sessionControler";
 import { colors } from "../styles/colorPalette";
 
 
-
 export default function SettingsScreen() {
     const navigation = useNavigation();
 

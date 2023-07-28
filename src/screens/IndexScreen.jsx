@@ -11,11 +11,11 @@ import { colors } from '../styles/colorPalette';
 export default function IndexScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
   
-  const [userName, setUserName] = useState("");
+  /* const [userName, setUserName] = useState(""); */
 
   useEffect(() => {
-    checkLogin();
     initApp();
+    checkLogin();
   }, []);
 
   async function checkLogin() {
@@ -23,7 +23,7 @@ export default function IndexScreen() {
 
     if(session != null)
       if ("id" in session && "role" in session && "name" in session && "email" in session) {
-        setUserName(session["name"])
+        /* setUserName(session["name"]) */
         setLoggedIn(true);
         return;
       }
@@ -35,7 +35,7 @@ export default function IndexScreen() {
     <View style={styles.container}>
       {loggedIn ? (
         <View style={styles.container_element}>
-          <Text style={styles.title}>¡Hola { userName }!</Text>
+          <Text style={styles.title}>¡Hola!</Text>
           <Text style={styles.text}>¿Estás listo para imprimir tickets?</Text>
           <Link style={styles.link_button} href='/tickets' replace="/tickets">
             <Text>
