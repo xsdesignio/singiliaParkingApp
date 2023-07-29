@@ -156,3 +156,23 @@ export function saveTicket(ticket_info) {
         );
     })
 }
+
+
+// get all bulletins with reference_id = -1
+// @returns a promise with the bulletins array
+export function getTicketsWithoutReference() {
+    return new Promise((resolve, reject) => {
+        let db = getDatabase()
+
+        db.transaction(
+            (tx) => {
+                tx.executeSql(
+                    "SELECT * FROM tickets WHERE reference_id = -1",
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error.message)
+                )
+            }
+        )
+    })
+}

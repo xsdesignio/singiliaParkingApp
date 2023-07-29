@@ -76,6 +76,7 @@ export default function TicketsScreen() {
 
                 <TextInput
                     style={styles.input}
+                    autoCapitalize="characters"
                     onChangeText={(value) => setRegistration(value)}
                     placeholder="Matricula"
                 />

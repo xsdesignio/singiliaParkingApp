@@ -1,5 +1,5 @@
 import { getDatabase } from "../../database";
-
+import { AsyncStorage } from "react-native";
 
 
 
@@ -27,7 +27,7 @@ export function getBulletinsSaved() {
         () => {}
       );
     });
-  }
+}
 
 // Get all bulletins saved in the database
 // @returns a promise with the bulletins array
@@ -59,7 +59,7 @@ export function getBulletinsByDuration(duration = null) {
         () => {} 
       );
     });
-  }
+}
   
 
 
@@ -67,7 +67,7 @@ export function getBulletinsByDuration(duration = null) {
 // @param id: id of the bulletin to be paid
 // @returns a promise with the bulletin paid
 // @throws an error if the bulletins doesn't exist or the bulletin is already paid
-export function payBulletin(id) {
+export function payBulletinLocally(id) {
     // check if the bulletin exists and is not paid
     return new Promise((resolve, reject) => {
         let db = getDatabase()
@@ -107,8 +107,6 @@ export function payBulletin(id) {
 }
 
 
-
-
 export function deleteOldBulletins() {
     let db = getDatabase()
     db.transaction((tx) => {
@@ -119,6 +117,52 @@ export function deleteOldBulletins() {
         `)
     })
 }
+
+
+
+export function addReferenceToBulletin(id, reference_id) {
+    return new Promise((resolve, reject) => {
+        let db = getDatabase()
+        db.transaction((tx) => {
+            tx.executeSql(
+                "UPDATE bulletins SET reference_id = ? WHERE id = ?",
+                [reference_id, id],
+                (_, result) => resolve(result.rows._array),
+                (_, error) => reject(error.message)
+            )
+        },
+        (error) => {
+            reject(error.message)
+        }, null)
+    })
+}
+
+// get all bulletins with reference_id = -1
+// @returns a promise with the bulletins array
+export function getBulletinsWithoutReference() {
+  return new Promise((resolve, reject) => {
+    let db = getDatabase();
+
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "SELECT * FROM bulletins WHERE reference_id = -1;",
+          [],
+          (_, result) => {
+            resolve(result.rows._array);
+          },
+          (_, error) => {
+              reject(error.message)
+              return true
+          }
+        );
+      },
+      (error) => reject(error.message),
+      () => {}
+    );
+  });
+}
+      
 
 
 
@@ -158,4 +202,32 @@ export function saveBulletin(bulletin_info) {
             null
         );
     })
+}
+
+
+
+// ASYNC STORAGE FUNCTIONS
+// Save the list of bulletins pending to be paid on Server
+// @param id: id of the bulletin to be paid
+// @returns a promise with true if the bulletin was saved successfully or false if not
+export async function addPendingBulletinToPayOnServer(id) {
+    try {
+        let pending_bulletins = await AsyncStorage.getItem("pending_bulletins")
+        let new_updated_bulletins = await AsyncStorage.setItem("pending_bulletins", JSON.stringify(pending_bulletins.push(id)))
+        console.log(new_updated_bulletins)
+        return true
+    } catch (error) {
+        return false
+    }
+}
+
+// Get the list of bulletins pending to be paid on Server
+// @returns a promise with the list of bulletins pending to be paid
+export async function getNotSyncronizedBulletins() {
+    try {
+        let pending_bulletins = await AsyncStorage.getItem("pending_bulletins")
+        return pending_bulletins
+    } catch (error) {
+        return []
+    }
 }

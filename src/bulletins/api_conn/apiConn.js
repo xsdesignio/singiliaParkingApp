@@ -20,7 +20,7 @@ export function createBulletinOnServer(bulletin_info) {
             // If request was made successfully
             return response.json()
         })
-        .then(ticket => resolve(ticket))
+        .then(bulletin => resolve(bulletin))
         .catch(() => resolve(null))
     })
 }
@@ -28,7 +28,7 @@ export function createBulletinOnServer(bulletin_info) {
 
 
 
-export function payBulletin(bulletin_id) {
+export function payBulletinOnServer(bulletin_id) {
     return new Promise((resolve, reject) => {
 
 

@@ -1,9 +1,10 @@
 import { Alert } from "react-native"
 import { getSession } from "../session/sessionStorage"
-import { saveBulletin } from "./storage/bulletinsStorage";
+import { saveBulletin, payBulletinLocally, addPendingBulletinToPayOnServer } from "./storage/bulletinsStorage";
 
-import { createBulletinOnServer } from "./api_conn/apiConn";
+import { createBulletinOnServer, payBulletinOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage";
+
 
 
 
@@ -47,6 +48,27 @@ export async function createAndPrintBulletin(bulletinInfo) {
     catch(error) {
         console.log(error)
         Alert.alert("Error al imprimir el boletín", error.message)
+    }
+}
+
+
+
+// Pay a certain bulletin, updating it's paid status on the server and locally
+// Create an alert with the result of the operation
+// @param bulletin_id, id of the bulletin to pay (from the local database)
+export async function payBulletin(bulletin_id) {
+    try {
+        let sent_to_server = await payBulletinOnServer(bulletin_id)
+        await payBulletinLocally(bulletin_id)
+        if(!sent_to_server) {
+            addBulletinToUploadQueue(bulletin_id)
+        }
+        Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito")
+    }
+    catch(error) {
+        Alert.alert("Error al pagar el boletín", error.message, {
+            text: "Ok",
+        })
     }
 }
 
@@ -96,4 +118,13 @@ export function getBulletinPrice(duration) {
     
     return 1.8
     
+}
+
+
+
+// Add a bulletin to the upload queue
+// @param bulletin_id, id of the bulletin to add to the upload queue
+export async function addBulletinToUploadQueue(bulletin_id) {
+    // Save on async storage the id of the bulletin to upload
+    addPendingBulletinToPayOnServer(bulletin_id)
 }

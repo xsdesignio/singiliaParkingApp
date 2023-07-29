@@ -7,6 +7,9 @@ import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 
 import { colors } from "../styles/colorPalette";
 
+import { payBulletin } from "../bulletins/bulletinsController";
+import { printBulletin } from "../bulletins/printing/bulletinsPrinting";
+import { printTicket } from "../tickets/printing/ticketsPrinting";
 
 
 export default function RecordScreen() {
@@ -53,15 +56,67 @@ export default function RecordScreen() {
         
     }
 
-    function openItem(item) {
-        console.log(item)
+    function openBulletin(bulletin) {
+        // Open an alert where the user can print the bulletin again such as pay it
+
+        let bulletin_data = ""
+        bulletin_data += `Matrícula: ${bulletin["registration"]} \n`
+        bulletin_data += `Duración: ${bulletin["duration"]} minutos \n`
+        bulletin_data += `Precio: ${bulletin["price"]}€ \n`
+        bulletin_data += `Precepto: ${bulletin["precept"]} \n`
+        bulletin_data += `Fecha: ${bulletin["created_at"]} \n`
+        bulletin_data += `Pagado: ${bulletin["paid"] ? "Sí" : "No"} \n`
+        bulletin_data += `Marca: ${bulletin["brand"]} \n`
+        bulletin_data += `Modelo: ${bulletin["model"]} \n`
+        bulletin_data += `Color: ${bulletin["color"]} \n`
+
+        Alert.alert(`Mostrando boletín`, bulletin_data, [
+            {
+                text: "Cancelar",
+            },
+            {
+                text: "Imprimir",
+                onPress: () => {
+                    printBulletin(bulletin)
+                }
+            },
+            {
+                text: "pagar",
+                onPress: () => {
+                    payBulletin(bulletin["id"])
+                }
+            }
+        ])
+    }
+
+    function openTicket(ticket) {
+        // Make the same as openBulletin but with tickets. Just delete the pay option and the "color", "model" and "brand" fields
+        let ticket_data = ''
+        ticket_data += `Matrícula: ${ticket["registration"]} \n`
+        ticket_data += `Duración: ${ticket["duration"]} minutos \n`
+        ticket_data += `Precio: ${ticket["price"]}€ \n`
+        ticket_data += `Precepto: ${ticket["precept"]} \n`
+        ticket_data += `Fecha: ${ticket["created_at"]} \n`
+        ticket_data += `Método de pago: ${ticket["payment_method"] == "CASH"? "efectivo":"tarjeta"} \n`
+
+        Alert.alert(`Mostrando ticket`, ticket_data, [
+            {
+                text: "Cancelar",
+            },
+            {
+                text: "Imprimir",
+                onPress: () => {
+                    printTicket(ticket)
+                }
+            }
+        ])
     }
     
 
     const renderTicket = ({ item }) => {
         let img = getTicketAppareanceByDuration(item.duration)
         return (<View style={styles.ticket}>
-            <TouchableOpacity style={styles.ticket_button}>
+            <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
                 <Image style={styles.ticket_selector_image} source={img} />
             </TouchableOpacity>
         </View>);
@@ -70,7 +125,7 @@ export default function RecordScreen() {
 
     const renderBulletin = ({item}) => {
         return(<View style={styles.ticket}>
-            <TouchableOpacity style={styles.ticket_button} onPress={openItem(item)}>
+            <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
                 <Image style={styles.ticket_selector_image} source={require("../../assets/bulletins/bulletin.png")} />
             </TouchableOpacity>
         </View>)

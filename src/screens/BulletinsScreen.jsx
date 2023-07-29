@@ -12,11 +12,6 @@ import { colors } from "../styles/colorPalette";
 
 export default function bulletinsScreen() {
     
-    /* const payment_methods = Object.freeze({
-        CASH: "CASH",
-        CARD: "CARD"
-    }) */
-    
     const [bulletinInfo, setBulletinInfo] = useState({
         "duration": 30,
         "registration": undefined,
@@ -28,18 +23,6 @@ export default function bulletinsScreen() {
         "model": undefined,
         "color": undefined,
     })
-
-
-    /* useEffect(() => {
-        getConfigValue("zone")
-            .then((zone) => {
-                updateBulletinInfo("zone_name", zone);
-            })
-            .catch((error) => {
-                console.log(error)
-                Alert.alert("Ha ocurrido un error obteniendo tu localización", "Por favor, añádela desde los ajustes y vuelve a esta página.");
-            });
-    }, []); */
     
     
     // Simple function to update the bulletinInfo state
@@ -71,6 +54,7 @@ export default function bulletinsScreen() {
                                 
                     <TextInput
                         style={styles.input}
+                        autoCapitalize="characters"
                         onChangeText={(registration) => 
                             updateBulletinInfo("registration", registration)
                         }
