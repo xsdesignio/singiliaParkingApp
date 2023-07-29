@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveConfigDict } from "./configStorage";
 import { createSQLiteTables } from "./database";
 
-import { addReferenceToBulletin, getBulletinsWithoutReference, getNotSyncronizedBulletins, deleteOldBulletins } from "./bulletins/storage/bulletinsStorage";
+import { addReferenceToBulletin, getBulletinsWithoutReference, getNotSynchronizedBulletins, deleteOldBulletins } from "./bulletins/storage/bulletinsStorage";
 import { createBulletinOnServer, payBulletinOnServer } from "./bulletins/api_conn/apiConn";
 import { createTicketOnServer } from "./tickets/api_conn/apiConn";
 import { addReferenceToTicket, deleteOldTickets, getTicketsWithoutReference } from "./tickets/storage/ticketsStorage";
@@ -30,7 +30,7 @@ export async function initApp() {
             console.log(error)
         }
     } 
-    await syncronizeAppWithServer()
+    await synchronizeAppWithServer()
     await deleteOldTickets()
     await deleteOldBulletins()
 }
@@ -52,13 +52,16 @@ async function firstTimeAppStarts() {
 }
 
 
+
+// REFACTORIZE TO ADD INDIVIDUAL SYNC FUNCTIONS FOR TICKETS AND BULLETINS INSIDE THEIR RESPECTIVE FOLDERS (/api_conn/syncData.js)
+
 // Syncronize the app with the server
 // @returns true if the syncronization was successful and false otherwise
-export async function syncronizeAppWithServer() {
+export async function synchronizeAppWithServer() {
     //get pending bulletins
-    let not_syncronized_bulletins = await getNotSyncronizedBulletins()
+    let not_synchronized_bulletins = await getNotSynchronizedBulletins()
 
-    not_syncronized_bulletins.forEach(async (bulletin) => {
+    not_synchronized_bulletins.forEach(async (bulletin) => {
         // Send each bulletin to the server
         if(bulletin["reference_id"] == -1) {
             let created_bulletin = await createBulletinOnServer(bulletin)

@@ -108,14 +108,18 @@ export function payBulletinLocally(id) {
 
 
 export function deleteOldBulletins() {
+  return new Promise((resolve, reject) => {
     let db = getDatabase()
+
     db.transaction((tx) => {
-        tx.executeSql(`
-            DELETE FROM bulletins
-            WHERE created_at < datetime('now', '-1 day')
-                AND paid = 1;
-        `)
+        tx.executeSql(
+            "DELETE FROM bulletins WHERE paid = 1 AND created_at < datetime('now', '-1 day')",
+            [],
+            (_, result) => resolve(result.rows._array),
+            (_, error) => reject(error.message)
+        )
     })
+})
 }
 
 
@@ -223,7 +227,7 @@ export async function addPendingBulletinToPayOnServer(id) {
 
 // Get the list of bulletins pending to be paid on Server
 // @returns a promise with the list of bulletins pending to be paid
-export async function getNotSyncronizedBulletins() {
+export async function getNotSynchronizedBulletins() {
     try {
         let pending_bulletins = await AsyncStorage.getItem("pending_bulletins")
         return pending_bulletins
