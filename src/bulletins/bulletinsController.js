@@ -1,7 +1,6 @@
 import { Alert } from "react-native"
 import { getSession } from "../session/sessionStorage"
 import { saveBulletin, payBulletinLocally, addPendingBulletinToPayOnServer } from "./storage/bulletinsStorage";
-
 import { createBulletinOnServer, payBulletinOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage";
 
@@ -18,7 +17,7 @@ export async function createAndPrintBulletin(bulletinInfo) {
         let bulletin_dict = {
             ...bulletinInfo,
             "responsible_id": session["id"],
-            "zone": zone,
+            "zone_name": zone,
             "price": price,
         }
 
@@ -57,18 +56,58 @@ export async function createAndPrintBulletin(bulletinInfo) {
 // Create an alert with the result of the operation
 // @param bulletin_id, id of the bulletin to pay (from the local database)
 export async function payBulletin(bulletin_id) {
+    const paymentMethods = [
+        {
+            text: "Efectivo",
+            method: "CASH",
+        },
+        {
+            text: "Tarjeta",
+            method: "CARD",
+        },
+    ];
+
+    Alert.alert("Pagar Boletín", "Elige el método de pago", paymentMethods.map((method) => ({
+        text: method.text,
+        onPress: () => {
+            pay(bulletin_id, method.method);
+        },
+    })));
+}
+
+
+async function pay(bulletin_id, payment_method) {
     try {
-        let sent_to_server = await payBulletinOnServer(bulletin_id)
-        await payBulletinLocally(bulletin_id)
-        if(!sent_to_server) {
-            addBulletinToUploadQueue(bulletin_id)
-        }
-        Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito")
-    }
-    catch(error) {
-        Alert.alert("Error al pagar el boletín", error.message, {
-            text: "Ok",
-        })
+        console.log("This happends")
+
+        let paid_locally = await payBulletinLocally(bulletin_id, payment_method)
+        console.log("This happends too")
+
+        if(!paid_locally)
+            throw new Error("Error al pagar el boletín")
+            
+        let sent_to_server = await payBulletinOnServer(bulletin_id, payment_method)
+
+        console.log("And this also happends")
+        if(!sent_to_server) 
+            await addBulletinToUploadQueue(bulletin_id, payment_method)
+
+
+        console.log("The last console log")
+
+        setTimeout(() => {
+            Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito", [{
+                text: "Ok",
+            }]);
+        }, 100); // Show the second alert after a 100ms delay
+        
+    } catch (error) {
+        console.log(error)
+        setTimeout(() => {
+            Alert.alert("Error al pagar el boletín", "Ha ocurrido un error", [{
+                text: "Ok",
+            }]);
+        }, 100); // Show the second alert after a 100ms delay
     }
 }
 
@@ -91,7 +130,7 @@ function check_information(bulletin_info) {
     if (bulletin_info["paid"] == undefined || bulletin_info["paid"] == null)
         throw new Error("No se ha encontrado el estado de pago del boletín.")
     
-    if (!bulletin_info["zone"] || bulletin_info["zone"] == "") 
+    if (!bulletin_info["zone_name"] || bulletin_info["zone_name"] == "") 
         throw new Error("No se ha encontrado la ubicación del boletín.")
     
 }
@@ -126,5 +165,5 @@ export function getBulletinPrice(duration) {
 // @param bulletin_id, id of the bulletin to add to the upload queue
 export async function addBulletinToUploadQueue(bulletin_id) {
     // Save on async storage the id of the bulletin to upload
-    addPendingBulletinToPayOnServer(bulletin_id)
+    await addPendingBulletinToPayOnServer(bulletin_id)
 }

@@ -118,39 +118,6 @@ export default function bulletinsScreen() {
                             </Picker>
                         </View>
                     </View>
-
-                    {/* --------- Payment Method --------- */}
-                    {/* <View style={styles.centered_element}>
-                        <Text style={styles.label}>Método de pago:</Text>
-
-                        <View style={styles.selector}>
-                            <TouchableOpacity 
-                                style={[
-                                    styles.selector_button, 
-                                    {
-                                        backgroundColor: (bulletinInfo["payment_method"]==payment_methods.CARD) ? 
-                                            colors.light_green_selected: colors.light_green
-                                    }
-                                ]}
-                                onPress={() => updateBulletinInfo("paid", true)}>
-                                <Text>Tarjeta</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.selector_button, 
-                                    {
-                                        backgroundColor: (bulletinInfo["payment_method"]==payment_methods.CASH) ? 
-                                            colors.light_green_selected: colors.light_green
-                                    }
-                                ]}
-
-                                onPress={() => updateBulletinInfo("paid", false)}>
-                                <Text>Efectivo</Text>
-                            
-                            </TouchableOpacity>
-                        </View>
-                    </View> */}
-
                 </View>
 
 

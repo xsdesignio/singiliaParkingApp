@@ -27,33 +27,30 @@ export function createBulletinOnServer(bulletin_info) {
 
 
 
-
-export function payBulletinOnServer(bulletin_id) {
-    return new Promise((resolve, reject) => {
-
-
-        fetch( `${ apiHost }/bulletins/pay/${bulletin_id}` , {
+export function payBulletinOnServer(bulletin_id, payment_method) {
+    return new Promise((resolve) => {
+        fetch(`${apiHost}/bulletins/pay/${bulletin_id}`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded', 
+            },
+            body: `payment_method=${encodeURIComponent(payment_method)}`, 
         })
-        .then( response => {
+        .then(response => {
             // Throw an error when server returns an error
-
-            if(response.status == 400)
-                throw new Error("El boletín introducido no existe.")
-            
-            if(response.status != 200)
-                throw new Error("Ha ocurrido un error al pagar el boletín.")
-            
+            if (response.status === 400) {
+                throw new Error("El boletín introducido no existe.");
+            }
+            if (response.status !== 200) {
+                throw new Error("Ha ocurrido un error al pagar el boletín.");
+            }
             // If request was made successfully
-            return response.json()
+            return response.json();
         })
-        .then( response_json => {
-
-            let message = response_json["message"]
-            resolve(message)
-
+        .then(response_json => {
+            let message = response_json["message"];
+            resolve(message);
         })
-        .catch(error => reject(error.message))
-    })
-
+        .catch(() => resolve(null));
+    });
 }

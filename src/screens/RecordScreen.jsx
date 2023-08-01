@@ -83,7 +83,15 @@ export default function RecordScreen() {
             {
                 text: "pagar",
                 onPress: () => {
-                    payBulletin(bulletin["id"])
+                    try {
+                        payBulletin(bulletin["id"])
+                    } catch (error) {
+                        Alert.alert("Error al pagar", error, [
+                            {
+                                text: "Ok",
+                            }
+                        ])
+                    }
                 }
             }
         ])
