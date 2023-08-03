@@ -12,6 +12,7 @@ import { synchronizeBulletins } from "./bulletins/api_conn/syncBulletins";
 export async function initApp() {
     
     let app_already_started = await firstTimeAppStarts()
+    createSQLiteTables()
 
     if(!app_already_started) {
         // If it is the first time the app is loaded SQLite tables are created

@@ -88,6 +88,10 @@ export default function SettingsScreen() {
             <View>
                 <DefaultButton onPress={logout} text={"Cerrar sesión"} />
             </View>
+
+            <View>
+                <DefaultButton onPress={() => navigation.navigate("printing-settings")} text={"Volver"} />
+            </View>
             
         </View>)
 }
