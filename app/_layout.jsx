@@ -1,3 +1,4 @@
+import React from "react";
 import { StyleSheet, SafeAreaView  } from "react-native";
 import { Slot } from "expo-router";
 
@@ -22,5 +23,6 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         backgroundColor: '#60826a',
+        paddingTop: 40,
     },
 })

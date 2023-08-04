@@ -46,7 +46,6 @@ export default function Header() {
 const styles = StyleSheet.create({
     settings_header: {
         flexDirection: "row",
-        paddingTop:40,
         justifyContent: "space-between",
         alignContent: "center",
         backgroundColor: "white",

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "scheme": "mobile",
-    "name": "mobile",
-    "slug": "mobile",
+    "scheme": "com.singiliabarba.parkingcontrol",
+    "name": "Singilia Parking",
+    "slug": "com-singiliabarba-parkingcontrol",
     "version": "1.0.0",
     "orientation": "portrait",
     "assetBundlePatterns": [
@@ -29,7 +29,8 @@
       "permissions": [
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.BLUETOOTH_CONNECT"
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTHLE"
       ],
       "package": "com.singiliabarba.parkingcontrol"
     },
@@ -38,6 +39,11 @@
     },
     "updates": {
       "fallbackToCacheTimeout": 0
+    },
+    "extra": {
+      "eas": {
+        "projectId": "97d4c49d-a341-4997-b17d-ef7d2848f587"
+      }
     }
   }
 }

@@ -28,11 +28,11 @@
     "react-native-base64": "^0.2.1",
     "react-native-ble-plx": "^2.0.3",
     "react-native-dotenv": "^3.4.8",
+    "react-native-gesture-handler": "^2.12.1",
     "react-native-gradle-plugin": "^0.71.19",
     "react-native-paper": "^5.9.1",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "react-native-web": "~0.19.6",
     "react-router-dom": "^6.11.2"
   },
   "devDependencies": {

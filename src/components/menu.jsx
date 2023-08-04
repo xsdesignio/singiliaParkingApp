@@ -93,6 +93,7 @@ let styles = StyleSheet.create({
         borderTopWidth: 1,
         backgroundColor: '#F9FFFF',
         zIndex: -10,
+        minWidth: 400,
     },
     page_link: {
         flexDirection: 'row',
