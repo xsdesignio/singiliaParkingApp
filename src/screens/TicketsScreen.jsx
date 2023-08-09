@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
-
 import { useState } from "react";
 
 import { colors } from "../styles/colorPalette";
@@ -110,6 +110,7 @@ export default function TicketsScreen() {
 
                 <DefaultButton onPress={() => printManager()} text={"imprimir"}/>
             </View>
+
         </View>)
 }
 
@@ -119,13 +120,15 @@ let styles = StyleSheet.create({
         height: 142,
         justifyContent: "center",
         marginBottom: 10,
-        width: "110%",
+        width: "120%",
     },
     container: {
         alignItems: 'center',
+        backgroundColor: colors.green,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
+        paddingHorizontal: 0,
         paddingVertical: 20,
     },
 
@@ -162,7 +165,6 @@ let styles = StyleSheet.create({
     
     ticket_info: {
         alignItems: 'center',
-        backgroundColor: colors.green,
         flex: 1,
         gap: 10,
         minHeight: 40,

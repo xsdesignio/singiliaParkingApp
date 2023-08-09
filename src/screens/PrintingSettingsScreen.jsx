@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
+
+// eslint-disable-next-line react-native/split-platform-components
 import { PermissionsAndroid, Platform } from 'react-native';
+
 import { DefaultButton } from '../components/atoms/default-button.jsx';
 
 import { colors } from '../styles/colorPalette';
@@ -151,6 +154,7 @@ export default function PrintingSettingsScreen() {
             />
             {/* <Text>{ allDevices }</Text> */}
             {/* <Button title='scan' onPress={scanForPeripherals} /> */}
+            <DefaultButton text='scan' onPress={scanForPeripherals} />
             <TouchableOpacity style={styles.print_button} onPress={scanForPeripherals}>
                 <Text style={styles.print_button_text}>
                     Escanear

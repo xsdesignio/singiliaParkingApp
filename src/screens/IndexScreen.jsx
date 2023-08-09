@@ -1,14 +1,16 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Link } from 'expo-router';
 
 import { getSession } from '../session/sessionStorage';
 import { initApp } from '../app';
 import { colors } from '../styles/colorPalette';
+import DefaultButton from '../components/atoms/default-button';
 
 
 
-export default function IndexScreen() {
+// eslint-disable-next-line react/prop-types
+export default function IndexScreen({ navigation }) {
   const [loggedIn, setLoggedIn] = useState(false);
   
   /* const [userName, setUserName] = useState(""); */
@@ -37,20 +39,15 @@ export default function IndexScreen() {
         <View style={styles.container_element}>
           <Text style={styles.title}>¡Hola!</Text>
           <Text style={styles.text}>¿Estás listo para imprimir tickets?</Text>
-          <Link style={styles.link_button} href='/tickets' replace="/tickets">
-            <Text>
-              Lanzar aplicación
-            </Text>
-          </Link>
+          <DefaultButton text="Lanzar aplicación" onPress={ () => {
+            navigation.replace('Main')
+          }}/>
         </View>
       ) : (
         <View style={styles.container_element}>
           <Text style={styles.text}>Para acceder a la aplicación necesitas iniciar sesión</Text>
-          <Link style={styles.link_button} href='/login' replace="/login">
-            <Text>
-              Iniciar Sesión
-            </Text>
-          </Link>
+          {/* eslint-disable-next-line react/prop-types */}
+          <DefaultButton text="Iniciar Sesión" onPress={ () => navigation.navigate('Login')}/>
         </View>
       )}
     </View>
@@ -72,32 +69,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: "80%",
   },
-  link_button: {
-    backgroundColor: colors.green_button,
-    borderColor: colors.white,
-    borderRadius: 20,
-    borderWidth: 1,
-    color: colors.white,
-    elevation: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-
-    shadowColor: colors.black,
-    shadowOffset: {
-        width: 0,
-        height: 5,
-    },
-    
-    shadowOpacity: 0.36,
-    shadowRadius: 6.68,
-
-  },
   text: {
-    color: colors.white,
+    color: colors.dark_green,
     textAlign: 'center',
   },
   title: {
-    color: colors.white,
+    color: colors.dark_green,
     fontSize: 22, 
     fontWeight: 'bold',
     textAlign: 'center', 

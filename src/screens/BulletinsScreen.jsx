@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { colors } from "../styles/colorPalette";
 
 // import { getConfigValue } from "../configStorage";
 
-export default function bulletinsScreen() {
+export default function BulletinsScreen() {
     
     const [bulletinInfo, setBulletinInfo] = useState({
         "duration": 30,
@@ -148,8 +149,6 @@ export default function bulletinsScreen() {
     
 
             <DefaultButton onPress={printManager} text="Imprimir" />
-                
-                
         </View>)
 }
 

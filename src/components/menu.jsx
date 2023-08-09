@@ -1,31 +1,42 @@
-import { Image, Keyboard, StyleSheet, Text, View } from "react-native"
-import { Link, usePathname } from 'expo-router'
-import { useEffect, useState, useRef } from "react"
-import { Animated } from 'react-native'
+/* eslint-disable react/prop-types */
+import React from "react"
+import { Image, Keyboard, StyleSheet, Text, View, TouchableOpacity } from "react-native"
+//import { Link, usePathname } from 'expo-router'
+import { colors } from "../styles/colorPalette"
+import { useEffect, useState } from "react"
+// import { TouchableOpacity } from "react-native-gesture-handler"
+//import { Animated } from 'react-native'
 
-export default function Menu() {
-    let path_name = usePathname()
+
+export default function Menu( { navigation } ) {
+    const [path_name, setPathName] = useState()
 
     const [jsxLinks, setJsxLinks] = useState()
 
-    const [links, setLinks] = useState([
+    const [pages, setPages] = useState([
         {
             name: 'Historial',
-            href: '/record',
+            link: 'Record',
             active: false,
             source: require('../../assets/icons/ticket.png'),
         },
         {
             name: 'Tickets',
-            href: '/tickets',
+            link: 'Tickets',
             active: false,
             source: require('../../assets/icons/printing.png'),
         },
         {
             name: 'Boletines',
-            href: '/bulletins',
+            link: 'Bulletins',
             active: false,
             source: require('../../assets/icons/printing.png'),
+        },
+        {
+            name: 'Ajustes',
+            link: 'Settings',
+            active: false,
+            source: require('../../assets/icons/settings.png'),
         }
     ])
 
@@ -33,37 +44,45 @@ export default function Menu() {
     const [isShown, setIsShown] = useState(true)
 
     useEffect(() => {
-        setLinks(links.map(el => {
-            if (path_name == el.href) {
+        if(navigation == undefined) return
+
+        let state = navigation.getState()
+
+        setPathName(state.routes[state.routes.length-1].name)
+        
+        setPages(pages.map(el => {
+            if (path_name == el.link) {
                 el.active = true
+                console.log("This doesn't work")
             }
             return el
         }))
+        
 
-        setJsxLinks(links.map((link) => {
+        setJsxLinks(pages.map((page) => {
             return (
-                <Link key={link.name} href={link.href} style={link.active ? styles.selected_page_link : styles.page_link}>
-                    <Image style={styles.link_icon} source={link.source} />
-                    {link.active ? (<Text> {link.name}</Text>) : ""}
-                </Link>
+                <TouchableOpacity key={page.name} onPress={() => navigation.replace(page.link)} style={page.active ? styles.selected_page_link : styles.page_link}>
+                    <Image style={styles.link_icon} source={page.source} />
+                    {page.active ? (<Text> {page.name}</Text>) : ""}
+                </TouchableOpacity>
             );
         }));
 
-        const keyboardShowListener = Keyboard.addListener(
+        Keyboard.addListener(
             'keyboardDidShow',
             () => {
                 setIsShown(false)
             }
         );
 
-        const keyboardHideListener = Keyboard.addListener(
+        Keyboard.addListener(
             'keyboardDidHide',
             () => {
                 setIsShown(true)
             }
         );
 
-    }, []);
+    }, [navigation]);
 
     return (<>
         { isShown ? 
@@ -78,57 +97,55 @@ export default function Menu() {
 
 let styles = StyleSheet.create({
     content_moved: {
+        backgroundColor: colors.green,
         height: 120,
-        backgroundColor: '#60826a',
-        zIndex: -10,
-    },
-    pages: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-        gap: 20,
-        paddingHorizontal: 60,
-        borderTopColor: "#C2D9C9",
-        borderTopWidth: 1,
-        backgroundColor: '#F9FFFF',
-        zIndex: -10,
-        minWidth: 400,
-    },
-    page_link: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 2,
-        paddingHorizontal: 20,
-        height: 50,
-        borderRadius: 28,
-        backgroundColor: '#d4faec',
         zIndex: -10,
     },
     link_icon: {
-        width: 28,
         height: 28,
-    },
+        width: 28,
+    },/* 
     link_text: {
         paddingLeft: 20,
+    }, */
+    page_link: {
+        alignItems: 'center',
+        backgroundColor: colors.light_green,
+        borderRadius: 28,
+        flexDirection: 'row',
+        height: 50,
+        justifyContent: 'center',
+        padding: 2,
+        paddingHorizontal: 20,
+        zIndex: -10,
+    },
+    pages: {
+        alignItems: 'center',
+        backgroundColor: colors.background,
+        borderTopColor: colors.border_color,
+        borderTopWidth: 1,
+        flexDirection: 'row',
+        gap: 20,
+        justifyContent: 'space-between',
+        minWidth: 400,
+        paddingHorizontal: 60,
+        paddingVertical: 8,
+        zIndex: -10,
     },
     selected_page_link: {
+        backgroundColor: colors.light_green_selected,
+        borderRadius: 28,
+        elevation: 10,
+        height: 60,
         padding: 8,
         paddingHorizontal: 20,
-        height: 60,
-        borderRadius: 28,
-        textAlign: "center",
-        backgroundColor: '#95e8c9',
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: {
-            width: 0,
             height: 5,
+            width: 0,
         },
         shadowOpacity: 0.44,
         shadowRadius: 6.68,
-
-        elevation: 10,
-    }
-    
-})
+        textAlign: "center",
+    },
+});

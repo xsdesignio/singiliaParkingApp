@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
-import { useNavigation } from "expo-router";
 import { useState } from "react";
 
 import DefaultButton from "../components/atoms/default-button";
@@ -9,8 +9,7 @@ import { logoutUser } from "../session/sessionControler";
 import { colors } from "../styles/colorPalette";
 
 
-export default function SettingsScreen() {
-    const navigation = useNavigation();
+export default function SettingsScreen({ navigation }) {
 
     const [bulletinsAmount, setBulletinsAmount] = useState(1)
 
@@ -90,7 +89,7 @@ export default function SettingsScreen() {
             </View>
 
             <View>
-                <DefaultButton onPress={() => navigation.navigate("printing-settings")} text={"Volver"} />
+                <DefaultButton onPress={() => navigation.navigate("Printing Settings")} text={"Volver"} />
             </View>
             
         </View>)

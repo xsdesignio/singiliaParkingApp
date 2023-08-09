@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, TextInput} from "react-native";
 import { useState } from "react";
 
-import { useNavigation  } from "expo-router";
 
 import { loginUser } from "../session/sessionControler";
 import DefaultButton from "../components/atoms/default-button";
@@ -10,14 +9,14 @@ import DefaultButton from "../components/atoms/default-button";
 import { colors } from "../styles/colorPalette";
 
 
-export default function LoginScreen() {
+// eslint-disable-next-line react/prop-types
+export default function LoginScreen({ navigation }) {
 
     // Form data
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
 
-    const navigation = useNavigation();
     const [errorMessage, setErrorMessage] = useState("")
 
     function login() {
@@ -32,10 +31,8 @@ export default function LoginScreen() {
             if(session == null) 
                 throw Error("Ha ocurrido un error a la hora de iniciar sesión")
             
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'tickets' }],
-            });
+            // eslint-disable-next-line react/prop-types
+            navigation.navigate('Tickets')
         })
         .catch( error => {
             setErrorMessage(error)
