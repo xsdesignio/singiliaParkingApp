@@ -4,13 +4,16 @@ import { useState } from "react";
 
 
 import { loginUser } from "../session/sessionControler";
+import { useLogin } from "../context/LoginProvider";
 import DefaultButton from "../components/atoms/default-button";
 
 import { colors } from "../styles/colorPalette";
 
 
 // eslint-disable-next-line react/prop-types
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+
+    const { setIsLoggedIn } = useLogin()
 
     // Form data
     const [email, setEmail] = useState("");
@@ -32,7 +35,7 @@ export default function LoginScreen({ navigation }) {
                 throw Error("Ha ocurrido un error a la hora de iniciar sesión")
             
             // eslint-disable-next-line react/prop-types
-            navigation.navigate('Tickets')
+            setIsLoggedIn(true)
         })
         .catch( error => {
             setErrorMessage(error)

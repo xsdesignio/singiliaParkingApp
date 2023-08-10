@@ -37,6 +37,17 @@ export default function BulletinsScreen() {
 
     function printManager() {
         createAndPrintBulletin(bulletinInfo);
+        setBulletinInfo({
+            "duration": 30,
+            "registration": undefined,
+            "price": undefined,
+            /* "payment_method": undefined, */
+            "paid": false,
+            "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
+            "brand": undefined,
+            "model": undefined,
+            "color": undefined,
+        })
     }
 
 
@@ -155,7 +166,6 @@ export default function BulletinsScreen() {
 let styles = StyleSheet.create({
     bulletin_info_form: {
         alignItems: "center",
-        backgroundColor: colors.green,
         flex: 1,
         justifyContent: "center",
         marginBottom: 20,
@@ -173,6 +183,7 @@ let styles = StyleSheet.create({
 
     container: {
         alignItems: 'center',
+        backgroundColor: colors.green,
         flex: 1,
         gap: 20,
         justifyContent: 'center',

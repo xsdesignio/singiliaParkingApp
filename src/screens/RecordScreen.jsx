@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
@@ -12,7 +13,7 @@ import { printBulletin } from "../bulletins/printing/bulletinsPrinting";
 import { printTicket } from "../tickets/printing/ticketsPrinting";
 
 
-export default function RecordScreen() {
+export default function RecordScreen({ navigation }) {
 
     const [ticketsActive, setTicketsActive] = useState(true);
 
@@ -22,9 +23,12 @@ export default function RecordScreen() {
     const [bulletins, setBulletins] = useState([])
 
     useEffect(() => {
-        setData()
-    }, [])
-
+        const unsubscribe = navigation.addListener('focus', () => {
+            setData();
+        });
+    
+        return unsubscribe;
+    }, []);
     // Set the data to the states if data is not empty
     function setData() {
 

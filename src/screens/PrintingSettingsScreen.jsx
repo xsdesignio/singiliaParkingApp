@@ -5,7 +5,7 @@ import { BleManager } from 'react-native-ble-plx';
 // eslint-disable-next-line react-native/split-platform-components
 import { PermissionsAndroid, Platform } from 'react-native';
 
-import { DefaultButton } from '../components/atoms/default-button.jsx';
+import DefaultButton from '../components/atoms/default-button';
 
 import { colors } from '../styles/colorPalette';
 

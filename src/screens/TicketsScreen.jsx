@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { useState } from "react";
 
 import { colors } from "../styles/colorPalette";
@@ -48,11 +48,15 @@ export default function TicketsScreen() {
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
     function printManager() {
-        createAndPrintTicket(selectedTicket.duration, registration, paymentMethod)
+        createAndPrintTicket(selectedTicket.duration, registration, paymentMethod);
+        setPaymentMethod(null);
+        setRegistration("");
     }
     
 
-    return(<View style={styles.container}>
+    return(
+    <KeyboardAvoidingView style={styles.keyboard_avoiding_view} behavior="padding" keyboardVerticalOffset={100}>
+        <View style={styles.container}>
             <BigCard imageUrl={selectedTicket.imageUrl} />
 
             <View style={styles.available_tickets}>
@@ -111,7 +115,8 @@ export default function TicketsScreen() {
                 <DefaultButton onPress={() => printManager()} text={"imprimir"}/>
             </View>
 
-        </View>)
+        </View>
+    </KeyboardAvoidingView>)
 }
 
 let styles = StyleSheet.create({
@@ -142,11 +147,16 @@ let styles = StyleSheet.create({
         textAlign: 'center',
         width: 280,
     },
+
+    keyboard_avoiding_view: {
+        flex: 1,
+    },
     
     normal_text: {
         color: colors.white,
         fontSize: 16,
     },
+    
     selector: {
         flexDirection: "row"
     },
@@ -157,8 +167,6 @@ let styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10
     },
-    
-
     ticket_button: {
         margin: 10,
     },
@@ -184,7 +192,6 @@ let styles = StyleSheet.create({
         marginVertical: 0,
         paddingHorizontal: 4,
         paddingVertical: 4,
-    },
-    
+    }
     
 })

@@ -6,6 +6,7 @@ import { useState } from "react";
 import DefaultButton from "../components/atoms/default-button";
 
 import { logoutUser } from "../session/sessionControler";
+import { useLogin } from "../context/LoginProvider";
 import { colors } from "../styles/colorPalette";
 
 
@@ -13,19 +14,20 @@ export default function SettingsScreen({ navigation }) {
 
     const [bulletinsAmount, setBulletinsAmount] = useState(1)
 
+    const { setIsLoggedIn } = useLogin()
+
     const [location, setLocation] = useState("")
 
     const [provisionalLocation, setprovisionalLocation] = useState("")
 
     function logout() {
         logoutUser().then(logout_successfull => {
-            if(logout_successfull)
-                navigation.reset( {
-                    index: 0,
-                    routes: [{
-                        name: 'index'
-                    }]
-                })
+            console.log("Aquí está el error")
+            if(logout_successfull) {
+                console.log("Sesión cerrada correctamente")
+                
+                setIsLoggedIn(false)
+            }
             else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
         }).catch(error => {
             Alert.alert("Error al cerrar la sesión", error, [{text: "OK"}])
@@ -89,7 +91,7 @@ export default function SettingsScreen({ navigation }) {
             </View>
 
             <View>
-                <DefaultButton onPress={() => navigation.navigate("Printing Settings")} text={"Volver"} />
+                <DefaultButton onPress={() => navigation.navigate("Printing Settings")} text={"Ajustes de impresión"} />
             </View>
             
         </View>)
@@ -100,6 +102,7 @@ export default function SettingsScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
+        backgroundColor: colors.green,
         flex: 1,
         justifyContent: 'center',
         width: "100%",
