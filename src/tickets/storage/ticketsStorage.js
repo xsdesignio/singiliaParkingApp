@@ -176,3 +176,22 @@ export function getTicketsWithoutReference() {
         )
     })
 }
+
+
+export function addReferenceToTicket(id, reference_id) {
+    /* Generate the code to modify the reference_if for the ticket with the id given */
+    return new Promise((resolve, reject) => {
+        let db = getDatabase()
+
+        db.transaction(
+            (tx) => {
+                tx.executeSql(
+                    "UPDATE tickets SET reference_id = ? WHERE id = ?",
+                    [reference_id, id],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error.message)
+                )
+            }
+        )
+    })
+}

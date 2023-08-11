@@ -4,9 +4,13 @@ import { getTicketsWithoutReference, addReferenceToTicket } from "../storage/tic
 export async function synchronizeTickets() {
     let tickets_without_reference = await getTicketsWithoutReference()
     tickets_without_reference.forEach(async (ticket) => {
-        let created_ticket = await createTicketOnServer(ticket)
-        if(created_ticket)
-            await addReferenceToTicket(ticket["id"], created_ticket["id"])
+        try {
+            let created_ticket = await createTicketOnServer(ticket)
+            if(created_ticket)
+                await addReferenceToTicket(ticket["id"], created_ticket["id"])
+        } catch(error) {
+            console.log(error)
+        }
     });
 
 }

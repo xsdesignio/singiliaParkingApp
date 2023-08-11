@@ -18,14 +18,14 @@ export default function PrintingSettingsScreen() {
 
     const [allDevices, setAllDevices] = useState([]);
 
-    // const [connectedDevice, setConnectedDevice] = useState(null);
-    // const [heartRate, setHeartRate] = useState(0);
+    const [connectedDevice, setConnectedDevice] = useState(null);
 
 
 
     useEffect(() => {
         const requestPermissionsAsync = async () => {
             const granted = await requestPermissions();
+            console.log("granted")
             console.log(granted)
         };
         requestPermissionsAsync();
@@ -69,15 +69,27 @@ export default function PrintingSettingsScreen() {
 
 
     //Create, using flatlist, a list to show all devices if they exist
-    const renderItem = ({ item }) => (
-        <View style={styles.item}>
+    /* const renderItem = ({ item }) => (
+        <TouchableOpacity style={styles.devices_list_item} onPress={() => connectToDevice(item)}>
+            <Text style={styles.title}>Dispositivo</Text>
             <Text style={styles.title}>{item.name}</Text>
-        </View>
-    );
+        </TouchableOpacity>
+    ); */
+
+    function renderItem ({ item }) {
+        console.log(item)
+        return (
+            <TouchableOpacity style={styles.devices_list_item} onPress={() => connectToDevice(item)}>
+                <Text style={styles.title}>Dispositivo</Text>
+                <Text style={styles.title}>{item.name}</Text>
+            </TouchableOpacity>
+        );
+    }
 
     
 
     const requestPermissions = async () => {
+        console.log("requestPermissions")
         if (Platform.OS === "android") {
             if ((ExpoDevice.platformApiLevel ?? -1) < 31) {
                 const granted = await PermissionsAndroid.request(
@@ -90,8 +102,8 @@ export default function PrintingSettingsScreen() {
                 );
                 return granted === PermissionsAndroid.RESULTS.GRANTED;
             } else {
-                const isAndroid31PermissionsGranted =
-                await requestAndroid31Permissions();
+                const isAndroid31PermissionsGranted =await requestAndroid31Permissions();
+                console.log("else")
 
                 return isAndroid31PermissionsGranted;
             }
@@ -104,10 +116,10 @@ export default function PrintingSettingsScreen() {
         devices.findIndex((device) => nextDevice.id === device.id) > -1;
 
     function scanForPeripherals () {
+        console.log(bleManager)
 
-        console.log("This do happens");
         bleManager.startDeviceScan(null, null, (error, device) => {
-            console.log("This nor ever happens");
+            console.log("This do happens");
             console.log(device);
             if (error) {
                 console.log(error);
@@ -123,7 +135,7 @@ export default function PrintingSettingsScreen() {
     }
 
 
-    /*
+    
     const connectToDevice = async (device) => {
         try {
             const deviceConnection = await bleManager.connectToDevice(device.id);
@@ -142,7 +154,7 @@ export default function PrintingSettingsScreen() {
         setConnectedDevice(null);
         //setHeartRate(0);
         }
-    }; */
+    };
 
     return (
         <View style={styles.container}>
@@ -154,12 +166,8 @@ export default function PrintingSettingsScreen() {
             />
             {/* <Text>{ allDevices }</Text> */}
             {/* <Button title='scan' onPress={scanForPeripherals} /> */}
-            <DefaultButton text='scan' onPress={scanForPeripherals} />
-            <TouchableOpacity style={styles.print_button} onPress={scanForPeripherals}>
-                <Text style={styles.print_button_text}>
-                    Escanear
-                </Text>
-            </TouchableOpacity>
+            <DefaultButton text='Escanear' onPress={scanForPeripherals} />
+            { connectedDevice ? <DefaultButton text='Desconectar' onPress={disconnectFromDevice} /> : null }
         </View>
     );
 }
@@ -169,31 +177,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center',
+        paddingVertical: 20,
     },
-
-    print_button: {
-        backgroundColor: colors.green_button,
-        borderColor: colors.white,
-        borderRadius: 20,
+    devices_list_item: {
+        alignItems: 'center',
+        backgroundColor: colors.light_green,
+        borderColor: colors.dark_green,
+        borderRadius: 5,
         borderWidth: 1,
-        color: colors.background,
-        elevation: 10,
-        margin: 10,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        shadowColor: colors.black,
-        shadowOffset: {
-            width: 0,
-            height: 5,
-        },
-        shadowOpacity: 0.36,
-        shadowRadius: 6.68,
-        width: 200,
-    },
-    print_button_text: {
-        borderRadius: 8,
-        color: colors.white,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        padding: 10,
     }
+
 });
