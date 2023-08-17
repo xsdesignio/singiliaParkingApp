@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { colors } from "../../styles/colorPalette";
+import { colors } from "../styles/colorPalette";
 
 /* import { Device } from "react-native-ble-plx"; */
 

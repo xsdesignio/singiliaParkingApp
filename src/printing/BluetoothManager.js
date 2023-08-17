@@ -1,19 +1,89 @@
+/* eslint-disable react-native/split-platform-components */
+import { useMemo } from 'react';
 import { BleManager } from 'react-native-ble-plx';
+// import { BleManager, Service } from 'react-native-ble-plx';
+import { Platform, PermissionsAndroid } from 'react-native';
+import { ExpoDevice } from 'expo';
 
+import Constants from 'expo-constants';
+
+
+ 
+
+// e7810a71-73ae-499d-8c15-faa9aef0c3f2
 
 export default class BluetoothManager {
     constructor() {
-        this.bleManager = new BleManager()
+        this.bleManager = useMemo(() => new BleManager(), [])
     }
 
-    async scan() {
+    async requestPermissions () {
+        if (Platform.OS === "android") {
+            const platformApiLevel = Constants.platformApiLevel ?? -1;
+
+            if ((platformApiLevel ?? -1) < 31) {
+                const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: "Permiso de localización",
+                    message: "Bluetooth Low Energy requiere conocer tu localización.",
+                    buttonPositive: "OK",
+                }
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } else {
+                const isAndroid31PermissionsGranted = await this._requestAndroid31Permissions();
+                return isAndroid31PermissionsGranted;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    // This function is executed depending if the android api version is inferior to 31
+    // Because more permissions seem to be required
+    async _requestAndroid31Permissions () {
+        const bluetoothScanPermission = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+            {
+                title: "Location Permission",
+                message: "Bluetooth Low Energy requires Location",
+                buttonPositive: "OK",
+            }
+        );
+        const bluetoothConnectPermission = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            {
+                title: "Location Permission",
+                message: "Bluetooth Low Energy requires Location",
+                buttonPositive: "OK",
+            }
+        );
+        const fineLocationPermission = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+                title: "Location Permission",
+                message: "Bluetooth Low Energy requires Location",
+                buttonPositive: "OK",
+            }
+        );
+
+        return (
+            bluetoothScanPermission === "granted" &&
+            bluetoothConnectPermission === "granted" &&
+            fineLocationPermission === "granted"
+        );
+    }
+
+    async scan( callBack ) {
+        
         this.bleManager.startDeviceScan(null, null, (error, device) => {
             console.log("Scanning...")
             if (error) {
                 console.log(error)
                 return
             }
-            console.log(device)
+            callBack(device)
         })
     }
 
@@ -21,30 +91,59 @@ export default class BluetoothManager {
         this.bleManager.stopDeviceScan()
     }
 
+    // Return the connected device if successfully connected or return null otherwise
     async connectToDevice(device) {
         this.bleManager.connectToDevice(device.id)
-            .then((device) => {
+            .then(async (connectedDevice) => {
                 console.log("Connected to device", device)
+                // this.deviceServicesAndCharacteristics = await connectedDevice.discoverAllServicesAndCharacteristics()
+                this.BleManager.stopDeviceScan()
+                return connectedDevice
             })
             .catch((error) => {
                 console.log(error)
+                return null
             })
     }
 
-    async disconnectFromDevice(device) {
-        this.bleManager.cancelDeviceConnection(device.id)
-            .then(() => {
-                console.log("Disconnected from device", device)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+    async disconnectFromDevice(connectedDevice) {
+        if(connectedDevice)
+            this.bleManager.cancelDeviceConnection(connectedDevice.id)
+                .then(() => {
+                    console.log("Disconnected from device", connectedDevice)
+                    return true
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return false
+                })
+    }
+
+    async sendDatatoDevice(connectedDevice, ServiceUUID, characteristicUUID, data) {
+        if(connectedDevice) {
+            try {
+                const characteristic = await connectedDevice.writeCharacteristicWithResponseForService(
+                    ServiceUUID,
+                    characteristicUUID,
+                    data
+                )
+                console.log("Data sent successfully: ", characteristic)
+                return true
+            } catch (error) {
+                console.log("Error sending data: ", error)
+                return false
+            }
+            
+        } else {
+            console.log("Device not connected.");
+            return false;
+        }
     }
 
 }
 
 
-/* 
+/* Z
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';

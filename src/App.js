@@ -7,10 +7,13 @@ import { registerRootComponent } from 'expo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useEffect } from 'react';
+import { Keyboard } from 'react-native';
 
 import { getSession } from './session/sessionStorage';
 
-import { LoginProvider, useLogin } from './context/LoginProvider';
+import { LoginProvider, useLogin } from './session/LoginProvider';
+import { PrinterProvider } from './printing/PrintingProvider';
+
 
 import { initApp } from './init';
 import { colors } from './styles/colorPalette';
@@ -43,7 +46,9 @@ export default function App() {
 
 	return (
 		<LoginProvider>
-			<DefaultNavigator/>
+			<PrinterProvider>
+				<DefaultNavigator/>
+			</PrinterProvider>
 		</LoginProvider>
 	);
 }
@@ -72,6 +77,26 @@ function DefaultNavigator() {
 		
 		setIsLoggedIn(false);
 	}
+
+
+
+	const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false);
+
+	useEffect(() => {
+		const keyboardDidShowListener = Keyboard.addListener(
+			'keyboardDidShow',
+			() => setIsKeyboardOpen(true)
+		);
+		const keyboardDidHideListener = Keyboard.addListener(
+			'keyboardDidHide',
+			() => setIsKeyboardOpen(false)
+		);
+		
+		return () => {
+			keyboardDidShowListener.remove();
+			keyboardDidHideListener.remove();
+		};
+	}, []);
 
 	return (
 		<NavigationContainer>
@@ -107,7 +132,7 @@ function DefaultNavigator() {
 						},
 						"tabBarStyle": [
 							{
-							"display": "flex",
+							"display": isKeyboardOpen ? "none": "flex",
 							height: 72,
 							},
 							null

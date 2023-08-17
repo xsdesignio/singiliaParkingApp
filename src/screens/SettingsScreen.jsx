@@ -1,13 +1,15 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import { useState } from "react";
 
 import DefaultButton from "../components/atoms/default-button";
+import SecondaryButton from "../components/atoms/secondary-button";
 
 import { logoutUser } from "../session/sessionControler";
-import { useLogin } from "../context/LoginProvider";
+import { useLogin } from "../session/LoginProvider";
 import { colors } from "../styles/colorPalette";
+import { getConfigDict, getConfigValue } from "../configStorage";
 
 
 export default function SettingsScreen({ navigation }) {
@@ -16,13 +18,14 @@ export default function SettingsScreen({ navigation }) {
 
     const { setIsLoggedIn } = useLogin()
 
-    const [location, setLocation] = useState("")
+    const [zone, setZone] = useState("")
 
     const [provisionalLocation, setprovisionalLocation] = useState("")
 
     function logout() {
         logoutUser().then(logout_successfull => {
             console.log("Aquí está el error")
+            console.log(logout_successfull)
             if(logout_successfull) {
                 console.log("Sesión cerrada correctamente")
                 
@@ -34,15 +37,29 @@ export default function SettingsScreen({ navigation }) {
         })
     }
 
+
+
+    useEffect(() => {
+        getConfigDict().then(dict => console.log(dict))
+        getConfigValue("zone").then(obtained_zone => {
+            console.log(obtained_zone)
+            setZone(obtained_zone)
+        })
+    }, [])
+
     return(
         <View style={styles.container}>
 
             <Text style={styles.title}>Ajustes:</Text>
 
-            <Text style={styles.normal_text}>Sesión</Text>
+            <View>
+                <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Ajustes de impresión"} />
+            </View>
+            
+
 
             <View>
-                <Text>Actualmente en {location}</Text>
+                <Text>Actualmente en {zone}</Text>
                 <Text>Cambiar zona</Text>
                 <TextInput
                     style={styles.input}
@@ -52,7 +69,7 @@ export default function SettingsScreen({ navigation }) {
                     secureTextEntry={true}
                     placeholder='Localizacion'
                 />
-                <DefaultButton onPress={() => setLocation(provisionalLocation)} text={"Cambiar zona"} />
+                <DefaultButton onPress={() => setZone(provisionalLocation)} text={"Cambiar zona"} />
             </View>
 
             <Text style={styles.normal_text}>Número de boletines a imprimir</Text>
@@ -87,13 +104,9 @@ export default function SettingsScreen({ navigation }) {
             <Text style={styles.normal_text}>Sesión</Text>
 
             <View>
-                <DefaultButton onPress={logout} text={"Cerrar sesión"} />
+                <SecondaryButton onPress={logout} text={"Cerrar sesión"} />
             </View>
 
-            <View>
-                <DefaultButton onPress={() => navigation.navigate("Printing Settings")} text={"Ajustes de impresión"} />
-            </View>
-            
         </View>)
 }
 

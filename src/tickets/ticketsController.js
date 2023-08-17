@@ -5,8 +5,6 @@ import { createTicketOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage"
 import { Alert } from "react-native";
 
-
-
 // Print a ticket
 // @param duration, duration of the ticket
 // @param registration, registration of the vehicle
@@ -28,7 +26,6 @@ export async function createAndPrintTicket(duration, registration, paymentMethod
             "payment_method": paymentMethod,
             "paid": true,
         }
-
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         let server_ticket = await createTicketOnServer(ticket_dict)
@@ -57,6 +54,9 @@ export async function createAndPrintTicket(duration, registration, paymentMethod
     }
 }
 
+
+export async function printTicket(ticket) {
+}
 
 
 

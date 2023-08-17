@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 
 import { colors } from "../styles/colorPalette";
 
 import { createAndPrintTicket } from "../tickets/ticketsController";
+
+import { usePrinter } from "../printing/PrintingProvider";
 
 import DefaultButton from "../components/atoms/default-button";
 import BigCard from "../components/atoms/big-card";
@@ -47,15 +49,29 @@ export default function TicketsScreen() {
 
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
+
+    const { blManager, connectedDevice } = usePrinter()
+
+    
     function printManager() {
+        
+        if (connectedDevice == null) {
+            Alert.alert("No hay impresora conectada", "Conecte una impresora desde ajustes para poder imprimir")
+            return
+        }
+        console.log("Dispositivo conectado:")
+        console.log(connectedDevice)
+        /* connectedDevice.services().then((service) => {
+            console.log(service.uuid)
+            connectedDevice.characteristicsForService(service.uuid)
+        }) */
+
         createAndPrintTicket(selectedTicket.duration, registration, paymentMethod);
         setPaymentMethod(null);
         setRegistration("");
     }
-    
 
     return(
-    <KeyboardAvoidingView style={styles.keyboard_avoiding_view} behavior="padding" keyboardVerticalOffset={100}>
         <View style={styles.container}>
             <BigCard imageUrl={selectedTicket.imageUrl} />
 
@@ -116,7 +132,7 @@ export default function TicketsScreen() {
             </View>
 
         </View>
-    </KeyboardAvoidingView>)
+    )
 }
 
 let styles = StyleSheet.create({
@@ -146,10 +162,6 @@ let styles = StyleSheet.create({
         paddingVertical: 5,
         textAlign: 'center',
         width: 280,
-    },
-
-    keyboard_avoiding_view: {
-        flex: 1,
     },
     
     normal_text: {

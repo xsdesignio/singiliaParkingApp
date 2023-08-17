@@ -4,7 +4,7 @@ import { useState } from "react";
 
 
 import { loginUser } from "../session/sessionControler";
-import { useLogin } from "../context/LoginProvider";
+import { useLogin } from "../session/LoginProvider";
 import DefaultButton from "../components/atoms/default-button";
 
 import { colors } from "../styles/colorPalette";

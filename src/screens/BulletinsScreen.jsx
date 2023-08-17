@@ -7,6 +7,7 @@ import { createAndPrintBulletin } from "../bulletins/bulletinsController";
 
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
+import SecondaryButton from "../components/atoms/secondary-button";
 import { colors } from "../styles/colorPalette";
 
 // import { getConfigValue } from "../configStorage";
@@ -51,6 +52,7 @@ export default function BulletinsScreen() {
     }
 
 
+    const [showOptionalData, setShowOptionalData] = useState(false)
 
 
     return(
@@ -135,32 +137,40 @@ export default function BulletinsScreen() {
 
                 {/* --------- Vehicle Details (Not required) --------- */}
                 <View style={styles.centered_element}>
-                    <Text style={styles.label}>Datos Opcionales</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(model) => 
-                            updateBulletinInfo("model", model)}
-                        placeholder="Modelo"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(brand) => 
-                            updateBulletinInfo("brand", brand)}
-                        placeholder="Marca"
-                    />
-                </View>
+                    { showOptionalData ? 
+                    (<>
+                        <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)}/>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(model) => 
+                                updateBulletinInfo("model", model)}
+                            placeholder="Modelo"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(brand) => 
+                                updateBulletinInfo("brand", brand)}
+                            placeholder="Marca"
+                        />
 
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(color) => 
-                        updateBulletinInfo("color", color)}
-                    placeholder="Color"
-                />
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(color) => 
+                                updateBulletinInfo("color", color)}
+                            placeholder="Color"
+                        />
+                    </>
+                    ) : (
+                        <SecondaryButton text={"Añadir datos opcionales"} onPress={() => setShowOptionalData(!showOptionalData)}/>
+                    ) }
+                    
+                </View>
             </View>
     
 
             <DefaultButton onPress={printManager} text="Imprimir" />
-        </View>)
+        </View>
+    )
 }
 
 let styles = StyleSheet.create({
@@ -178,7 +188,8 @@ let styles = StyleSheet.create({
         justifyContent: "center",
     },
     centered_element: {
-        alignItems:"center"
+        alignItems:"center",
+        paddingVertical: 10
     },
 
     container: {

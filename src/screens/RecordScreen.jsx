@@ -9,8 +9,8 @@ import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 import { colors } from "../styles/colorPalette";
 
 import { payBulletin } from "../bulletins/bulletinsController";
-import { printBulletin } from "../bulletins/printing/bulletinsPrinting";
-import { printTicket } from "../tickets/printing/ticketsPrinting";
+import { printBulletin } from "../bulletins/bulletinsController";
+import { printTicket } from "../tickets/ticketsController";
 
 
 export default function RecordScreen({ navigation }) {
@@ -238,15 +238,15 @@ const styles = {
     },
 
     tickets_list: {
-        borderRadius:  40,
+        borderRadius:  16,
         width: "80%",
         height: "90%",
-        paddingTop: 20,
         marginTop: 10,
         marginBottom: 40,
         backgroundColor: colors.dark_green
     },
     ticket: {
+        paddingTop: 20,
         borderRadius:  4,
         justifyContent: 'flex-start',
         alignItems: "center",
