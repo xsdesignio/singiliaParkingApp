@@ -75,9 +75,6 @@ export async function payBulletin(bulletin_id) {
     })));
 }
 
-export async function printBulletin(bulletin_info) {
-}
-
 
 
 async function pay(bulletin_id, payment_method) {

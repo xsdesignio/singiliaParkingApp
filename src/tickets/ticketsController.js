@@ -55,11 +55,6 @@ export async function createAndPrintTicket(duration, registration, paymentMethod
 }
 
 
-export async function printTicket(ticket) {
-}
-
-
-
 // get the ticket price depending on the duration
 // @param duration, duration of the ticket
 // @return price of the ticket

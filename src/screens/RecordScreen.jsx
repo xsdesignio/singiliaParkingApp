@@ -9,9 +9,6 @@ import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 import { colors } from "../styles/colorPalette";
 
 import { payBulletin } from "../bulletins/bulletinsController";
-import { printBulletin } from "../bulletins/bulletinsController";
-import { printTicket } from "../tickets/ticketsController";
-
 
 export default function RecordScreen({ navigation }) {
 
@@ -81,7 +78,7 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Imprimir",
                 onPress: () => {
-                    printBulletin(bulletin)
+                    console.log("Imprimir boletín")
                 }
             },
             {
@@ -118,7 +115,7 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Imprimir",
                 onPress: () => {
-                    printTicket(ticket)
+                    console.log("Imprimir ticket")
                 }
             }
         ])

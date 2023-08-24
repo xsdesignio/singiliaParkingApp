@@ -13,6 +13,8 @@ import DefaultButton from "../components/atoms/default-button";
 import BigCard from "../components/atoms/big-card";
 
 
+// v18.7.0
+
 export default function TicketsScreen() {
 
     const [registration, setRegistration] = useState("")
@@ -50,7 +52,7 @@ export default function TicketsScreen() {
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
 
-    const { blManager, connectedDevice } = usePrinter()
+    const { sendDataToDevice, connectedDevice } = usePrinter()
 
     
     function printManager() {
@@ -59,14 +61,14 @@ export default function TicketsScreen() {
             Alert.alert("No hay impresora conectada", "Conecte una impresora desde ajustes para poder imprimir")
             return
         }
-        console.log("Dispositivo conectado:")
-        console.log(connectedDevice)
-        /* connectedDevice.services().then((service) => {
-            console.log(service.uuid)
-            connectedDevice.characteristicsForService(service.uuid)
-        }) */
-
+        
         createAndPrintTicket(selectedTicket.duration, registration, paymentMethod);
+
+        sendDataToDevice({
+            "Duración": selectedTicket.duration + " minutos",
+            "Matrícula": registration,
+            "Método de pago": (paymentMethod == payment_methods.CASH ? "Efectivo" : "Tarjeta")
+        })
         setPaymentMethod(null);
         setRegistration("");
     }

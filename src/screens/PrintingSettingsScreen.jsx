@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 
 import DefaultButton from '../components/atoms/default-button';
@@ -12,36 +12,25 @@ import { usePrinter } from '../printing/PrintingProvider';
 
 
 export default function PrintingSettingsScreen() {
-    const { blManager, connectedDevice, connectToDevice, disconnectFromDevice } = usePrinter()
-
-    const [allDevices, setAllDevices] = useState([]);
+    const { connectedDevice, connectToDevice, allDevices, disconnectFromDevice, scanForPeripherals, stopScan } = usePrinter()
 
 
     useEffect(() => {
         return () => {
-            blManager.stopScan();
+            stopScan();
         };
-    });
+    }, []);
+    /* 
+    useEffect(() => {
+        
+    }, [connectedDevice]); // Add this useEffect to see if connectedDevice changes trigger a re-render
 
-
-    function scanForPeripherals() {
-        blManager.scan(addDeviceFound)
-    }
-
-    function addDeviceFound(device) {
-        if (!isDuplicatedDevice(allDevices, device))
-            setAllDevices(devices => [...devices, device])
-    }
-
-    const isDuplicatedDevice = (devices, nextDevice) =>
-        devices.findIndex((device) => nextDevice.id === device.id) > -1;
-
-
+ */
     function renderItem({ item }) {
         return(
             <TouchableOpacity style={styles.devices_list_item} onPress={() => connectToDevice(item)}>
-                <Text style={styles.title}>Dispositivo</Text>
-                <Text style={styles.title}>{item.name}</Text>
+                <Text>Dispositivo encontrado</Text>
+                <Text style={styles.bold_text}>{item.name}</Text>
             </TouchableOpacity>
         )
 
@@ -49,30 +38,35 @@ export default function PrintingSettingsScreen() {
 
     return (
         <View style={styles.container}>
+
             <Text>Printing Settings</Text>
+            
             <View>
                 { connectedDevice ? (<Text>Conectado al dispositivo { connectedDevice.name }</Text>) : null}
             </View>
+
             <FlatList
                 data={allDevices}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
             />
-            {/* <Text>{ allDevices }</Text> */}
-            {/* <Button title='scan' onPress={scanForPeripherals} /> */}
-            <DefaultButton text='Escanear' onPress={scanForPeripherals} />
-            { connectedDevice ? <DefaultButton text='Desconectar' onPress={disconnectFromDevice} /> : null }
+            
+            { connectedDevice ? <DefaultButton text='Desconectar' onPress={disconnectFromDevice} /> : <DefaultButton text='Escanear' onPress={scanForPeripherals} /> }
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    bold_text: {
+        fontWeight: 'bold'
+    },
     container: {
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center',
         paddingVertical: 20,
     },
+
     devices_list_item: {
         alignItems: 'center',
         backgroundColor: colors.light_green,
@@ -81,6 +75,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         margin: 20,
         padding: 10,
-    }
+        width: 200
+    },
 
 });
