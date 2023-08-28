@@ -43,7 +43,7 @@ export default function RecordScreen({ navigation }) {
         })
 
         getBulletinsSaved().then((bulletins) => {
-            console.log("bulletins", bulletins.length)
+            
             if (bulletins.length > 0) {
                 setBulletins(bulletins.reverse())
             }
@@ -78,7 +78,7 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Imprimir",
                 onPress: () => {
-                    console.log("Imprimir boletín")
+                    
                 }
             },
             {
@@ -115,7 +115,7 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Imprimir",
                 onPress: () => {
-                    console.log("Imprimir ticket")
+                    
                 }
             }
         ])

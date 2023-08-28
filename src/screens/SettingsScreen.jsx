@@ -9,7 +9,7 @@ import SecondaryButton from "../components/atoms/secondary-button";
 import { logoutUser } from "../session/sessionControler";
 import { useLogin } from "../session/LoginProvider";
 import { colors } from "../styles/colorPalette";
-import { getConfigDict, getConfigValue } from "../configStorage";
+import { getConfigValue } from "../configStorage";
 
 
 export default function SettingsScreen({ navigation }) {
@@ -24,11 +24,8 @@ export default function SettingsScreen({ navigation }) {
 
     function logout() {
         logoutUser().then(logout_successfull => {
-            console.log("Aquí está el error")
-            console.log(logout_successfull)
+            
             if(logout_successfull) {
-                console.log("Sesión cerrada correctamente")
-                
                 setIsLoggedIn(false)
             }
             else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
@@ -40,9 +37,10 @@ export default function SettingsScreen({ navigation }) {
 
 
     useEffect(() => {
-        getConfigDict().then(dict => console.log(dict))
+
+        // getConfigDict().then(dict => console.log(dict))
+
         getConfigValue("zone").then(obtained_zone => {
-            console.log(obtained_zone)
             setZone(obtained_zone)
         })
     }, [])

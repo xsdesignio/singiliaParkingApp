@@ -33,7 +33,7 @@ export const PrinterProvider = ({ children }) => {
         requestPermissions();
         return () => {
             if(connectedDevice != null)
-                bleManager.disconnectFromDevice(connectedDevice)
+                bleManager.disconnectFromDevice()
 
             bleManager.destroy()
             
@@ -67,7 +67,6 @@ export const PrinterProvider = ({ children }) => {
 
     // Return the connected device if successfully connected or return null otherwise
     async function connectToDevice(device) {
-        console.log("----- Conectando a dispositivo: ", device.name)
 
         bleManager.connectToDevice(device.id)
             .then(async (connDevice) => {
@@ -120,12 +119,12 @@ export const PrinterProvider = ({ children }) => {
             try {
                const encoded_data = await createEncodedTicketToBePrinted(data)
 
-                const characteristicWritten = await connectedDevice.writeCharacteristicWithResponseForService(
+                await connectedDevice.writeCharacteristicWithResponseForService(
                     serviceUUID,
                     characteristicUUID,
                     encoded_data
                 )
-                console.log(characteristicWritten)
+                
                 return true
 
             } catch (error) {

@@ -53,7 +53,6 @@ export async function getConfigValue(key) {
         if(configJSON!=null)
             configJSON = JSON.parse(configJSON)
         
-        console.log(configJSON)
         if(configJSON[key]!=null && configJSON[key]!=undefined)
             return configJSON[key]
 

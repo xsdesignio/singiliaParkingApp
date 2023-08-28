@@ -39,7 +39,7 @@ export async function initApp() {
 async function firstTimeAppStarts() {
     try {
         let alreadyStarted = await AsyncStorage.getItem("@started")
-        console.log("The app already started?", alreadyStarted)
+        
         if(alreadyStarted == "true")
             return true
         else
