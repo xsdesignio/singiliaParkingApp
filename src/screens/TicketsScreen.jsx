@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity, Alert } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
 import { colors } from "../styles/colorPalette";
@@ -52,23 +52,13 @@ export default function TicketsScreen() {
     const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
 
 
-    const { sendDataToDevice, connectedDevice } = usePrinter()
+    const printer = usePrinter()
 
     
     function printManager() {
         
-        if (connectedDevice == null) {
-            Alert.alert("No hay impresora conectada", "Conecte una impresora desde ajustes para poder imprimir")
-            return
-        }
-        
-        createAndPrintTicket(selectedTicket.duration, registration, paymentMethod);
+        createAndPrintTicket(printer, selectedTicket.duration, registration, paymentMethod);
 
-        sendDataToDevice({
-            "Duración": selectedTicket.duration + " minutos",
-            "Matrícula": registration,
-            "Método de pago": (paymentMethod == payment_methods.CASH ? "Efectivo" : "Tarjeta")
-        })
         setPaymentMethod(null);
         setRegistration("");
     }

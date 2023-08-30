@@ -5,15 +5,24 @@ import { createTicketOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage"
 import { Alert } from "react-native";
 
+
 // Print a ticket
 // @param duration, duration of the ticket
 // @param registration, registration of the vehicle
 // @param paymentMethod, payment method used to pay the ticket ('CASH' or 'CARD')
 // @return Promise with the created ticket information
-export async function createAndPrintTicket(duration, registration, paymentMethod) {
+export async function createAndPrintTicket(printer, duration, registration, paymentMethod) {
+
 
     try {
+
+        const { connectedDevice, sendDataToDevice } = printer
+
         // Obtaining required data to create the ticket
+        if(connectedDevice == null) {
+            throw new Error("No se ha encontrado ninguna impresora conectada.")
+        }
+
         let session = await getSession()
         let zone = await getConfigValue("zone")
 
@@ -28,6 +37,18 @@ export async function createAndPrintTicket(duration, registration, paymentMethod
         }
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
+
+        sendDataToDevice({
+            "Zona": ticket_dict["zone"],
+            "Duración": ticket_dict["duration"] + " min",
+            "Matrícula": ticket_dict["registration"],
+            "Precio": ticket_dict["price"] + " eur",
+            "Método de pago": (ticket_dict["payment_method"] == "CASH" ? "Efectivo" : "Tarjeta"),
+            "Hora": new Date().toLocaleTimeString('es-ES'),
+            "Fecha": new Date().toLocaleDateString('es-ES'),
+        })
+
+
         let server_ticket = await createTicketOnServer(ticket_dict)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
@@ -65,15 +86,15 @@ function getTicketPrice(duration) {
         return 0
 
     if(duration <= 30) 
-        return 0.7
+        return 0.70
     
     if(duration <= 60) 
-        return 0.9
+        return 0.90
     
     if(duration <= 90) 
-        return 1.4
+        return 1.40
     
-    return 1.8
+    return 1.80
     
 }
 

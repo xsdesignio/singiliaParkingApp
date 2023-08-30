@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { requestPermissions } from './PermissionsManager';
 import { BleManager } from "react-native-ble-plx";
 
-import { createEncodedTicketToBePrinted } from './ticketCreation';
+import { createEncodedTicketToBePrinted, encodedLegalInfoToBePrinted, encodedLogoToBePrinted, encodedSingiliaBarbaInfoToBePrinted } from './ticketCreation';
 
 
 
@@ -117,7 +117,8 @@ export const PrinterProvider = ({ children }) => {
     async function sendDataToDevice(data) {
         if(connectedDevice != null) {
             try {
-               const encoded_data = await createEncodedTicketToBePrinted(data)
+                await printLogo()
+                const encoded_data = createEncodedTicketToBePrinted(data)
 
                 await connectedDevice.writeCharacteristicWithResponseForService(
                     serviceUUID,
@@ -125,6 +126,8 @@ export const PrinterProvider = ({ children }) => {
                     encoded_data
                 )
                 
+                await printSingiliaBarbaInfo();
+                await printLegalInfo();
                 return true
 
             } catch (error) {
@@ -137,6 +140,38 @@ export const PrinterProvider = ({ children }) => {
             return false
         }
     }
+
+    async function printSingiliaBarbaInfo() {
+        const info = encodedSingiliaBarbaInfoToBePrinted()
+        await connectedDevice.writeCharacteristicWithResponseForService(
+            serviceUUID,
+            characteristicUUID,
+            info
+        )
+        return true;
+    }
+
+    async function printLegalInfo() {
+        const info = encodedLegalInfoToBePrinted()
+        await connectedDevice.writeCharacteristicWithResponseForService(
+            serviceUUID,
+            characteristicUUID,
+            info
+        )
+        return true;
+
+    }
+
+    async function printLogo() {
+        const logo = encodedLogoToBePrinted()
+        await connectedDevice.writeCharacteristicWithResponseForService(
+            serviceUUID,
+            characteristicUUID,
+            logo
+        )
+        return true;
+    }
+
 
     return (
         <PrinterContext.Provider
