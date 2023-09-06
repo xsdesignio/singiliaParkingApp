@@ -1,4 +1,5 @@
 import { storeSession, deleteSession  } from "./sessionStorage";
+import { setConfigValue } from "../configStorage";
 
 
 const apiHost = "http://192.168.0.24:5000"
@@ -29,18 +30,24 @@ export function loginUser(form) {
         .then( session => {
             // Store the session returned
             // Resolve with the session if stored successfully or reject with an error message otherwise
-            storeSession(session)
-            .then(isStored => {
+            console.log(session.associated_zone)
 
-                if(isStored == true)
-                    resolve(session)
-                else
-                    throw new Error("Los datos son correctos pero no se han podido almacenar correctamente. Inténtalo de nuevo")
-            
-            })
-            .catch(error => {
-                reject(error)
-            })
+            if (!(session.associated_zone == null || session.associated_zone == undefined))
+                setConfigValue("zone", session.associated_zone)
+
+
+            storeSession(session)
+                .then(isStored => {
+
+                    if(isStored == true)
+                        resolve(session)
+                    else
+                        throw new Error("Los datos son correctos pero no se han podido almacenar correctamente. Inténtalo de nuevo")
+                
+                })
+                .catch(error => {
+                    reject(error)
+                })
         })
         .catch(error => reject(error.toString()))
     }) 

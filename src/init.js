@@ -8,6 +8,8 @@ import { deleteOldTickets } from "./tickets/storage/ticketsStorage";
 import { synchronizeTickets } from "./tickets/api_conn/syncTickets";
 import { synchronizeBulletins } from "./bulletins/api_conn/syncBulletins";
 
+import { obtainAssignedZone } from "./zone_obtainer";
+
 // Function to start all background processes required to run the app
 export async function initApp() {
     
@@ -29,6 +31,8 @@ export async function initApp() {
             console.log(error)
         }
     } 
+    
+    await obtainAssignedZone()
     await synchronizeAppWithServer()
     await deleteOldTickets()
     await deleteOldBulletins()

@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { ScrollView, StyleSheet, View, Text, TextInput, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
+import { Picker } from '@react-native-picker/picker';
 import { colors } from "../styles/colorPalette";
 
 import { createAndPrintTicket } from "../tickets/ticketsController";
@@ -10,10 +11,7 @@ import { createAndPrintTicket } from "../tickets/ticketsController";
 import { usePrinter } from "../printing/PrintingProvider";
 
 import DefaultButton from "../components/atoms/default-button";
-import BigCard from "../components/atoms/big-card";
 
-
-// v18.7.0
 
 export default function TicketsScreen() {
 
@@ -26,30 +24,8 @@ export default function TicketsScreen() {
 
     const [paymentMethod, setPaymentMethod] = useState(null)
 
-    const availableTickets = [
-        {
-            imageUrl: require("../../assets/tickets/30.png"),
-            duration: 30,
-            color: "yellow",
-        },
-        {
-            imageUrl: require("../../assets/tickets/60.png"),
-            duration: 60,
-            color: "green",
-        },
-        {
-            imageUrl: require("../../assets/tickets/90.png"),
-            duration: 90,
-            color: "red",
-        },
-        {
-            imageUrl: require("../../assets/tickets/120.png"),
-            duration: 120,
-            color: "orange",
-        },
-    ]
 
-    const [selectedTicket, setSelectedTicket] = useState(availableTickets[0])
+    const [duration, setDuration] = useState(30)
 
 
     const printer = usePrinter()
@@ -57,7 +33,7 @@ export default function TicketsScreen() {
     
     function printManager() {
         
-        createAndPrintTicket(printer, selectedTicket.duration, registration, paymentMethod);
+        createAndPrintTicket(printer, duration, registration, paymentMethod);
 
         setPaymentMethod(null);
         setRegistration("");
@@ -65,84 +41,105 @@ export default function TicketsScreen() {
 
     return(
         <View style={styles.container}>
-            <BigCard imageUrl={selectedTicket.imageUrl} />
+            <View style={styles.tickets_info_form}>
+                <Text style={styles.title}>Creación de tickets</Text>
 
-            <View style={styles.available_tickets}>
-                <ScrollView style={styles.tickets_selector} horizontal={true}>
+                <View style={styles.ticket_info_section}>
 
-                    { availableTickets.map(element => 
-                        (<TouchableOpacity 
-                            style={styles.ticket_button}
-                            onPress={() => {
-                                setSelectedTicket(element)
-                            }}
-                            key={element.color}
-                            >
-                            <Image style={styles.ticket_selector_image} source={element.imageUrl} />
-                        </TouchableOpacity>)
-                    )}
-                </ScrollView>
-            </View>
-                
-            <View style={styles.ticket_info}>
+                    <Text style={styles.label}>Matrícula</Text>
+                    <TextInput
+                        style={styles.input}
+                        autoCapitalize="characters"
+                        onChangeText={(value) => setRegistration(value)}
+                        placeholder="0000BBB"
+                    />
 
-                <TextInput
-                    style={styles.input}
-                    autoCapitalize="characters"
-                    onChangeText={(value) => setRegistration(value)}
-                    placeholder="Matricula"
-                />
-
-                <Text style={styles.normal_text}>Métodos de pago:</Text>
-                
-                <View style={styles.selector}>
-                    <TouchableOpacity 
-                        style={[
-                            styles.selector_button, 
-                            {
-                                backgroundColor: (paymentMethod==payment_methods.CARD) ? 
-                                    colors.light_green_selected : colors.light_green
+                    <Text style={styles.label}>Duración</Text>
+                    <View style={styles.duration_picker_wraper}>
+                        <Picker
+                            style={styles.picker}
+                            selectedValue={duration}
+                            onValueChange={(duration) => 
+                                    setDuration(duration)
                             }
-                        ]}
-                        onPress={() => setPaymentMethod(payment_methods.CARD)}>
-                        <Text>Tarjeta</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.selector_button, 
-                            {
-                                backgroundColor: (paymentMethod==payment_methods.CASH) ? 
-                                    colors.light_green_selected : colors.light_green
-                            }
-                        ]}
-                        onPress={() => setPaymentMethod(payment_methods.CASH)}>
-                        <Text>Efectivo</Text>
-                    </TouchableOpacity>
+                            itemStyle={styles.picker_item}
+                        >
+                            <Picker.Item
+                                label="30 minutos"
+                                value={30}
+                            />
+                            <Picker.Item
+                                label="60 minutos"
+                                value={60}
+                            />
+                            <Picker.Item
+                                label="90 minutos"
+                                value={90}
+                            />
+                            <Picker.Item
+                                label="120 minutos"
+                                value={120}
+                            />
+                        </Picker>
+                    </View>
+
+
+                    <Text style={styles.label}>Métodos de pago:</Text>
+                    
+                    <View style={styles.selector}>
+                        <TouchableOpacity 
+                            style={[
+                                styles.selector_button, 
+                                {
+                                    backgroundColor: (paymentMethod==payment_methods.CARD) ? 
+                                        colors.light_green_selected : colors.light_green
+                                }
+                            ]}
+                            onPress={() => setPaymentMethod(payment_methods.CARD)}>
+                            <Text>Tarjeta</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                styles.selector_button, 
+                                {
+                                    backgroundColor: (paymentMethod==payment_methods.CASH) ? 
+                                        colors.light_green_selected : colors.light_green
+                                }
+                            ]}
+                            onPress={() => setPaymentMethod(payment_methods.CASH)}>
+                            <Text>Efectivo</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-
-                <DefaultButton onPress={() => printManager()} text={"imprimir"}/>
             </View>
+
+            <DefaultButton onPress={() => printManager()} text={"imprimir"}/>
 
         </View>
     )
 }
 
 let styles = StyleSheet.create({
-    available_tickets: {
-        alignItems: "center",
-        height: 142,
-        justifyContent: "center",
-        marginBottom: 10,
-        width: "120%",
-    },
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green,
+        backgroundColor: colors.green_background,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
-        paddingHorizontal: 0,
         paddingVertical: 20,
+    },
+
+
+    duration_picker_wraper: {
+        alignItems: "center",
+        backgroundColor: colors.white,
+        borderColor: colors.dark_blue,
+        borderRadius: 5,
+        borderWidth: 1,
+        height: 40,
+        justifyContent: "center",
+        padding: 0,
+        width: "100%",
     },
 
     input: {
@@ -155,11 +152,18 @@ let styles = StyleSheet.create({
         textAlign: 'center',
         width: 280,
     },
-    
-    normal_text: {
+
+    label: {
         color: colors.white,
         fontSize: 16,
+        marginBottom: 4,
+        marginTop: 12,
     },
+
+    picker: {
+        width: 300,
+    },
+
     
     selector: {
         flexDirection: "row"
@@ -171,31 +175,25 @@ let styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10
     },
-    ticket_button: {
-        margin: 10,
-    },
     
-    ticket_info: {
-        alignItems: 'center',
+    ticket_info_section: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    tickets_info_form: {
+        alignItems: "center",
         flex: 1,
-        gap: 10,
-        minHeight: 40,
+        justifyContent: "center",
+        marginBottom: 20,
+        marginTop: 0,
+        minHeight: 180,
+        zIndex: 10,
     },
-    
-    ticket_selector_image: {
-        borderRadius: 4,
-        height: 110,
-        padding: 20,
-        width: 192.5,
+    title: {
+        color: colors.white,
+        fontSize: 32,
+        fontWeight: "bold",
+        marginBottom: 10,
+        marginTop: 10,
     },
-    tickets_selector: {
-        backgroundColor: colors.dark_green,
-        flexDirection: 'row',
-        gap: 10,
-        marginHorizontal: 40,
-        marginVertical: 0,
-        paddingHorizontal: 4,
-        paddingVertical: 4,
-    }
-    
 })

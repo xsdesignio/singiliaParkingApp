@@ -7,8 +7,16 @@ import { getConfigValue } from "../configStorage";
 
 
 
-export async function createAndPrintBulletin(bulletinInfo) {
+export async function createAndPrintBulletin(printer, bulletinInfo) {
     try {
+
+        const { connectedDevice, printBulletin } = printer
+
+        // Obtaining required data to create the ticket
+        if(connectedDevice == null) {
+            throw new Error("No se ha encontrado ninguna impresora conectada.")
+        }
+
         let session = await getSession()
         let zone = await getConfigValue("zone")
 
@@ -23,6 +31,18 @@ export async function createAndPrintBulletin(bulletinInfo) {
 
          // Check if ticket_info has all required information and create the ticket on the server
         check_information(bulletin_dict)
+
+        printBulletin({
+            "Zona": bulletin_dict["zone_name"],
+            "Duración": bulletin_dict["duration"] + " min",
+            "Matrícula": bulletin_dict["registration"],
+            "Precio": bulletin_dict["price"] + " eur",
+            "Precepto": bulletin_dict["precept"],
+            "Fecha": new Date().toLocaleDateString('es-ES'),
+            "Hora": new Date().toLocaleTimeString('es-ES'),
+        })
+
+
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
 
 

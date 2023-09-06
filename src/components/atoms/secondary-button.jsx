@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     },
     print_button_text: {
         borderRadius: 8,
-        color: colors.dark_green,
-        fontWeight: 'bold',
+        color: colors.black,
+        fontWeight: '400',
         textAlign: 'center',
     }
 })

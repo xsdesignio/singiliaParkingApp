@@ -16,7 +16,7 @@ export async function createAndPrintTicket(printer, duration, registration, paym
 
     try {
 
-        const { connectedDevice, sendDataToDevice } = printer
+        const { connectedDevice, printTicket } = printer
 
         // Obtaining required data to create the ticket
         if(connectedDevice == null) {
@@ -38,14 +38,13 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
 
-        sendDataToDevice({
+        printTicket({
             "Zona": ticket_dict["zone"],
             "Duración": ticket_dict["duration"] + " min",
             "Matrícula": ticket_dict["registration"],
             "Precio": ticket_dict["price"] + " eur",
-            "Método de pago": (ticket_dict["payment_method"] == "CASH" ? "Efectivo" : "Tarjeta"),
-            "Hora": new Date().toLocaleTimeString('es-ES'),
             "Fecha": new Date().toLocaleDateString('es-ES'),
+            "Hora": new Date().toLocaleTimeString('es-ES'),
         })
 
 

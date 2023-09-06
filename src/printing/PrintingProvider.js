@@ -1,13 +1,14 @@
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable react/prop-types */
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, Alert } from 'react';
 import { useMemo } from 'react';
 
 import { requestPermissions } from './PermissionsManager';
 import { BleManager } from "react-native-ble-plx";
 
-import { createEncodedTicketToBePrinted, encodedLegalInfoToBePrinted, encodedLogoToBePrinted, encodedSingiliaBarbaInfoToBePrinted } from './ticketCreation';
+// import { createEncodedTicketToBePrinted, encodedLegalInfoToBePrinted, encodedLogoToBePrinted, encodedSingiliaBarbaInfoToBePrinted } from './PrinterCommunication';
 
+import PrinterCommunicationEncoder from './PrinterCommunication';
 
 
 
@@ -22,12 +23,14 @@ const PrinterContext = createContext();
 export const PrinterProvider = ({ children }) => {
     const bleManager = useMemo(() => new BleManager(), [])
 
+    const communicationEncoder = useMemo(() => new PrinterCommunicationEncoder(), [])
+
     const [connectedDevice, setConnectedDevice] = useState(null);
     const [allDevices, setAllDevices] = useState([])
 
     // const [deviceServicesAndCharacteristics, setDeviceServicesAndCharacteristics] = useState([])
     const [serviceUUID, setServiceUUID] = useState(null)
-    const [characteristicUUID, useCharacteristicUUID] = useState(null)
+    const [characteristicUUID, setCharacteristicUUID] = useState(null)
 
     useEffect(() => {
         requestPermissions();
@@ -50,6 +53,8 @@ export const PrinterProvider = ({ children }) => {
                 console.log(error);
             }
             if (device) {
+                if(device.name == null)
+                    return
                 setAllDevices((prevState) => {
 
                     if (!isDuplicated(prevState, device)) {
@@ -62,6 +67,7 @@ export const PrinterProvider = ({ children }) => {
         });
 
     async function stopScan() {
+        setAllDevices([])
         bleManager.stopDeviceScan()
     }
 
@@ -85,7 +91,7 @@ export const PrinterProvider = ({ children }) => {
                     characteristicsOfService.forEach((characteristic) => {
                         if(characteristic.isWritableWithResponse && !serviceFound) {
                             setServiceUUID(service.uuid)
-                            useCharacteristicUUID(characteristic.uuid)
+                            setCharacteristicUUID(characteristic.uuid)
                             serviceFound = true
                         }
                     })
@@ -105,7 +111,7 @@ export const PrinterProvider = ({ children }) => {
                 .then(() => {
                     setConnectedDevice(null)
                     setServiceUUID(null)
-                    useCharacteristicUUID(null)
+                    setCharacteristicUUID(null)
 
                 })
                 .catch((error) => {
@@ -113,69 +119,94 @@ export const PrinterProvider = ({ children }) => {
                 })
     }
 
-    // type = "Bulletin" or "Ticket"
-    async function sendDataToDevice(data) {
-        if(connectedDevice != null) {
-            try {
-                await printLogo()
-                const encoded_data = createEncodedTicketToBePrinted(data)
 
-                await connectedDevice.writeCharacteristicWithResponseForService(
-                    serviceUUID,
-                    characteristicUUID,
-                    encoded_data
-                )
-                
-                await printSingiliaBarbaInfo();
-                await printLegalInfo();
-                return true
-
-            } catch (error) {
-                console.log("Error sending data: ", error)
-                return false
-            }
-            
-        } else {
+    async function printTicket(ticket_data) {
+        
+        if(connectedDevice == null) {
             console.log("Device not connected.");
+            Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes")
             return false
         }
+
+        try {
+            const logo = communicationEncoder.getSingiliaLogo()
+            await sendDataToDevice(logo)
+
+            const title = communicationEncoder.getEncodedTitle("Servicio Municipal\nEstacionamiento Regulado")
+            await sendDataToDevice(title)
+
+            const encoded_ticket_data = communicationEncoder.getEncodedDict(ticket_data)
+            await sendDataToDevice(encoded_ticket_data)
+
+            const singilia_barba_info =communicationEncoder. getSingiliaInfo()
+            await sendDataToDevice(singilia_barba_info)
+
+            const legal_info = communicationEncoder.getLegalInfo()
+            await sendDataToDevice(legal_info)
+
+            return true
+
+        } catch (error) {
+            console.log("Error sending data: ", error)
+            return false
+        }
+
     }
 
-    async function printSingiliaBarbaInfo() {
-        const info = encodedSingiliaBarbaInfoToBePrinted()
-        await connectedDevice.writeCharacteristicWithResponseForService(
-            serviceUUID,
-            characteristicUUID,
-            info
-        )
-        return true;
+    async function printBulletin(bulletin_data) {
+
+        if(connectedDevice == null) {
+            console.log("Device not connected.");
+            Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes.")
+            return false
+        }
+
+        try {
+            const logo = communicationEncoder.getSingiliaLogo()
+            await sendDataToDevice(logo)
+
+            const title = communicationEncoder.getEncodedTitle("Boletín")
+            await sendDataToDevice(title)
+
+            const encoded_bulletin_data = communicationEncoder.getEncodedDict(bulletin_data)
+            await sendDataToDevice(encoded_bulletin_data)
+
+            const singilia_barba_info = communicationEncoder.getSingiliaInfo()
+            await sendDataToDevice(singilia_barba_info)
+
+            const legal_info = communicationEncoder.getLegalInfo()
+            await sendDataToDevice(legal_info)
+
+            return true
+
+        } catch (error) {
+            console.log("Error sending data: ", error)
+            return false
+        }
+
     }
 
-    async function printLegalInfo() {
-        const info = encodedLegalInfoToBePrinted()
-        await connectedDevice.writeCharacteristicWithResponseForService(
-            serviceUUID,
-            characteristicUUID,
-            info
-        )
-        return true;
 
-    }
+    // type = "Bulletin" or "Ticket"
+    async function sendDataToDevice(encoded_info) {
+        try {
+            await connectedDevice.writeCharacteristicWithResponseForService(
+                serviceUUID,
+                characteristicUUID,
+                encoded_info
+            )
+            return true
 
-    async function printLogo() {
-        const logo = encodedLogoToBePrinted()
-        await connectedDevice.writeCharacteristicWithResponseForService(
-            serviceUUID,
-            characteristicUUID,
-            logo
-        )
-        return true;
+        } catch (error) {
+            console.log("Error sending data: ", error)
+            return false
+        }
     }
 
 
     return (
         <PrinterContext.Provider
-            value={{ connectedDevice, connectToDevice, allDevices, disconnectFromDevice, sendDataToDevice, scanForPeripherals, stopScan }}
+            value={{ connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, scanForPeripherals, stopScan }}
         >
             {children}
         </PrinterContext.Provider>

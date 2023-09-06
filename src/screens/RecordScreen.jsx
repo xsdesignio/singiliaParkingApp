@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
@@ -9,12 +9,15 @@ import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 import { colors } from "../styles/colorPalette";
 
 import { payBulletin } from "../bulletins/bulletinsController";
+import { usePrinter } from "../printing/PrintingProvider";
 
 export default function RecordScreen({ navigation }) {
 
     const [ticketsActive, setTicketsActive] = useState(true);
 
     const [tickets, setTickets] = useState([])
+
+    const { printTicket, printBulletin } = usePrinter();
 
     
     const [bulletins, setBulletins] = useState([])
@@ -33,8 +36,11 @@ export default function RecordScreen({ navigation }) {
             
             if (tickets.length > 0) {
                 setTickets(tickets.reverse())
+                console.log("tickets: ")
+                console.log(tickets)
             }
         }).catch((error) => {
+            console.log(error)
             Alert.alert("Error al cargar los datos", error, [
                 {
                     text: "Ok",
@@ -48,9 +54,10 @@ export default function RecordScreen({ navigation }) {
                 setBulletins(bulletins.reverse())
             }
         }).catch((error) => {
+            console.log(error)
             Alert.alert("Error al cargar los datos", error, [
                 {
-                    text: "Ok",
+                    text: "Vale",
                 }
             ])
         })
@@ -60,25 +67,34 @@ export default function RecordScreen({ navigation }) {
     function openBulletin(bulletin) {
         // Open an alert where the user can print the bulletin again such as pay it
 
-        let bulletin_data = ""
-        bulletin_data += `Matrícula: ${bulletin["registration"]} \n`
-        bulletin_data += `Duración: ${bulletin["duration"]} minutos \n`
-        bulletin_data += `Precio: ${bulletin["price"]}€ \n`
-        bulletin_data += `Precepto: ${bulletin["precept"]} \n`
-        bulletin_data += `Fecha: ${bulletin["created_at"]} \n`
-        bulletin_data += `Pagado: ${bulletin["paid"] ? "Sí" : "No"} \n`
-        bulletin_data += `Marca: ${bulletin["brand"]} \n`
-        bulletin_data += `Modelo: ${bulletin["model"]} \n`
-        bulletin_data += `Color: ${bulletin["color"]} \n`
+        let title = `Boletín de matrícula ${bulletin["registration"]}`
 
-        Alert.alert(`Mostrando boletín`, bulletin_data, [
+        let date = bulletin["created_at"].split(" ")[0]
+        let time = bulletin["created_at"].split(" ")[1]
+
+        let bulletin_data = ''
+        bulletin_data += `Fecha: ${ date } \n`
+        bulletin_data += `Hora: ${ time }`
+
+        Alert.alert(title, bulletin_data, [
             {
-                text: "Cancelar",
+                text: "Cerrar",
             },
             {
-                text: "Imprimir",
+                text: "Volver a imprimir",
                 onPress: () => {
-                    
+                    console.log("bulletin_data -", " RecordScreen.js")
+                    console.log(bulletin_data)
+                    let data_to_print = {
+                        "Zona": bulletin_data["zone_name"],
+                        "Duración": bulletin_data["duration"] + " min",
+                        "Matrícula": bulletin_data["registration"],
+                        "Precio": bulletin_data["price"] + " eur",
+                        "Precepto": bulletin_data["precept"],
+                        "Fecha": new Date().toLocaleDateString('es-ES'),
+                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                    }
+                    printBulletin(data_to_print)
                 }
             },
             {
@@ -87,9 +103,10 @@ export default function RecordScreen({ navigation }) {
                     try {
                         payBulletin(bulletin["id"])
                     } catch (error) {
+                        console.log(error)
                         Alert.alert("Error al pagar", error, [
                             {
-                                text: "Ok",
+                                text: "Vale",
                             }
                         ])
                     }
@@ -100,22 +117,39 @@ export default function RecordScreen({ navigation }) {
 
     function openTicket(ticket) {
         // Make the same as openBulletin but with tickets. Just delete the pay option and the "color", "model" and "brand" fields
-        let ticket_data = ''
-        ticket_data += `Matrícula: ${ticket["registration"]} \n`
-        ticket_data += `Duración: ${ticket["duration"]} minutos \n`
-        ticket_data += `Precio: ${ticket["price"]}€ \n`
-        ticket_data += `Precepto: ${ticket["precept"]} \n`
-        ticket_data += `Fecha: ${ticket["created_at"]} \n`
-        ticket_data += `Método de pago: ${ticket["payment_method"] == "CASH"? "efectivo":"tarjeta"} \n`
+        
+        let title = `Ticket de matrícula ${ticket["registration"]}`
 
-        Alert.alert(`Mostrando ticket`, ticket_data, [
+        
+        let date = ticket["created_at"].split(" ")[0]
+        let time = ticket["created_at"].split(" ")[1]
+
+        let ticket_data = ''
+        ticket_data += `Fecha: ${ date } \n`
+        ticket_data += `Hora: ${ time }`
+        
+
+
+        Alert.alert(title, ticket_data, [
             {
-                text: "Cancelar",
+                text: "Cerrar",
             },
             {
-                text: "Imprimir",
+                text: "Volver a imprimir",
                 onPress: () => {
                     
+                    console.log("ticket_data -", " RecordScreen.js")
+                    console.log(ticket_data)
+                    let data_to_print = {
+                        "Zona": ticket_data["zone_name"],
+                        "Duración": ticket_data["duration"] + " min",
+                        "Matrícula": ticket_data["registration"],
+                        "Precio": ticket_data["price"] + " eur",
+                        "Precepto": ticket_data["precept"],
+                        "Fecha": new Date().toLocaleDateString('es-ES'),
+                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                    }
+                    printTicket(data_to_print)
                 }
             }
         ])
@@ -123,47 +157,79 @@ export default function RecordScreen({ navigation }) {
     
 
     const renderTicket = ({ item }) => {
-        let img = getTicketAppareanceByDuration(item.duration)
-        return (<View style={styles.ticket}>
+        if(item == null || item == undefined)
+            return
+
+        console.log(item)
+        let ticket_style = getTicketAppareanceByDuration(item["duration"])
+        let date = item["created_at"].split(" ")[0]
+        let time = item["created_at"].split(" ")[1]
+        let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
+
+        console.log("Until here everything is good")
+        console.log(ticket_style)
+        return (<View style={[styles.ticket, ticket_style]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
-                <Image style={styles.ticket_selector_image} source={img} />
+                <Text>Matrícula { item["registration"] }</Text>
+                <Text>Duración { item["duration"] }</Text>
+                <Text>Precio: { item["price"] } €</Text>
+                <Text>Fecha: { date } </Text>
+                <Text>Hora: { time }</Text>
+                <Text>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>);
     }
     
 
     const renderBulletin = ({item}) => {
-        return(<View style={styles.ticket}>
+        if(item == null || item == undefined)
+            return
+
+        console.log(item)
+        let date = item["created_at"].split(" ")[0]
+        let time = item["created_at"].split(" ")[1]
+        let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
+
+        let payment_status = item["paid"] ? "Sí" : "No"
+
+        return(<View style={[styles.ticket, styles.bulletin_box]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
-                <Image style={styles.ticket_selector_image} source={require("../../assets/bulletins/bulletin.png")} />
+                <Text>Matrícula { item["registration"] }</Text>
+                <Text>Duración { item["duration"] }</Text>
+                <Text>Precio: { item["price"] } €</Text>
+                <Text>Pagado: { payment_status }</Text>
+                <Text>Precept: { item["precept"] }</Text>
+                <Text>Fecha: { date } </Text>
+                <Text>Hora: { time }</Text>
+                <Text>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>)
     }
 
 
-    const tickets_list = (tickets==[]? (<Text>Aún no has impreso ningún ticket</Text>) : (<FlatList
+    const tickets_list = (tickets==[] || tickets.length === 0 ? (<Text>Aún no has impreso ningún ticket</Text>) : (<FlatList
         data={tickets}
         renderItem={renderTicket}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(ticket) => ticket.id.toString()}
     />))
 
-    const bulletins_list = (bulletins==[]? (<Text>Aún no has impreso ningún boletín</Text>) : (<FlatList
+    const bulletins_list = (bulletins==[] || bulletins.length === 0 ? (<Text>Aún no has impreso ningún boletín</Text>) : (<FlatList
         data={bulletins}
         renderItem={renderBulletin}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(ticket) => ticket.id.toString()}
     />))
 
 
     function getTicketAppareanceByDuration(duration) {
         switch(duration) {
             case 30:
-                return require("../../assets/tickets/30.png")
+                return styles.yellow_box
             case 60:
-                return require("../../assets/tickets/60.png")
+                return styles.green_box
             case 90:
-                return require("../../assets/tickets/90.png")
+                return styles.orange_box
             case 120:
-                return require("../../assets/tickets/120.png")
+                return styles.pink_box
         }
     }
 
@@ -205,9 +271,12 @@ const styles = {
         justifyContent: 'center',
         alignItems: "center",
         zIndex: -20,
+        height: "100%",
+        backgroundColor: colors.green_background,
     },
     selector: {
-        flexDirection: "row"
+        flexDirection: "row",
+        marginBottom: 20,
     },
     selector_button: {
         paddingVertical: 10,
@@ -218,40 +287,65 @@ const styles = {
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '400',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
-        color: "white",
         padding: 0,
+        marginTop: 20,
+        color: colors.white,
     },
     tickets: {
+        backgroundColor: colors.white,
         width: "100%",
         height: "100%",
         marginTop: 20,
         padding: 20,
         paddingBottom: 60,
-        backgroundColor: '#f5f5f5',
+        gap: 20,
     },
 
     tickets_list: {
-        borderRadius:  16,
         width: "80%",
-        height: "90%",
+        height: "72%",
         marginTop: 10,
-        marginBottom: 40,
-        backgroundColor: colors.dark_green
+        marginBottom: 0,
+        backgroundColor: colors.white,
     },
     ticket: {
-        paddingTop: 20,
+        padding: 20,
+        margin: 20,
         borderRadius:  4,
         justifyContent: 'flex-start',
         alignItems: "center",
-        height: 190
+        height: "auto",
     },
     ticket_selector_image: {
         width: 280,
         height: 160,
         borderRadius: 8,
     },
+    green_box: {
+        /* Create a green border */
+        borderColor: "rgba(58, 175, 25, 0.8)",
+        borderWidth: 2,
+    },
+    yellow_box: {
+        /* Create a green border */
+        borderColor: "rgba(253, 246, 50, 0.8)",
+        borderWidth: 2,
+    },
+    orange_box: {
+        /* Create a green border */
+        borderColor: "rgba(255, 141, 3, 0.8)",
+        borderWidth: 2,
+    },
+    pink_box: {
+        /* Create a green border */
+        borderColor: "rgba(228, 68, 121, 0.8)",
+        borderWidth: 2,
+    },
+    bulletin_box: {
+        borderColor: "rgba(63, 77, 202, 0.8)",
+        borderWidth: 2,
+    }
 }

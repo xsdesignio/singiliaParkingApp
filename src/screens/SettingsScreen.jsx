@@ -1,13 +1,15 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 
-import DefaultButton from "../components/atoms/default-button";
+import { getSession } from "../session/sessionStorage";
+// import DefaultButton from "../components/atoms/default-button";
 import SecondaryButton from "../components/atoms/secondary-button";
 
-import { logoutUser } from "../session/sessionControler";
+import { logoutUser,  } from "../session/sessionControler";
 import { useLogin } from "../session/LoginProvider";
+import { usePrinter } from "../printing/PrintingProvider";
 import { colors } from "../styles/colorPalette";
 import { getConfigValue } from "../configStorage";
 
@@ -20,7 +22,10 @@ export default function SettingsScreen({ navigation }) {
 
     const [zone, setZone] = useState("")
 
-    const [provisionalLocation, setprovisionalLocation] = useState("")
+    const [ session , setSession] = useState([])
+    const [ sessionName, setSessionName ] = useState([])
+
+    // const [provisionalLocation, setprovisionalLocation] = useState("")
 
     function logout() {
         logoutUser().then(logout_successfull => {
@@ -43,35 +48,43 @@ export default function SettingsScreen({ navigation }) {
         getConfigValue("zone").then(obtained_zone => {
             setZone(obtained_zone)
         })
+
+        getSession().then(session => {
+            setSession(session)
+            setSessionName(session["name"])
+        })
+
+        console.log("session")
+        console.log(session)
     }, [])
+
+    const {conntectedDevice} = usePrinter()
 
     return(
         <View style={styles.container}>
 
-            <Text style={styles.title}>Ajustes:</Text>
-
-            <View>
-                <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Ajustes de impresión"} />
+            <View style={styles.section}>
+                {conntectedDevice ? (
+                    <View>
+                        <Text>Impresora contectada: </Text>
+                        <Text style={styles.bold_text}>{conntectedDevice.name}</Text>
+                    </View>
+                    ) : 
+                    (
+                        <Text>Actualmente no tienes ninguna impresora contectada </Text>
+                    )
+                }
+                <View>
+                    <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Conectar impresora"} />
+                </View>
             </View>
             
 
 
-            <View>
-                <Text>Actualmente en {zone}</Text>
-                <Text>Cambiar zona</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(value) => {
-                        setprovisionalLocation(value)
-                    }}
-                    secureTextEntry={true}
-                    placeholder='Localizacion'
-                />
-                <DefaultButton onPress={() => setZone(provisionalLocation)} text={"Cambiar zona"} />
-            </View>
 
-            <Text style={styles.normal_text}>Número de boletines a imprimir</Text>
-            <View>
+            <View style={styles.section}>
+
+                <Text style={styles.normal_text}>Número de boletines a imprimir</Text>
                 <View style={styles.selector}>
                     <TouchableOpacity 
                         style={[
@@ -99,9 +112,10 @@ export default function SettingsScreen({ navigation }) {
                 
             </View>
 
-            <Text style={styles.normal_text}>Sesión</Text>
-
-            <View>
+            <View style={styles.section}>
+                <Text style={styles.subtitle}> Administrar Sesión</Text>
+                <Text style={styles.normal_text}>Zona Asignada: {zone}</Text>
+                <Text style={styles.normal_text}>Actualmente registrado como { sessionName }</Text>
                 <SecondaryButton onPress={logout} text={"Cerrar sesión"} />
             </View>
 
@@ -113,25 +127,25 @@ export default function SettingsScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green,
+        backgroundColor: colors.green_background,
         flex: 1,
+        gap: 20,
         justifyContent: 'center',
         width: "100%",
     },
-    input: {
-        backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
-        borderRadius: 5,
-        borderWidth: 1,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        textAlign: 'center',
-        width: 280,
-    },
 
     normal_text: {
-        color: colors.white,
+        color: colors.dark_green,
         fontSize: 16,
+    },
+    section: {
+        backgroundColor: colors.white,
+        borderColor: colors.dark_green,
+        borderWidth: 1,
+        gap: 20,
+        justifyContent: "center",
+        padding: 20,
+        width: 300,
     },
     selector: {
         flexDirection: "row"
@@ -142,12 +156,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
     },
-    title: {
-        color: colors.white,
+    subtitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 20,
         textAlign: "center",
-        width: "50%",
-    },
+    }, 
 })
+

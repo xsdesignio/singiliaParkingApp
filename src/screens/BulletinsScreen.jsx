@@ -5,6 +5,10 @@ import { useState } from "react";
 
 import { createAndPrintBulletin } from "../bulletins/bulletinsController";
 
+
+import { usePrinter } from "../printing/PrintingProvider";
+
+
 import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
 import SecondaryButton from "../components/atoms/secondary-button";
@@ -35,9 +39,11 @@ export default function BulletinsScreen() {
         }));
     }
 
+    const printer = usePrinter()
+
 
     function printManager() {
-        createAndPrintBulletin(bulletinInfo);
+        createAndPrintBulletin(printer, bulletinInfo);
         setBulletinInfo({
             "duration": 30,
             "registration": undefined,
@@ -63,16 +69,15 @@ export default function BulletinsScreen() {
                 
                 {/* --------- Required Information --------- */}
                 <View style={styles.bulletin_info_section}>
-                    <Text style={styles.label}>Datos requeridos</Text>
 
-                                
+                    <Text style={styles.label}>Matrícula</Text>
                     <TextInput
                         style={styles.input}
                         autoCapitalize="characters"
                         onChangeText={(registration) => 
                             updateBulletinInfo("registration", registration)
                         }
-                        placeholder="Matricula"
+                        placeholder="0000BBB"
                     />
 
                     <Text style={styles.label}>Duración</Text>
@@ -81,25 +86,25 @@ export default function BulletinsScreen() {
                             style={styles.picker}
                             selectedValue={bulletinInfo["duration"]}
                             onValueChange={(duration) => 
-                                updateBulletinInfo("duration", parseInt(duration))
+                                updateBulletinInfo("duration", duration)
                             }
                             itemStyle={styles.picker_item}
                         >
                             <Picker.Item
                                 label="30 minutos"
-                                value="30"
+                                value={30}
                             />
                             <Picker.Item
                                 label="60 minutos"
-                                value="60"
+                                value={60}
                             />
                             <Picker.Item
                                 label="90 minutos"
-                                value="90"
+                                value={90}
                             />
                             <Picker.Item
                                 label="120 minutos"
-                                value="120"
+                                value={120}
                             />
                         </Picker>
                     </View>
@@ -139,7 +144,6 @@ export default function BulletinsScreen() {
                 <View style={styles.centered_element}>
                     { showOptionalData ? 
                     (<>
-                        <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)}/>
                         <TextInput
                             style={styles.input}
                             onChangeText={(model) => 
@@ -159,6 +163,7 @@ export default function BulletinsScreen() {
                                 updateBulletinInfo("color", color)}
                             placeholder="Color"
                         />
+                        <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)}/>
                     </>
                     ) : (
                         <SecondaryButton text={"Añadir datos opcionales"} onPress={() => setShowOptionalData(!showOptionalData)}/>
@@ -167,7 +172,6 @@ export default function BulletinsScreen() {
                 </View>
             </View>
     
-
             <DefaultButton onPress={printManager} text="Imprimir" />
         </View>
     )
@@ -194,7 +198,7 @@ let styles = StyleSheet.create({
 
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green,
+        backgroundColor: colors.green_background,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
@@ -211,7 +215,7 @@ let styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         padding: 0,
-        width: 200,
+        width: "100%",
     },
 
     input: {
@@ -222,17 +226,18 @@ let styles = StyleSheet.create({
         marginVertical: 4,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        width: 200,
+        textAlign: 'center',
+        width: 280,
     },
     label: {
         color: colors.white,
         fontSize: 16,
         marginBottom: 4,
-        marginTop: 8,
+        marginTop: 12,
     },
 
     picker: {
-        width: "100%",
+        width: 280,
     },
 
 
@@ -250,24 +255,11 @@ let styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         padding: 0,
-        width: 320,
+        width: 300,
     },
-
-
-
-    /* selector: {
-        flexDirection: "row"
-    },
-    selector_button: {
-        borderRadius: 20,
-        marginHorizontal: 6,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-    },
-    */
     title: {
         color: colors.white,
-        fontSize: 20,
+        fontSize: 32,
         fontWeight: "bold",
         marginBottom: 10,
         marginTop: 10,
