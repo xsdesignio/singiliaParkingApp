@@ -21,7 +21,7 @@ export default function DefaultButton({text, onPress}){
 const styles = StyleSheet.create({
     print_button: {
         backgroundColor: colors.green_button,
-        borderColor: colors.white,
+        borderColor: colors.dark_green,
         borderRadius: 20,
         borderWidth: 1,
         color: colors.background,

@@ -122,7 +122,6 @@ export default function TicketsScreen() {
 let styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green_background,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
@@ -133,7 +132,7 @@ let styles = StyleSheet.create({
     duration_picker_wraper: {
         alignItems: "center",
         backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
+        borderColor: colors.dark_green,
         borderRadius: 5,
         borderWidth: 1,
         height: 40,
@@ -144,7 +143,7 @@ let styles = StyleSheet.create({
 
     input: {
         backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
+        borderColor: colors.dark_green,
         borderRadius: 5,
         borderWidth: 1,
         paddingHorizontal: 10,
@@ -154,23 +153,26 @@ let styles = StyleSheet.create({
     },
 
     label: {
-        color: colors.white,
+        color: colors.black,
         fontSize: 16,
-        marginBottom: 4,
-        marginTop: 12,
+        marginBottom: 6,
+        marginTop: 18,
     },
 
     picker: {
-        width: 300,
+        width: 280,
     },
 
     
     selector: {
-        flexDirection: "row"
+        flexDirection: "row",
+        marginTop: 10
     },
     
     selector_button: {
+        borderColor: colors.dark_green,
         borderRadius: 20,
+        borderWidth: 1,
         marginHorizontal: 6,
         paddingHorizontal: 20,
         paddingVertical: 10
@@ -190,8 +192,8 @@ let styles = StyleSheet.create({
         zIndex: 10,
     },
     title: {
-        color: colors.white,
-        fontSize: 32,
+        color: colors.black,
+        fontSize: 28,
         fontWeight: "bold",
         marginBottom: 10,
         marginTop: 10,

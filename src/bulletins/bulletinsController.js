@@ -63,6 +63,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
  
         // If everything went well, show a success message
         Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
+        return(bulletin_dict)
     }
     catch(error) {
         console.log(error)
@@ -99,22 +100,15 @@ export async function payBulletin(bulletin_id) {
 
 async function pay(bulletin_id, payment_method) {
     try {
-        console.log("This happends")
-
         let paid_locally = await payBulletinLocally(bulletin_id, payment_method)
-        console.log("This happends too")
 
         if(!paid_locally)
             throw new Error("Error al pagar el boletín")
             
         let sent_to_server = await payBulletinOnServer(bulletin_id, payment_method)
 
-        console.log("And this also happends")
         if(!sent_to_server) 
             await addBulletinToUploadQueue(bulletin_id, payment_method)
-
-
-        console.log("The last console log")
 
         setTimeout(() => {
             Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito", [{
@@ -123,7 +117,7 @@ async function pay(bulletin_id, payment_method) {
         }, 100); // Show the second alert after a 100ms delay
         
     } catch (error) {
-        console.log(error)
+        
         setTimeout(() => {
             Alert.alert("Error al pagar el boletín", "Ha ocurrido un error", [{
                 text: "Ok",

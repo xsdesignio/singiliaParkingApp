@@ -21,7 +21,7 @@ export default function SecondaryButton({text, onPress}){
 const styles = StyleSheet.create({
     print_button: {
         backgroundColor: colors.light_green_selected,
-        borderColor: colors.white,
+        borderColor: colors.dark_green,
         borderRadius: 8,
         borderWidth: 1,
         elevation: 10,

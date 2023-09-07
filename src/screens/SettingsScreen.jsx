@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import { useState } from "react";
 
 import { getSession } from "../session/sessionStorage";
@@ -16,7 +16,7 @@ import { getConfigValue } from "../configStorage";
 
 export default function SettingsScreen({ navigation }) {
 
-    const [bulletinsAmount, setBulletinsAmount] = useState(1)
+    // const [bulletinsAmount, setBulletinsAmount] = useState(1)
 
     const { setIsLoggedIn } = useLogin()
 
@@ -29,6 +29,7 @@ export default function SettingsScreen({ navigation }) {
 
     function logout() {
         logoutUser().then(logout_successfull => {
+            setIsLoggedIn(false)
             
             if(logout_successfull) {
                 setIsLoggedIn(false)
@@ -43,8 +44,6 @@ export default function SettingsScreen({ navigation }) {
 
     useEffect(() => {
 
-        // getConfigDict().then(dict => console.log(dict))
-
         getConfigValue("zone").then(obtained_zone => {
             setZone(obtained_zone)
         })
@@ -54,8 +53,6 @@ export default function SettingsScreen({ navigation }) {
             setSessionName(session["name"])
         })
 
-        console.log("session")
-        console.log(session)
     }, [])
 
     const {conntectedDevice} = usePrinter()
@@ -71,17 +68,20 @@ export default function SettingsScreen({ navigation }) {
                     </View>
                     ) : 
                     (
-                        <Text>Actualmente no tienes ninguna impresora contectada </Text>
+                        <>
+                            <Text style={styles.subtitle}> Administrar Impresión</Text>
+                            <Text>Actualmente no tienes ninguna impresora contectada </Text>
+                        </>
                     )
                 }
                 <View>
-                    <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Conectar impresora"} />
+                    <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Administrar impresora"} />
                 </View>
             </View>
             
 
 
-
+            {/* 
             <View style={styles.section}>
 
                 <Text style={styles.normal_text}>Número de boletines a imprimir</Text>
@@ -110,7 +110,7 @@ export default function SettingsScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
                 
-            </View>
+            </View> */}
 
             <View style={styles.section}>
                 <Text style={styles.subtitle}> Administrar Sesión</Text>
@@ -127,7 +127,6 @@ export default function SettingsScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green_background,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
         padding: 20,
         width: 300,
     },
-    selector: {
+    /* selector: {
         flexDirection: "row"
     },
     selector_button: {
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 6,
         paddingHorizontal: 20,
         paddingVertical: 10,
-    },
+    }, */
     subtitle: {
         fontSize: 22,
         fontWeight: 'bold',

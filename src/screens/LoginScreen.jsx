@@ -86,7 +86,7 @@ const styles = {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: colors.white,
+        color: colors.black,
     },
     error: {
         color: colors.error_color,

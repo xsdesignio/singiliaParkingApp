@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { StyleSheet, View, Text, TextInput } from "react-native";
+import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
 import { useState } from "react";
 
 import { createAndPrintBulletin } from "../bulletins/bulletinsController";
@@ -42,8 +42,26 @@ export default function BulletinsScreen() {
     const printer = usePrinter()
 
 
-    function printManager() {
-        createAndPrintBulletin(printer, bulletinInfo);
+    async function printManager() {
+
+        let bulletin_dict = await createAndPrintBulletin(printer, bulletinInfo);
+        Alert.alert("Imprimiendo", "Imprimiendo boletín", 
+            [
+                {text: "Cancelar"}, 
+                {text: "Volver a imprimir", onPress: () => {
+            
+                    printer.printBulletin({
+                        "Zona": bulletin_dict["zone_name"],
+                        "Duración": bulletin_dict["duration"] + " min",
+                        "Matrícula": bulletin_dict["registration"],
+                        "Precio": bulletin_dict["price"] + " eur",
+                        "Precepto": bulletin_dict["precept"],
+                        "Fecha": new Date().toLocaleDateString('es-ES'),
+                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                    })
+                }}
+            ]
+        );
         setBulletinInfo({
             "duration": 30,
             "registration": undefined,
@@ -55,6 +73,7 @@ export default function BulletinsScreen() {
             "model": undefined,
             "color": undefined,
         })
+
     }
 
 
@@ -172,7 +191,7 @@ export default function BulletinsScreen() {
                 </View>
             </View>
     
-            <DefaultButton onPress={printManager} text="Imprimir" />
+            <DefaultButton onPress={(printManager)} text="Imprimir" />
         </View>
     )
 }
@@ -198,7 +217,6 @@ let styles = StyleSheet.create({
 
     container: {
         alignItems: 'center',
-        backgroundColor: colors.green_background,
         flex: 1,
         gap: 20,
         justifyContent: 'center',
@@ -230,10 +248,10 @@ let styles = StyleSheet.create({
         width: 280,
     },
     label: {
-        color: colors.white,
+        color: colors.black,
         fontSize: 16,
-        marginBottom: 4,
-        marginTop: 12,
+        marginBottom: 6,
+        marginTop: 18,
     },
 
     picker: {
@@ -255,11 +273,11 @@ let styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         padding: 0,
-        width: 300,
+        width: 280,
     },
     title: {
-        color: colors.white,
-        fontSize: 32,
+        color: colors.black,
+        fontSize: 28,
         fontWeight: "bold",
         marginBottom: 10,
         marginTop: 10,

@@ -1,6 +1,6 @@
 
 
-const apiHost = "http://192.168.0.24:5000"
+const apiHost = "http://192.168.232.96:5000"
 
 
 export function createTicketOnServer(ticket_info) {

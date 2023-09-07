@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, Image } from "react-native";
 import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
@@ -17,7 +17,7 @@ export default function RecordScreen({ navigation }) {
 
     const [tickets, setTickets] = useState([])
 
-    const { printTicket, printBulletin } = usePrinter();
+    const { connectedDevice, printTicket, printBulletin } = usePrinter();
 
     
     const [bulletins, setBulletins] = useState([])
@@ -36,11 +36,8 @@ export default function RecordScreen({ navigation }) {
             
             if (tickets.length > 0) {
                 setTickets(tickets.reverse())
-                console.log("tickets: ")
-                console.log(tickets)
             }
         }).catch((error) => {
-            console.log(error)
             Alert.alert("Error al cargar los datos", error, [
                 {
                     text: "Ok",
@@ -54,7 +51,6 @@ export default function RecordScreen({ navigation }) {
                 setBulletins(bulletins.reverse())
             }
         }).catch((error) => {
-            console.log(error)
             Alert.alert("Error al cargar los datos", error, [
                 {
                     text: "Vale",
@@ -83,14 +79,23 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Volver a imprimir",
                 onPress: () => {
-                    console.log("bulletin_data -", " RecordScreen.js")
-                    console.log(bulletin_data)
+                    
+                    if(connectedDevice == null) {
+                        Alert.alert("Error al imprimir el boletín", "No se ha encontrado ninguna impresora contectada.", [
+                            {
+                                text: "Ok",
+                            }
+                        ]
+                        )
+                        return
+                    }
+
                     let data_to_print = {
-                        "Zona": bulletin_data["zone_name"],
-                        "Duración": bulletin_data["duration"] + " min",
-                        "Matrícula": bulletin_data["registration"],
-                        "Precio": bulletin_data["price"] + " eur",
-                        "Precepto": bulletin_data["precept"],
+                        "Zona": bulletin["zone_name"],
+                        "Duración": bulletin["duration"] + " min",
+                        "Matrícula": bulletin["registration"],
+                        "Precio": bulletin["price"] + " eur",
+                        "Precepto": bulletin["precept"],
                         "Fecha": new Date().toLocaleDateString('es-ES'),
                         "Hora": new Date().toLocaleTimeString('es-ES'),
                     }
@@ -103,7 +108,6 @@ export default function RecordScreen({ navigation }) {
                     try {
                         payBulletin(bulletin["id"])
                     } catch (error) {
-                        console.log(error)
                         Alert.alert("Error al pagar", error, [
                             {
                                 text: "Vale",
@@ -137,15 +141,22 @@ export default function RecordScreen({ navigation }) {
             {
                 text: "Volver a imprimir",
                 onPress: () => {
+                    if(connectedDevice == null) {
+                        Alert.alert("Error al imprimir el ticket", "No se ha encontrado ninguna impresora contectada.", [
+                            {
+                                text: "Ok",
+                            }
+                        ]
+                        )
+                        return
+                    }
                     
-                    console.log("ticket_data -", " RecordScreen.js")
-                    console.log(ticket_data)
                     let data_to_print = {
-                        "Zona": ticket_data["zone_name"],
-                        "Duración": ticket_data["duration"] + " min",
-                        "Matrícula": ticket_data["registration"],
-                        "Precio": ticket_data["price"] + " eur",
-                        "Precepto": ticket_data["precept"],
+                        "Zona": ticket["zone_name"],
+                        "Duración": ticket["duration"] + " min",
+                        "Matrícula": ticket["registration"],
+                        "Precio": ticket["price"] + " eur",
+                        "Precepto": ticket["precept"],
                         "Fecha": new Date().toLocaleDateString('es-ES'),
                         "Hora": new Date().toLocaleTimeString('es-ES'),
                     }
@@ -160,16 +171,14 @@ export default function RecordScreen({ navigation }) {
         if(item == null || item == undefined)
             return
 
-        console.log(item)
         let ticket_style = getTicketAppareanceByDuration(item["duration"])
         let date = item["created_at"].split(" ")[0]
         let time = item["created_at"].split(" ")[1]
         let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
 
-        console.log("Until here everything is good")
-        console.log(ticket_style)
         return (<View style={[styles.ticket, ticket_style]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
+                <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
                 <Text>Matrícula { item["registration"] }</Text>
                 <Text>Duración { item["duration"] }</Text>
                 <Text>Precio: { item["price"] } €</Text>
@@ -185,7 +194,6 @@ export default function RecordScreen({ navigation }) {
         if(item == null || item == undefined)
             return
 
-        console.log(item)
         let date = item["created_at"].split(" ")[0]
         let time = item["created_at"].split(" ")[1]
         let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
@@ -194,6 +202,7 @@ export default function RecordScreen({ navigation }) {
 
         return(<View style={[styles.ticket, styles.bulletin_box]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
+                <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
                 <Text>Matrícula { item["registration"] }</Text>
                 <Text>Duración { item["duration"] }</Text>
                 <Text>Precio: { item["price"] } €</Text>
@@ -272,7 +281,6 @@ const styles = {
         alignItems: "center",
         zIndex: -20,
         height: "100%",
-        backgroundColor: colors.green_background,
     },
     selector: {
         flexDirection: "row",
@@ -282,6 +290,8 @@ const styles = {
         paddingVertical: 10,
         paddingHorizontal: 20,
         marginHorizontal: 6,
+        borderColor: colors.dark_green,
+        borderWidth: 1,
         marginTop: 20,
         borderRadius: 20
     },
@@ -292,32 +302,28 @@ const styles = {
         alignItems: 'center',
         padding: 0,
         marginTop: 20,
-        color: colors.white,
+        color: colors.black,
     },
-    tickets: {
-        backgroundColor: colors.white,
-        width: "100%",
-        height: "100%",
-        marginTop: 20,
-        padding: 20,
-        paddingBottom: 60,
-        gap: 20,
-    },
-
     tickets_list: {
         width: "80%",
-        height: "72%",
+        height: "76%",
         marginTop: 10,
         marginBottom: 0,
+        borderRadius: 12,
         backgroundColor: colors.white,
     },
     ticket: {
         padding: 20,
         margin: 20,
         borderRadius:  4,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: "center",
         height: "auto",
+        backgroundColor: colors.white,
+    },
+    ticket_image: {
+        width: 50,
+        height: 50
     },
     ticket_selector_image: {
         width: 280,

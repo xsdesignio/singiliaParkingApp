@@ -124,7 +124,7 @@ function DefaultNavigator() {
 							// You can return any component that you like here!
 							return <Ionicons name={iconName} size={size} color={color} />;
 						},
-						"tabBarActiveTintColor": colors.green,
+						"tabBarActiveTintColor": colors.green_button,
 						"tabBarInactiveTintColor": "grey",
 						"tabBarLabelStyle": {
 							"paddingBottom": 10,
@@ -132,8 +132,10 @@ function DefaultNavigator() {
 						},
 						"tabBarStyle": [
 							{
-							"display": isKeyboardOpen ? "none": "flex",
-							height: 72,
+								"display": isKeyboardOpen ? "none": "flex",
+								height: 72,
+								borderTopColor: colors.dark_green,
+								borderTopWidth: 1,
 							},
 							null
 						]
