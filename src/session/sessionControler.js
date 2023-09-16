@@ -1,9 +1,9 @@
 import { storeSession, deleteSession  } from "./sessionStorage";
 import { setConfigValue } from "../configStorage";
+import { deleteAllBulletins } from "../bulletins/storage/bulletinsStorage";
 
 
-const apiHost = "http://192.168.232.96:5000"
-
+const apiHost = "http://18.101.2.247"
 
 // Login user, store the session and redirect to printing page
 // @param form: dict with email and password keys
@@ -67,6 +67,9 @@ export async function logoutUser() {
             if(response_json.status != 200)
                 throw new Error("Ha ocurrido un error cerrando sesión, si no ha sido cerrada inténtelo de nuevo.")
             
+            await setConfigValue("zone", undefined)
+            await deleteAllBulletins()
+            await deleteAllBulletins()
             await deleteSession()
             resolve(true)
 

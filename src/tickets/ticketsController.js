@@ -26,6 +26,12 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         let session = await getSession()
         let zone = await getConfigValue("zone")
 
+        console.log("zone: ", zone)
+
+
+        console.log("Fecha:", new Date().toLocaleString('es-ES').replace(",", ""))
+
+        
         let ticket_dict = {
             "responsible_id": session["id"],
             "zone": zone,
@@ -34,6 +40,7 @@ export async function createAndPrintTicket(printer, duration, registration, paym
             "price": getTicketPrice(duration),
             "payment_method": paymentMethod,
             "paid": true,
+            "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
         }
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
@@ -42,9 +49,9 @@ export async function createAndPrintTicket(printer, duration, registration, paym
             "Zona": ticket_dict["zone"],
             "Duración": ticket_dict["duration"] + " min",
             "Matrícula": ticket_dict["registration"],
-            "Precio": ticket_dict["price"] + " eur",
-            "Fecha": new Date().toLocaleDateString('es-ES'),
-            "Hora": new Date().toLocaleTimeString('es-ES'),
+            "Importe": ticket_dict["price"] + "0 eur",
+            "Fecha": ticket_dict["created_at"].split(" ")[0],
+            "Hora": ticket_dict["created_at"].split(" ")[1] + "h",
         })
 
 
@@ -121,5 +128,5 @@ function check_information(ticket_info) {
         throw new Error("No se ha encontrado el estado de pago del ticket.")
     
     if (!ticket_info["zone"] || ticket_info["zone"] == "") 
-        throw new Error("No se ha encontrado la ubicación del ticket.")
+        throw new Error("Aún no eres responsable de ninguna zona.")
 }

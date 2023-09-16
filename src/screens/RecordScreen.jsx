@@ -178,13 +178,14 @@ export default function RecordScreen({ navigation }) {
 
         return (<View style={[styles.ticket, ticket_style]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
-                <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
-                <Text>Matrícula { item["registration"] }</Text>
-                <Text>Duración { item["duration"] }</Text>
-                <Text>Precio: { item["price"] } €</Text>
-                <Text>Fecha: { date } </Text>
-                <Text>Hora: { time }</Text>
-                <Text>Método de pago: { payment_method }</Text>
+                <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
+                <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
+                <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
+                <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
+                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
+                <Text style={styles.ticket_text}>Fecha: { date } </Text>
+                <Text style={styles.ticket_text}>Hora: { time }</Text>
+                <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>);
     }
@@ -203,26 +204,27 @@ export default function RecordScreen({ navigation }) {
         return(<View style={[styles.ticket, styles.bulletin_box]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
                 <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
-                <Text>Matrícula { item["registration"] }</Text>
-                <Text>Duración { item["duration"] }</Text>
-                <Text>Precio: { item["price"] } €</Text>
-                <Text>Pagado: { payment_status }</Text>
-                <Text>Precept: { item["precept"] }</Text>
-                <Text>Fecha: { date } </Text>
-                <Text>Hora: { time }</Text>
-                <Text>Método de pago: { payment_method }</Text>
+                <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
+                <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
+                <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
+                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
+                <Text style={styles.ticket_text}>Pagado: { payment_status }</Text>
+                <Text style={styles.ticket_text}>Precept: { item["precept"] }</Text>
+                <Text style={styles.ticket_text}>Fecha: { date } </Text>
+                <Text style={styles.ticket_text}>Hora: { time }</Text>
+                <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>)
     }
 
 
-    const tickets_list = (tickets==[] || tickets.length === 0 ? (<Text>Aún no has impreso ningún ticket</Text>) : (<FlatList
+    const tickets_list = (tickets==[] || tickets.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún ticket</Text>) : (<FlatList
         data={tickets}
         renderItem={renderTicket}
         keyExtractor={(ticket) => ticket.id.toString()}
     />))
 
-    const bulletins_list = (bulletins==[] || bulletins.length === 0 ? (<Text>Aún no has impreso ningún boletín</Text>) : (<FlatList
+    const bulletins_list = (bulletins==[] || bulletins.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún boletín</Text>) : (<FlatList
         data={bulletins}
         renderItem={renderBulletin}
         keyExtractor={(ticket) => ticket.id.toString()}
@@ -295,6 +297,13 @@ const styles = {
         marginTop: 20,
         borderRadius: 20
     },
+    no_elements_text: {
+        fontSize: 18,
+        fontWeight: '400',
+        textAlign: 'center',
+        padding: 20,
+        color: colors.black,
+    },
     title: {
         fontSize: 18,
         fontWeight: '400',
@@ -313,7 +322,8 @@ const styles = {
         backgroundColor: colors.white,
     },
     ticket: {
-        padding: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 14,
         margin: 20,
         borderRadius:  4,
         justifyContent: 'center',
@@ -323,7 +333,22 @@ const styles = {
     },
     ticket_image: {
         width: 50,
-        height: 50
+        height: 50,
+    },
+    ticket_title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        padding: 0,
+        marginTop: 20,
+        marginBottom: 20,
+        color: colors.black,
+    },
+    ticket_text: {
+        fontSize: 16,
+        fontWeight: '400',
+        margin: 2,
+        padding: 0,
+        color: colors.black,
     },
     ticket_selector_image: {
         width: 280,

@@ -59,7 +59,8 @@ export default class PrinterCommunicationEncoder {
         dataToSend += this.escPos.CHARACTER_SPACING_2;
 
         Object.entries(data).forEach(([key, value]) => {
-            dataToSend += (key + ": " + value + "\n");
+            let formattedString = this.formatStringToPrint(key + ": " + value + "\n");
+            dataToSend += formattedString;
         });
 
         dataToSend += this.escPos.EMPHASIZED_OFF;
@@ -103,6 +104,27 @@ export default class PrinterCommunicationEncoder {
         return base64.encode(dataToSend);
     }
 
+    getBulletinLegalInfo() {
+        let dataToSend = this.escPos.CHARACTER_SIZE_1;
+
+        dataToSend += this.escPos.EMPHASIZED_ON;
+        dataToSend += "ANULACIÓN DE BOLETÍN (SI SE PAGA\nEN ORDENADOR DE ESTACIONAMIENTO O EN C.C):\n";
+        dataToSend += this.escPos.EMPHASIZED_OFF;
+
+        dataToSend += "-Pagar a ordenador de estacionamiento o en el C.C: IBAN ES 51 2103 3042 20 0030001171.\n";
+        dataToSend += "-Como concepto el nº del boletín\nde denuncia y matrícula.\n";
+        dataToSend += "-Importe según tabla:\n";
+        dataToSend += "Tiempo estaccionado: Hora fín Regulación (u Hora Salida Confirmada por Ordenador de\nEstacionamiento)-Hora Boletín Denuncia.\n";
+
+        dataToSend += this.escPos.EMPHASIZED_ON;
+        dataToSend += "Ejemplar para la policía\n";
+        dataToSend += this.escPos.EMPHASIZED_OFF;
+
+        dataToSend += this.utils.MARGIN.repeat(2);
+
+        return base64.encode(dataToSend);
+    }
+
     getSingiliaLogo() {
         const IMAGE_WIDTH = 64;
         const IMAGE_HEIGHT = 64;
@@ -125,5 +147,34 @@ export default class PrinterCommunicationEncoder {
                             this.utils.MARGIN;
         
         return base64.encode(logoToBeSent);
+    }
+
+
+    // This function formats the string so it can be printed correctly and ensures that no word is cut in the middle.
+    // @param string, the string to format.
+    formatStringToPrint(string) {
+        let total_space = 32; // the max number of characters that can be printed in a line.
+        let string_size = string.length;
+        
+        // If the string is smaller than a line (the total space), simply return it
+        if (string_size < total_space) {
+            return string;
+        }
+
+        let formatted_string = "";
+
+        let words = string.split(" ");
+        let consumed_space = 0;
+        
+        words.forEach(word => {
+            if(consumed_space + word.length > total_space) {
+                consumed_space = 0;
+                formatted_string += "\n";
+            }
+            formatted_string += word + " ";
+            consumed_space += word.length;
+        })
+
+        return formatted_string;
     }
 }

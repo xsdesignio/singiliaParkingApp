@@ -118,8 +118,24 @@ export function deleteOldBulletins() {
             (_, result) => resolve(result.rows._array),
             (_, error) => reject(error.message)
         )
-    })
-})
+    }) 
+  })
+}
+
+
+export function deleteAllBulletins() {
+  return new Promise((resolve, reject) => {
+      let db = getDatabase()
+
+      db.transaction((tx) => {
+          tx.executeSql(
+              "DELETE FROM bulletins",
+              [],
+              (_, result) => resolve(result.rows._array),
+              (_, error) => reject(error.message)
+          )
+      })
+  })
 }
 
 

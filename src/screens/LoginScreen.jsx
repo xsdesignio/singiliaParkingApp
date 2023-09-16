@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput} from "react-native";
+import { View, Text, TextInput, Image } from "react-native";
 import { useState } from "react";
 
 
@@ -45,8 +45,10 @@ export default function LoginScreen() {
 
     return(
         <View style={styles.container}>
-
-            <Text style={styles.title}>Inicia sesión:</Text>
+            {/* Create an image with a width and height of 50px */}  
+            
+            <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
+            <Text style={styles.title}>Inicio de sesión:</Text>
             
             <TextInput
                 style={styles.input}
@@ -64,12 +66,18 @@ export default function LoginScreen() {
                 secureTextEntry={true}
                 placeholder='contraseña'
             />
+            { errorMessage != "" && <Text style={styles.error}>{errorMessage}</Text> }
 
             <View style={styles.buttonContainer}>
                 <DefaultButton onPress={login} text={"Iniciar Sesión"} />
             </View>
 
-            <Text style={styles.error}>{errorMessage}</Text>
+            <Text style={styles.normal_text}>
+                Administración de zona azul de parking en Antequera.
+            </Text>
+            <Text style={styles.normal_text_small}>
+                Página solo disponible para Administradores.
+            </Text>
 
         </View>
     )
@@ -78,18 +86,39 @@ export default function LoginScreen() {
 const styles = {
     container: {
         flex: 1,
-        gap: 20,
+        gap: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
+        marginTop: 10,
         marginBottom: 20,
         color: colors.black,
     },
     error: {
         color: colors.error_color,
+        textAlign: "center",
+        fontSize: 14,
+        padding: 14,
+        borderRadius: 12,
+        margin: 10,
+        backgroundColor: colors.white,
+    },
+    normal_text: {
+        color: colors.dark_green,
+        fontSize: 14,
+        textAlign: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 6,
+    },
+    normal_text_small: {
+        color: colors.dark_green,
+        fontSize: 12,
+        textAlign: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 6,
     },
     input: {
         paddingHorizontal: 12,

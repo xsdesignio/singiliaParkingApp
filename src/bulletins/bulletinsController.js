@@ -13,6 +13,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         const { connectedDevice, printBulletin } = printer
 
         // Obtaining required data to create the ticket
+        console.log(connectedDevice)
         if(connectedDevice == null) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
@@ -22,11 +23,14 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         let price = getBulletinPrice(bulletinInfo["duration"])
 
+        console.log("Fecha:", new Date().toLocaleString('es-ES').replace(",", ""))
+
         let bulletin_dict = {
             ...bulletinInfo,
             "responsible_id": session["id"],
             "zone_name": zone,
             "price": price,
+            "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
         }
 
          // Check if ticket_info has all required information and create the ticket on the server
@@ -36,10 +40,10 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             "Zona": bulletin_dict["zone_name"],
             "Duración": bulletin_dict["duration"] + " min",
             "Matrícula": bulletin_dict["registration"],
-            "Precio": bulletin_dict["price"] + " eur",
+            "Importe": bulletin_dict["price"] + "0 eur",
             "Precepto": bulletin_dict["precept"],
-            "Fecha": new Date().toLocaleDateString('es-ES'),
-            "Hora": new Date().toLocaleTimeString('es-ES'),
+            "Fecha": bulletin_dict["created_at"].split(" ")[0],
+            "Hora": bulletin_dict["created_at"].split(" ")[1] + "h",
         })
 
 

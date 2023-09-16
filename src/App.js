@@ -58,10 +58,9 @@ function DefaultNavigator() {
 	const { isLoggedIn, setIsLoggedIn } = useLogin();
   
 	/* const [userName, setUserName] = useState(""); */
-
-	initApp();
-
 	useEffect(() => {
+
+		initApp();
 		checkLogin();
 	}, []);
 

@@ -1,7 +1,6 @@
 
 
-const apiHost = "http://192.168.232.96:5000"
-
+const apiHost = "http://18.101.2.247"
 
 export function createBulletinOnServer(bulletin_info) {
     return new Promise((resolve) => {

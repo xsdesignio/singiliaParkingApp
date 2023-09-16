@@ -36,6 +36,7 @@ export async function initApp() {
     await synchronizeAppWithServer()
     await deleteOldTickets()
     await deleteOldBulletins()
+    console.log("App initialized Successfully")
 }
 
 

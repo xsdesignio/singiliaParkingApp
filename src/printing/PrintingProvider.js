@@ -35,8 +35,10 @@ export const PrinterProvider = ({ children }) => {
     useEffect(() => {
         requestPermissions();
         return () => {
-            if(connectedDevice != null)
+            if(connectedDevice != null) {
                 bleManager.disconnectFromDevice()
+                setConnectedDevice(null)
+            }
 
             bleManager.destroy()
             
@@ -174,7 +176,7 @@ export const PrinterProvider = ({ children }) => {
             const singilia_barba_info = communicationEncoder.getSingiliaInfo()
             await sendDataToDevice(singilia_barba_info)
 
-            const legal_info = communicationEncoder.getLegalInfo()
+            const legal_info = communicationEncoder.getBulletinLegalInfo()
             await sendDataToDevice(legal_info)
 
             return true

@@ -1,12 +1,12 @@
 // Fetch the url 
 import { setConfigValue } from "./configStorage"   
 
-const apiHost = "http://192.168.232.96:5000"
+const apiHost = "http://18.101.2.247"
 
 
 
 export async function obtainAssignedZone () {
-    console.log("Entering obtainAssignedZone")
+    
     return new Promise( (resolve) => {
         fetch( `${ apiHost }/users/get-assigned-zone`)
         .then( response_json => {
@@ -21,6 +21,7 @@ export async function obtainAssignedZone () {
             // Store the session returned
             // Resolve with the session if stored successfully or reject with an error message otherwise
             if (!(response.zone == null || response.zone == undefined)){
+                console.log("zone: ", response.zone)
                 await setConfigValue("zone", response.zone)
                 resolve(response.zone)
             }

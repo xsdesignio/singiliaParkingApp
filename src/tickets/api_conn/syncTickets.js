@@ -6,6 +6,7 @@ import { getTicketsWithoutReference, addReferenceToTicket } from "../storage/tic
 export async function synchronizeTickets() {
     let tickets_without_reference = await getTicketsWithoutReference()
     tickets_without_reference.forEach(async (ticket) => {
+        console.log(ticket)
         try {
             let created_ticket = await createTicketOnServer(ticket)
             if(created_ticket)

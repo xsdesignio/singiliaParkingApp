@@ -125,6 +125,21 @@ export function deleteOldTickets() {
 }
 
 
+export function deleteAllTickets() {
+    return new Promise((resolve, reject) => {
+        let db = getDatabase()
+
+        db.transaction((tx) => {
+            tx.executeSql(
+                "DELETE FROM tickets",
+                [],
+                (_, result) => resolve(result.rows._array),
+                (_, error) => reject(error.message)
+            )
+        })
+    })
+}
+
 
 // Save a ticket into database
 // @param ticket_info : dictionary with all ticket information

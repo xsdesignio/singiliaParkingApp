@@ -19,11 +19,12 @@ export default function SettingsScreen({ navigation }) {
     // const [bulletinsAmount, setBulletinsAmount] = useState(1)
 
     const { setIsLoggedIn } = useLogin()
+    const { connectedDevice } = usePrinter()
 
-    const [zone, setZone] = useState("")
+    const [zone, setZone] = useState(null)
 
     const [ session , setSession] = useState([])
-    const [ sessionName, setSessionName ] = useState([])
+    const [ sessionName, setSessionName ] = useState("")
 
     // const [provisionalLocation, setprovisionalLocation] = useState("")
 
@@ -45,76 +46,47 @@ export default function SettingsScreen({ navigation }) {
     useEffect(() => {
 
         getConfigValue("zone").then(obtained_zone => {
+            console.log("obtained_zone: ", obtained_zone)
             setZone(obtained_zone)
         })
 
         getSession().then(session => {
+            console.log("session: ", session)
             setSession(session)
             setSessionName(session["name"])
         })
 
     }, [])
 
-    const {conntectedDevice} = usePrinter()
-
     return(
         <View style={styles.container}>
 
             <View style={styles.section}>
-                {conntectedDevice ? (
-                    <View>
-                        <Text>Impresora contectada: </Text>
-                        <Text style={styles.bold_text}>{conntectedDevice.name}</Text>
-                    </View>
-                    ) : 
-                    (
-                        <>
-                            <Text style={styles.subtitle}> Administrar Impresión</Text>
-                            <Text>Actualmente no tienes ninguna impresora contectada </Text>
-                        </>
-                    )
-                }
+                <Text style={styles.subtitle}> Administrar Impresión</Text>
+                            {
+                                connectedDevice ? (
+                                    <View>
+                                        <Text style={styles.normal_text}>Impresora contectada: </Text>
+                                        <Text style={styles.bold_text}>{connectedDevice.name}</Text>
+                                    </View>
+                                ) : (
+                                    <Text style={styles.normal_text}>Actualmente no tienes ninguna impresora contectada </Text>
+                                )
+                            }
+                        
+                    
                 <View>
                     <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Administrar impresora"} />
                 </View>
             </View>
-            
-
-
-            {/* 
-            <View style={styles.section}>
-
-                <Text style={styles.normal_text}>Número de boletines a imprimir</Text>
-                <View style={styles.selector}>
-                    <TouchableOpacity 
-                        style={[
-                            styles.selector_button, 
-                            {
-                                backgroundColor: (bulletinsAmount==1) ? 
-                                    colors.light_green_selected : colors.light_green
-                            }
-                        ]}
-                        onPress={() => setBulletinsAmount(1)}>
-                        <Text>1</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.selector_button, 
-                            {
-                                backgroundColor: (bulletinsAmount==2) ? 
-                                colors.light_green_selected : colors.light_green
-                            }
-                        ]}
-                        onPress={() => setBulletinsAmount(2)}>
-                        <Text>2</Text>
-                    </TouchableOpacity>
-                </View>
-                
-            </View> */}
 
             <View style={styles.section}>
                 <Text style={styles.subtitle}> Administrar Sesión</Text>
-                <Text style={styles.normal_text}>Zona Asignada: {zone}</Text>
+                <Text style={styles.normal_text}>
+                    Zona Asignada: {
+                        zone == null ? "No asignada" : zone
+                    }
+                </Text>
                 <Text style={styles.normal_text}>Actualmente registrado como { sessionName }</Text>
                 <SecondaryButton onPress={logout} text={"Cerrar sesión"} />
             </View>
@@ -125,6 +97,11 @@ export default function SettingsScreen({ navigation }) {
 
 
 const styles = StyleSheet.create({
+    bold_text: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: "center",
+    },
     container: {
         alignItems: 'center',
         flex: 1,
@@ -136,6 +113,7 @@ const styles = StyleSheet.create({
     normal_text: {
         color: colors.dark_green,
         fontSize: 16,
+        textAlign: "center",
     },
     section: {
         backgroundColor: colors.white,

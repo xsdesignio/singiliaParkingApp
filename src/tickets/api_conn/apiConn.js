@@ -1,10 +1,10 @@
 
 
-const apiHost = "http://192.168.232.96:5000"
+const apiHost = "http://18.101.2.247"
 
 
 export function createTicketOnServer(ticket_info) {
-    
+    console.log("This is printed")
     return new Promise((resolve) => {
 
         fetch( `${ apiHost }/tickets/create` , {
@@ -15,12 +15,16 @@ export function createTicketOnServer(ticket_info) {
             body: JSON.stringify(ticket_info)
         })
         .then( response => {
+            console.log(response)
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
-                    
+                console.log("This is printed too")
             return response.json()
         })
-        .then(ticket => resolve(ticket))
+        .then(ticket => {
+            console.log(ticket)
+            resolve(ticket)
+        })
         .catch(() => resolve(null))
     })
 }

@@ -31,9 +31,9 @@ export default function TicketsScreen() {
     const printer = usePrinter()
 
     
-    function printManager() {
+    async function printManager() {
         
-        createAndPrintTicket(printer, duration, registration, paymentMethod);
+        await createAndPrintTicket(printer, duration, registration, paymentMethod);
 
         setPaymentMethod(null);
         setRegistration("");
@@ -50,6 +50,7 @@ export default function TicketsScreen() {
                     <TextInput
                         style={styles.input}
                         autoCapitalize="characters"
+                        value = {registration}
                         onChangeText={(value) => setRegistration(value)}
                         placeholder="0000BBB"
                     />

@@ -20,7 +20,7 @@ export default function BulletinsScreen() {
     
     const [bulletinInfo, setBulletinInfo] = useState({
         "duration": 30,
-        "registration": undefined,
+        "registration": "",
         "price": undefined,
         /* "payment_method": undefined, */
         "paid": false,
@@ -54,10 +54,10 @@ export default function BulletinsScreen() {
                         "Zona": bulletin_dict["zone_name"],
                         "Duración": bulletin_dict["duration"] + " min",
                         "Matrícula": bulletin_dict["registration"],
-                        "Precio": bulletin_dict["price"] + " eur",
+                        "Precio": bulletin_dict["price"] + "0 eur",
                         "Precepto": bulletin_dict["precept"],
-                        "Fecha": new Date().toLocaleDateString('es-ES'),
-                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                        "Fecha": bulletin_dict["created_at"].split(" ")[0],
+                        "Hora": bulletin_dict["created_at"].split(" ")[1] +"h",
                     })
                 }}
             ]
@@ -93,6 +93,7 @@ export default function BulletinsScreen() {
                     <TextInput
                         style={styles.input}
                         autoCapitalize="characters"
+                        value = {bulletinInfo["registration"]}
                         onChangeText={(registration) => 
                             updateBulletinInfo("registration", registration)
                         }
@@ -165,15 +166,16 @@ export default function BulletinsScreen() {
                     (<>
                         <TextInput
                             style={styles.input}
-                            onChangeText={(model) => 
-                                updateBulletinInfo("model", model)}
-                            placeholder="Modelo"
-                        />
-                        <TextInput
-                            style={styles.input}
                             onChangeText={(brand) => 
                                 updateBulletinInfo("brand", brand)}
                             placeholder="Marca"
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(model) => 
+                                updateBulletinInfo("model", model)}
+                            placeholder="Modelo"
                         />
 
                         <TextInput
