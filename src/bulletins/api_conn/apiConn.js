@@ -1,6 +1,6 @@
+import { API_URL } from "@env"
 
-
-const apiHost = "http://18.101.2.247"
+const apiHost = API_URL
 
 export function createBulletinOnServer(bulletin_info) {
     return new Promise((resolve) => {
@@ -13,6 +13,8 @@ export function createBulletinOnServer(bulletin_info) {
             body: JSON.stringify(bulletin_info)
         })
         .then( response => {
+            console.log("Trying to create bulletin on server")
+            console.log(response.status)
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
                     
@@ -20,7 +22,11 @@ export function createBulletinOnServer(bulletin_info) {
             return response.json()
         })
         .then(bulletin => resolve(bulletin))
-        .catch(() => resolve(null))
+        .catch((error) => {
+            console.log("Error here on bulletin api conn:")
+            console.log(error)
+            resolve(null)
+        })
     })
 }
 

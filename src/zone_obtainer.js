@@ -1,9 +1,8 @@
 // Fetch the url 
-import { setConfigValue } from "./configStorage"   
+import { setConfigValue } from "./configStorage"
+import { API_URL } from "@env"   
 
-const apiHost = "http://18.101.2.247"
-
-
+const apiHost = API_URL
 
 export async function obtainAssignedZone () {
     
@@ -27,6 +26,7 @@ export async function obtainAssignedZone () {
             }
         })
         .catch(error => {
+            console.log("Error en obtainAssignedZone in zone_obtainer.js")
             console.log(error)
             resolve(null)
         })

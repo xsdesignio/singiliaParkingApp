@@ -13,7 +13,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         const { connectedDevice, printBulletin } = printer
 
         // Obtaining required data to create the ticket
-        console.log(connectedDevice)
         if(connectedDevice == null) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
@@ -23,7 +22,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         let price = getBulletinPrice(bulletinInfo["duration"])
 
-        console.log("Fecha:", new Date().toLocaleString('es-ES').replace(",", ""))
 
         let bulletin_dict = {
             ...bulletinInfo,
@@ -80,24 +78,27 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 // Pay a certain bulletin, updating it's paid status on the server and locally
 // Create an alert with the result of the operation
 // @param bulletin_id, id of the bulletin to pay (from the local database)
-export async function payBulletin(bulletin_id) {
-    const paymentMethods = [
-        {
-            text: "Efectivo",
-            method: "CASH",
-        },
-        {
-            text: "Tarjeta",
-            method: "CARD",
-        },
-    ];
-
-    Alert.alert("Pagar Boletín", "Elige el método de pago", paymentMethods.map((method) => ({
-        text: method.text,
-        onPress: () => {
-            pay(bulletin_id, method.method);
-        },
-    })));
+export function payBulletin(bulletin_id) {
+    return new Promise((resolve) => {
+        const paymentMethods = [
+            {
+                text: "Efectivo",
+                method: "CASH",
+            },
+            {
+                text: "Tarjeta",
+                method: "CARD",
+            },
+        ];
+    
+        Alert.alert("Pagar Boletín", "Elige el método de pago", paymentMethods.map((method) => ({
+            text: method.text,
+            onPress: async () => {
+                await pay(bulletin_id, method.method);
+                resolve()
+            },
+        })));
+    })
 }
 
 

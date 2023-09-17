@@ -29,6 +29,7 @@ import SettingsScreen from './screens/SettingsScreen';
 
 import LoginScreen from './screens/LoginScreen';
 import IndexScreen from './screens/IndexScreen';
+import { getServerSession } from './session/sessionControler';
 
 
 const InitStack = createNativeStackNavigator();
@@ -59,20 +60,30 @@ function DefaultNavigator() {
   
 	/* const [userName, setUserName] = useState(""); */
 	useEffect(() => {
-
-		initApp();
-		checkLogin();
+		checkLogin().then(() => {
+			initApp();
+		})
 	}, []);
 
 	async function checkLogin() {
+
+
 		let session = await getSession();
 
-		if(session != null)
-		if ("id" in session && "role" in session && "name" in session && "email" in session) {
-			/* setUserName(session["name"]) */
-			setIsLoggedIn(true);
-			return;
+		if(session != null) {
+			if ("id" in session && "role" in session && "name" in session && "email" in session) {
+				setIsLoggedIn(true);
+			}
+		
+			let serverSession = await getServerSession();
+
+			if(serverSession != null)
+				if ("id" in serverSession && "role" in serverSession && "name" in serverSession && "email" in serverSession) {
+					setIsLoggedIn(true);
+					return;
+				}
 		}
+			
 		
 		setIsLoggedIn(false);
 	}

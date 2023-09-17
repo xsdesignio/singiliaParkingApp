@@ -26,12 +26,6 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         let session = await getSession()
         let zone = await getConfigValue("zone")
 
-        console.log("zone: ", zone)
-
-
-        console.log("Fecha:", new Date().toLocaleString('es-ES').replace(",", ""))
-
-        
         let ticket_dict = {
             "responsible_id": session["id"],
             "zone": zone,
@@ -45,40 +39,54 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
 
-        printTicket({
-            "Zona": ticket_dict["zone"],
-            "Duración": ticket_dict["duration"] + " min",
-            "Matrícula": ticket_dict["registration"],
-            "Importe": ticket_dict["price"] + "0 eur",
-            "Fecha": ticket_dict["created_at"].split(" ")[0],
-            "Hora": ticket_dict["created_at"].split(" ")[1] + "h",
-        })
+        printTicket(formatTicketToBePrinted(ticket_dict))
 
 
         let server_ticket = await createTicketOnServer(ticket_dict)
+        console.log("ticket created on server:", server_ticket)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
         // If not, save it with a negative id so it can be identified as a local ticket that has not been created on the server yet
         if (server_ticket) {
             ticket_dict["created_at"] = server_ticket["created_at"]
             ticket_dict["reference_id"] = server_ticket["id"]
+
+            console.log("This?")
         } else {
+            console.log("Maybe this?")
             ticket_dict["reference_id"] = -1
         }
 
         let result_ticket = await saveTicket(ticket_dict)
 
+        console.log("result_ticket: ", result_ticket)
         if(result_ticket == null) {
+
+            console.log("Or this one?")
             throw new Error("Error al guardar el ticket")
         }
-
+        console.log("If you see this, the ticket has been saved successfully")
         // If everything went well, show a success message
         Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
     }
     catch(error) {
+        console.log("Error at createAndPrintTicket:")
         console.log(error)
         Alert.alert(`Ha ocurrido un error al crear el ticket`, error.message)
     }
+}
+
+
+function formatTicketToBePrinted(ticket) {
+    return{
+        "Zona": ticket["zone"],
+        "Duración": ticket["duration"] + " min",
+        "Matrícula": ticket["registration"],
+        "Importe": ticket["price"] + "0 eur",
+        "Fecha": ticket["created_at"].split(" ")[0],
+        "Hora": ticket["created_at"].split(" ")[1].substring(0, 5) + " h",
+    }
+
 }
 
 

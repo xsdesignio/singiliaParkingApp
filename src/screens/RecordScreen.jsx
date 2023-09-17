@@ -29,9 +29,10 @@ export default function RecordScreen({ navigation }) {
     
         return unsubscribe;
     }, []);
+
+    
     // Set the data to the states if data is not empty
     function setData() {
-
         getTicketsSaved().then((tickets) => {
             
             if (tickets.length > 0) {
@@ -65,14 +66,15 @@ export default function RecordScreen({ navigation }) {
 
         let title = `Boletín de matrícula ${bulletin["registration"]}`
 
-        let date = bulletin["created_at"].split(" ")[0]
-        let time = bulletin["created_at"].split(" ")[1]
+        let date = formatDate(bulletin["created_at"].split(" ")[0])
+        let time = bulletin["created_at"].split(" ")[1].substring(0, 5)
 
         let bulletin_data = ''
         bulletin_data += `Fecha: ${ date } \n`
-        bulletin_data += `Hora: ${ time }`
+        
+        bulletin_data += `Hora: ${ time } h`
 
-        Alert.alert(title, bulletin_data, [
+        let alertOptions = [
             {
                 text: "Cerrar",
             },
@@ -96,17 +98,25 @@ export default function RecordScreen({ navigation }) {
                         "Matrícula": bulletin["registration"],
                         "Precio": bulletin["price"] + " eur",
                         "Precepto": bulletin["precept"],
-                        "Fecha": new Date().toLocaleDateString('es-ES'),
-                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                        "Fecha": new Date(bulletin["created_at"]).toLocaleDateString('es-ES'),
+                        "Hora": new Date(bulletin["created_at"]).toLocaleTimeString('es-ES'),
                     }
                     printBulletin(data_to_print)
                 }
-            },
-            {
+            }
+        ];
+    
+        // If the bulletin is not paid, add the "pay" option
+        if (!bulletin["paid"]) {
+            alertOptions.push({
                 text: "pagar",
                 onPress: () => {
                     try {
                         payBulletin(bulletin["id"])
+                            .then(() => {
+                                setData(); // Call setData() to refresh the data after successful payment
+                                
+                            });
                     } catch (error) {
                         Alert.alert("Error al pagar", error, [
                             {
@@ -115,8 +125,11 @@ export default function RecordScreen({ navigation }) {
                         ])
                     }
                 }
-            }
-        ])
+            })
+        }
+    
+        Alert.alert(title, bulletin_data, alertOptions);
+
     }
 
     function openTicket(ticket) {
@@ -125,12 +138,12 @@ export default function RecordScreen({ navigation }) {
         let title = `Ticket de matrícula ${ticket["registration"]}`
 
         
-        let date = ticket["created_at"].split(" ")[0]
-        let time = ticket["created_at"].split(" ")[1]
+        let date = formatDate(ticket["created_at"].split(" ")[0])
+        let time = ticket["created_at"].split(" ")[1].substring(0, 5)
 
         let ticket_data = ''
         ticket_data += `Fecha: ${ date } \n`
-        ticket_data += `Hora: ${ time }`
+        ticket_data += `Hora: ${ time } h`
         
 
 
@@ -172,8 +185,8 @@ export default function RecordScreen({ navigation }) {
             return
 
         let ticket_style = getTicketAppareanceByDuration(item["duration"])
-        let date = item["created_at"].split(" ")[0]
-        let time = item["created_at"].split(" ")[1]
+        let date = formatDate(item["created_at"].split(" ")[0])
+        let time = item["created_at"].split(" ")[1].substring(0, 5)
         let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
 
         return (<View style={[styles.ticket, ticket_style]}>
@@ -184,10 +197,11 @@ export default function RecordScreen({ navigation }) {
                 <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
                 <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
-                <Text style={styles.ticket_text}>Hora: { time }</Text>
+                <Text style={styles.ticket_text}>Hora: { time } h</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>);
+        
     }
     
 
@@ -195,15 +209,15 @@ export default function RecordScreen({ navigation }) {
         if(item == null || item == undefined)
             return
 
-        let date = item["created_at"].split(" ")[0]
-        let time = item["created_at"].split(" ")[1]
+        let date = formatDate(item["created_at"].split(" ")[0])
+        let time = item["created_at"].split(" ")[1].substring(0, 5)
         let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
 
         let payment_status = item["paid"] ? "Sí" : "No"
 
         return(<View style={[styles.ticket, styles.bulletin_box]}>
             <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
-                <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
+                <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
                 <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
                 <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
@@ -211,10 +225,19 @@ export default function RecordScreen({ navigation }) {
                 <Text style={styles.ticket_text}>Pagado: { payment_status }</Text>
                 <Text style={styles.ticket_text}>Precept: { item["precept"] }</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
-                <Text style={styles.ticket_text}>Hora: { time }</Text>
+                <Text style={styles.ticket_text}>Hora: { time } h</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>)
+    }
+
+    function formatDate(date) {
+        let elements = date.split("-")
+        let day = elements[2]
+        let month = elements[1]
+        let year = elements[0]
+
+        return `${day}/${month}/${year}`
     }
 
 

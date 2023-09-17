@@ -162,10 +162,15 @@ export function saveTicket(ticket_info) {
                     ticket_info["paid"], 
                     ticket_info["reference_id"] || -1, 
                 ], 
-                (_, result) => resolve(result),
+                (_, result) => {
+                    console.log("This also works")
+                    resolve(result)
+                },
                 (_, error) => reject(error.message));
             },
             (error) => {
+                console.log("Error here on saveTicket:")
+                console.log(error.message)
                 reject(error.message)
             }
         );

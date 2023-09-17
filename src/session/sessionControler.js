@@ -1,9 +1,10 @@
 import { storeSession, deleteSession  } from "./sessionStorage";
 import { setConfigValue } from "../configStorage";
 import { deleteAllBulletins } from "../bulletins/storage/bulletinsStorage";
+import { API_URL } from "@env"
+import { deleteAllTickets } from "../tickets/storage/ticketsStorage";
 
-
-const apiHost = "http://18.101.2.247"
+const apiHost = API_URL
 
 // Login user, store the session and redirect to printing page
 // @param form: dict with email and password keys
@@ -49,15 +50,18 @@ export function loginUser(form) {
                     reject(error)
                 })
         })
-        .catch(error => reject(error.toString()))
+        .catch(error => {
+            console.log("Error here on login:")
+            console.log(error.message)
+            reject(error.message)
+        })
     }) 
 }
 
 
 
 export async function logoutUser() {
-    return new Promise( (resolve, reject) => {
-        console.log("loging out 2")
+    return new Promise( (resolve) => {
         fetch( `${ apiHost }/auth/logout`)
         .then( async (response_json) => {
             // Throw an error when server returns an error
@@ -68,15 +72,48 @@ export async function logoutUser() {
                 throw new Error("Ha ocurrido un error cerrando sesión, si no ha sido cerrada inténtelo de nuevo.")
             
             await setConfigValue("zone", undefined)
-            await deleteAllBulletins()
+            await deleteAllTickets()
             await deleteAllBulletins()
             await deleteSession()
             resolve(true)
 
         }).catch(error => {
-            console.log(error.toString())
-            reject(error)
+            console.log("Error here at logout:")
+            console.log(error.message)
+            resolve(false)
         })
     })
+}
+
+// Check if the user is logged in and if so, return the session info
+// @returns a promise where "resolve" returns a dict with the session info and "reject" returns a message indicating the produced error during login
+export function getServerSession() {
+    return new Promise( (resolve) => {
+        fetch( `${ apiHost }/auth/session` )
+        .then( response_json => {
+            // Throw an error when server returns an error
+            console.log("Response status at getServerSession:")
+            console.log(response_json.toString())
+            if(response_json.status != 200)
+                throw new Error("No se ha podido obtener la sesión actual")
+            
+            // If request was made successfully
+            let session_response = response_json.json()
+            console.log("Session_response at getServerSession:")
+            console.log(session_response)
+            return session_response
+        })
+        .then( session => {
+            // Resolve with the session if stored successfully or reject with an error message otherwise
+            console.log("Session at getServerSession:")
+            console.log(session)
+            resolve(session)
+        })
+        .catch(error => {
+            console.log("Error here on getServerSession:")
+            console.log(error)
+            resolve(null)
+        })
+    }) 
 }
 
