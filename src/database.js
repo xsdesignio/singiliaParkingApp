@@ -1,6 +1,7 @@
 import * as SQLite from "expo-sqlite"
+import { DBNAME } from "@env"
 
-let db_name = "tickets.db"
+let db_name = DBNAME
 
 export function getDatabase() {
     const db = SQLite.openDatabase(db_name);
