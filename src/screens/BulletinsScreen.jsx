@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
+import { StyleSheet, View, Text, TextInput } from "react-native";
 import { useState } from "react";
 
 import { createAndPrintBulletin } from "../bulletins/bulletinsController";
@@ -44,24 +44,8 @@ export default function BulletinsScreen() {
 
     async function printManager() {
 
-        let bulletin_dict = await createAndPrintBulletin(printer, bulletinInfo);
-        Alert.alert("Imprimiendo", "Imprimiendo boletín", 
-            [
-                {text: "Cancelar"}, 
-                {text: "Volver a imprimir", onPress: () => {
-            
-                    printer.printBulletin({
-                        "Zona": bulletin_dict["zone_name"],
-                        "Duración": bulletin_dict["duration"] + " min",
-                        "Matrícula": bulletin_dict["registration"],
-                        "Precio": bulletin_dict["price"] + "0 eur",
-                        "Precepto": bulletin_dict["precept"],
-                        "Fecha": bulletin_dict["created_at"].split(" ")[0],
-                        "Hora": bulletin_dict["created_at"].split(" ")[1] +"h",
-                    })
-                }}
-            ]
-        );
+        await createAndPrintBulletin(printer, bulletinInfo);
+        
         setBulletinInfo({
             "duration": 30,
             "registration": undefined,

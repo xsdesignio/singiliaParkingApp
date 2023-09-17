@@ -62,9 +62,25 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         if(result == null) {
             throw new Error("Error al guardar el boletín")
         } 
+
+        Alert.alert("Boletín Creado", "El boletín ha sido creado he impreso con éxito", 
+            [
+                {text: "Cancelar"}, 
+                {text: "Volver a imprimir", onPress: () => {
+            
+                    printer.printBulletin({
+                        "Zona": bulletin_dict["zone_name"],
+                        "Duración": bulletin_dict["duration"] + " min",
+                        "Matrícula": bulletin_dict["registration"],
+                        "Precio": bulletin_dict["price"] + "0 eur",
+                        "Precepto": bulletin_dict["precept"],
+                        "Fecha": bulletin_dict["created_at"].split(" ")[0],
+                        "Hora": bulletin_dict["created_at"].split(" ")[1] +"h",
+                    })
+                }}
+            ]
+        );
  
-        // If everything went well, show a success message
-        Alert.alert(`Boletín Creado`, "El boletín ha sido creado he impreso con éxito")
         return(bulletin_dict)
     }
     catch(error) {

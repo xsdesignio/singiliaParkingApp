@@ -47,7 +47,7 @@ export default function LoginScreen() {
         <View style={styles.container}>
             {/* Create an image with a width and height of 50px */}  
             
-            <Image source={require("../../assets/icons/logo.png")} style={{width: 50, height: 50, justifyContent: "center"}}></Image>
+            <Image source={require("../../assets/icons/logo.png")} style={styles.logo_image}></Image>
             <Text style={styles.title}>Inicio de sesión:</Text>
             
             <TextInput
@@ -112,6 +112,11 @@ const styles = {
         textAlign: "center",
         paddingHorizontal: 20,
         paddingVertical: 6,
+    },
+    logo_image: {
+        width: 50, 
+        height: 50, 
+        justifyContent: "center"
     },
     normal_text_small: {
         color: colors.dark_green,
