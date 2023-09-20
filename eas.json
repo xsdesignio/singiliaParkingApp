@@ -1,5 +1,8 @@
 {
     "build": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
       "development": {
         "developmentClient": true,
         "distribution": "internal"

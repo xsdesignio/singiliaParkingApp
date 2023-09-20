@@ -91,28 +91,18 @@ export function getServerSession() {
     return new Promise( (resolve) => {
         fetch( `${ apiHost }/auth/session` )
         .then( response_json => {
-            // Throw an error when server returns an error
-            console.log("Response status at getServerSession:")
-            console.log(response_json.status)
-
             if(response_json.status != 200)
                 throw new Error("No se ha podido obtener la sesión actual")
             
             // If request was made successfully
             let session_response = response_json.json()
-            console.log("Session_response at getServerSession:")
-            console.log(session_response)
             return session_response
         })
         .then( session => {
             // Resolve with the session if stored successfully or reject with an error message otherwise
-            console.log("Session at getServerSession:")
-            console.log(session)
             resolve(session)
         })
         .catch(error => {
-            console.log("Error here on getServerSession:")
-            console.log(error)
             resolve(null)
         })
     }) 

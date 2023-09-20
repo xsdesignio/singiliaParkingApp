@@ -61,7 +61,6 @@ export function createSQLiteTables() {
 
 export function deleteAllTables() {
     const db = getDatabase()
-    console.log("Deleting tables")
     db.transaction(transaction => {
         transaction.executeSql(`DROP TABLE tickets;`)
         transaction.executeSql(`DROP TABLE bulletins;`)

@@ -46,12 +46,10 @@ export default function SettingsScreen({ navigation }) {
     useEffect(() => {
 
         getConfigValue("zone").then(obtained_zone => {
-            console.log("obtained_zone: ", obtained_zone)
             setZone(obtained_zone)
         })
 
         getSession().then(session => {
-            console.log("session: ", session)
             setSession(session)
             setSessionName(session["name"])
         })

@@ -125,7 +125,6 @@ export const PrinterProvider = ({ children }) => {
     async function printTicket(ticket_data) {
         
         if(connectedDevice == null) {
-            console.log("Device not connected.");
             Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes")
             return false
         }
@@ -158,7 +157,6 @@ export const PrinterProvider = ({ children }) => {
     async function printBulletin(bulletin_data) {
 
         if(connectedDevice == null) {
-            console.log("Device not connected.");
             Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes.")
             return false
         }

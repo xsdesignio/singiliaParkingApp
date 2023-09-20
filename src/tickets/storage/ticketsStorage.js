@@ -163,7 +163,6 @@ export function saveTicket(ticket_info) {
                     ticket_info["reference_id"] || -1, 
                 ], 
                 (_, result) => {
-                    console.log("This also works")
                     resolve(result)
                 },
                 (_, error) => reject(error.message));

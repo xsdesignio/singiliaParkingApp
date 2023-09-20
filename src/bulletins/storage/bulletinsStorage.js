@@ -90,7 +90,6 @@ export function payBulletinLocally(id, payment_method) {
                               resolve(true);
                           },
                           (_, error) => {
-                              console.log("Error: ", error)
                               resolve(false);
                           }
                       );
@@ -101,7 +100,6 @@ export function payBulletinLocally(id, payment_method) {
               }
           );
       }, () => {
-          console.log("Here no")
           resolve(null);
       });
   });

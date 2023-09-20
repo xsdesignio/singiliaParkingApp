@@ -8,6 +8,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    
     "plugins": [
       [
         "@config-plugins/react-native-ble-plx",
@@ -22,8 +23,9 @@
       ]
     ],
     "android": {
+      "icon": "./assets/icons/app-icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/logo.png",
+        "foregroundImage": "./assets/icons/app-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [

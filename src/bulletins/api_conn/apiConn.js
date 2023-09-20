@@ -3,7 +3,6 @@ import { API_URL } from "@env"
 const apiHost = API_URL
 
 export function createBulletinOnServer(bulletin_info) {
-    console.log("bulletin_info: ", bulletin_info)
     return new Promise((resolve) => {
         
         fetch( `${ apiHost }/bulletins/create` , {

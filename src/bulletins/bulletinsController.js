@@ -47,7 +47,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
 
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
-        console.log("Server bulletin:", server_bulletin)
 
         // If the bulletin has been successfully created on the server, saave it locally
         // Otherwise, save it locally with a reference_id of -1 so it can be uploaded later
@@ -58,8 +57,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             bulletin_dict["reference_id"] = -1
         }
 
-        console.log("bulletin dict:", bulletin_dict)
-        
         let result = await saveBulletin(bulletin_dict)
             
         if(result == null) {
