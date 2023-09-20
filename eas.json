@@ -1,7 +1,6 @@
 {
   "build": {
     "android": {
-      "icon": "./assets/logo.png",
       "gradleCommand": ":app:assembleRelease"
     },
     "development": {
