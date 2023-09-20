@@ -13,6 +13,7 @@ export function createBulletinOnServer(bulletin_info) {
             body: JSON.stringify(bulletin_info)
         })
         .then( response => {
+            console.log(response.message)
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
                     
@@ -27,7 +28,6 @@ export function createBulletinOnServer(bulletin_info) {
         })
     })
 }
-
 
 
 export function payBulletinOnServer(bulletin_id, payment_method) {
@@ -57,3 +57,4 @@ export function payBulletinOnServer(bulletin_id, payment_method) {
         .catch(() => resolve(null));
     });
 }
+

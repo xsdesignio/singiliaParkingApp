@@ -42,6 +42,8 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         printTicket(formatTicketToBePrinted(ticket_dict))
 
 
+
+        ticket_dict["created_at"] = convertDateFormat(ticket_dict["created_at"])
         let server_ticket = await createTicketOnServer(ticket_dict)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
@@ -129,4 +131,12 @@ function check_information(ticket_info) {
     
     if (!ticket_info["zone"] || ticket_info["zone"] == "") 
         throw new Error("Aún no eres responsable de ninguna zona.")
+}
+
+
+function convertDateFormat(input) {
+    const [day, month, yearTime] = input.split('/');
+    const [year, time] = yearTime.split(' ');
+
+    return `${year}/${month}/${day} ${time}`;
 }

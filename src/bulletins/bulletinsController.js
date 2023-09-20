@@ -31,6 +31,8 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
         }
 
+        console.log(bulletin_dict["created_at"])
+
          // Check if ticket_info has all required information and create the ticket on the server
         check_information(bulletin_dict)
 
@@ -44,8 +46,10 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             "Hora": bulletin_dict["created_at"].split(" ")[1] + "h",
         })
 
+        
 
-
+        bulletin_dict["created_at"] = convertDateFormat(bulletin_dict["created_at"])
+        
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
 
         // If the bulletin has been successfully created on the server, saave it locally
@@ -56,7 +60,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         } else {
             bulletin_dict["reference_id"] = -1
         }
-
+        
         let result = await saveBulletin(bulletin_dict)
             
         if(result == null) {
@@ -88,7 +92,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         Alert.alert("Error al imprimir el boletín", error.message)
     }
 }
-
 
 
 // Pay a certain bulletin, updating it's paid status on the server and locally
@@ -203,4 +206,14 @@ export function getBulletinPrice(duration) {
 export async function addBulletinToUploadQueue(bulletin_id) {
     // Save on async storage the id of the bulletin to upload
     await addPendingBulletinToPayOnServer(bulletin_id)
+}
+
+
+
+
+function convertDateFormat(input) {
+    const [day, month, yearTime] = input.split('/');
+    const [year, time] = yearTime.split(' ');
+
+    return `${year}/${month}/${day} ${time}`;
 }
