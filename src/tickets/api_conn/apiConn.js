@@ -1,6 +1,6 @@
 import { API_URL } from "@env"
 
-const apiHost = API_URL
+const apiHost = API_URL || process.env.API_URL
 
 export function createTicketOnServer(ticket_info) {
     return new Promise((resolve) => {

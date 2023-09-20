@@ -1,5 +1,11 @@
 {
   "build": {
+    "profileName": {
+      "env": {
+        "API_URL": "@API_URL",
+        "DBNAME": "@DBNAME"
+      }
+    },
     "development": {
       "developmentClient": true,
       "distribution": "internal"

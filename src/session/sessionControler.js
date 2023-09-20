@@ -4,7 +4,7 @@ import { deleteAllBulletins } from "../bulletins/storage/bulletinsStorage";
 import { API_URL } from "@env"
 import { deleteAllTickets } from "../tickets/storage/ticketsStorage";
 
-const apiHost = API_URL
+const apiHost = API_URL || process.env.API_URL
 
 // Login user, store the session and redirect to printing page
 // @param form: dict with email and password keys
