@@ -1,11 +1,10 @@
 import { storeSession, deleteSession  } from "./sessionStorage";
 import { setConfigValue } from "../configStorage";
 import { deleteAllBulletins } from "../bulletins/storage/bulletinsStorage";
-import { API_URL } from "@env"
+import { API_URL } from "../enviroment"
 import { deleteAllTickets } from "../tickets/storage/ticketsStorage";
 
-const apiHost = API_URL || process.env.API_URL
-console.log("apiHost: ", apiHost)
+const apiHost = API_URL
 
 // Login user, store the session and redirect to printing page
 // @param form: dict with email and password keys
@@ -103,7 +102,7 @@ export function getServerSession() {
             // Resolve with the session if stored successfully or reject with an error message otherwise
             resolve(session)
         })
-        .catch(error => {
+        .catch(() => {
             resolve(null)
         })
     }) 

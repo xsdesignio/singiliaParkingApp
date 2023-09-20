@@ -1,8 +1,8 @@
 // Fetch the url 
 import { setConfigValue } from "./configStorage"
-import { API_URL } from "@env"   
+import { API_URL } from "./enviroment"   
 
-const apiHost = API_URL || process.env.API_URL
+const apiHost = API_URL 
 
 export async function obtainAssignedZone () {
     

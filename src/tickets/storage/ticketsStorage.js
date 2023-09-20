@@ -1,7 +1,6 @@
 import { getDatabase } from "../../database";
 
 
-
 // Get all tickets saved in the database
 // @returns a promise with the tickets array
 export function getTicketsSaved() {
