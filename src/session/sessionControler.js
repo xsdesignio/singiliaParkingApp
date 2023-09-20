@@ -93,7 +93,8 @@ export function getServerSession() {
         .then( response_json => {
             // Throw an error when server returns an error
             console.log("Response status at getServerSession:")
-            console.log(response_json.toString())
+            console.log(response_json.status)
+
             if(response_json.status != 200)
                 throw new Error("No se ha podido obtener la sesión actual")
             

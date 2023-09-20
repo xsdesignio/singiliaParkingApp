@@ -35,8 +35,7 @@
     "react-native-paper": "^5.9.1",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "react-router-dom": "^6.11.2",
-    "undefined": "react-native-vector-icons/Ionicons"
+    "react-router-dom": "^6.11.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

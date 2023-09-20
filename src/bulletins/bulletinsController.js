@@ -45,8 +45,9 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         })
 
 
-        let server_bulletin = await createBulletinOnServer(bulletin_dict)
 
+        let server_bulletin = await createBulletinOnServer(bulletin_dict)
+        console.log("Server bulletin:", server_bulletin)
 
         // If the bulletin has been successfully created on the server, saave it locally
         // Otherwise, save it locally with a reference_id of -1 so it can be uploaded later
@@ -56,6 +57,8 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         } else {
             bulletin_dict["reference_id"] = -1
         }
+
+        console.log("bulletin dict:", bulletin_dict)
         
         let result = await saveBulletin(bulletin_dict)
             
@@ -94,7 +97,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 // Pay a certain bulletin, updating it's paid status on the server and locally
 // Create an alert with the result of the operation
 // @param bulletin_id, id of the bulletin to pay (from the local database)
-export function payBulletin(bulletin_id) {
+export function payBulletin(bulletin_info) {
     return new Promise((resolve) => {
         const paymentMethods = [
             {
@@ -110,7 +113,7 @@ export function payBulletin(bulletin_id) {
         Alert.alert("Pagar Boletín", "Elige el método de pago", paymentMethods.map((method) => ({
             text: method.text,
             onPress: async () => {
-                await pay(bulletin_id, method.method);
+                await pay(bulletin_info["id"], (bulletin_info["reference_id"] || -1), method.method);
                 resolve()
             },
         })));
@@ -119,14 +122,16 @@ export function payBulletin(bulletin_id) {
 
 
 
-async function pay(bulletin_id, payment_method) {
+async function pay(bulletin_id, reference_id, payment_method) {
     try {
         let paid_locally = await payBulletinLocally(bulletin_id, payment_method)
 
+        console.log("paid locally:", paid_locally)
+        
         if(!paid_locally)
             throw new Error("Error al pagar el boletín")
             
-        let sent_to_server = await payBulletinOnServer(bulletin_id, payment_method)
+        let sent_to_server = await payBulletinOnServer(reference_id, payment_method)
 
         if(!sent_to_server) 
             await addBulletinToUploadQueue(bulletin_id, payment_method)
@@ -138,9 +143,8 @@ async function pay(bulletin_id, payment_method) {
         }, 100); // Show the second alert after a 100ms delay
         
     } catch (error) {
-        
         setTimeout(() => {
-            Alert.alert("Error al pagar el boletín", "Ha ocurrido un error", [{
+            Alert.alert("Error", "Ha ocurrido un error al pagar el boletín", [{
                 text: "Ok",
             }]);
         }, 100); // Show the second alert after a 100ms delay

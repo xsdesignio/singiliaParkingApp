@@ -3,6 +3,7 @@ import { API_URL } from "@env"
 const apiHost = API_URL
 
 export function createBulletinOnServer(bulletin_info) {
+    console.log("bulletin_info: ", bulletin_info)
     return new Promise((resolve) => {
         
         fetch( `${ apiHost }/bulletins/create` , {
@@ -13,8 +14,6 @@ export function createBulletinOnServer(bulletin_info) {
             body: JSON.stringify(bulletin_info)
         })
         .then( response => {
-            console.log("Trying to create bulletin on server")
-            console.log(response.status)
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
                     

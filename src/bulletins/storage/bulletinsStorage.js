@@ -86,21 +86,22 @@ export function payBulletinLocally(id, payment_method) {
                       tx.executeSql(
                           "UPDATE bulletins SET paid = 1, payment_method = ? WHERE id = ?",
                           [payment_method, id],
-                          (_, updateResult) => {
-                              resolve(updateResult);
-                          },
                           () => {
-                              resolve(null);
+                              resolve(true);
+                          },
+                          (_, error) => {
+                              console.log("Error: ", error)
+                              resolve(false);
                           }
                       );
                   }
               },
               () => {
-                  console.log(null)
                   resolve(null);
               }
           );
       }, () => {
+          console.log("Here no")
           resolve(null);
       });
   });
@@ -212,7 +213,7 @@ export function saveBulletin(bulletin_info) {
                     bulletin_info["reference_id"] || -1 
                 ], 
                 (_, result) => {
-                  resolve(result)
+                  resolve(result.rows._array)
                 },
                 (_, error) => reject(error.message));
             },

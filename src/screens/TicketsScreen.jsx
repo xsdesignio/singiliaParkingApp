@@ -190,7 +190,6 @@ let styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 0,
         minHeight: 180,
-        zIndex: 10,
     },
     title: {
         color: colors.black,

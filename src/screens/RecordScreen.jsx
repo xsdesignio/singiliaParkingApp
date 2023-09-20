@@ -96,7 +96,7 @@ export default function RecordScreen({ navigation }) {
                         "Zona": bulletin["zone_name"],
                         "Duración": bulletin["duration"] + " min",
                         "Matrícula": bulletin["registration"],
-                        "Precio": bulletin["price"] + " eur",
+                        "Precio": bulletin["price"] + "0 eur",
                         "Precepto": bulletin["precept"],
                         "Fecha": new Date(bulletin["created_at"]).toLocaleDateString('es-ES'),
                         "Hora": new Date(bulletin["created_at"]).toLocaleTimeString('es-ES'),
@@ -112,7 +112,7 @@ export default function RecordScreen({ navigation }) {
                 text: "pagar",
                 onPress: () => {
                     try {
-                        payBulletin(bulletin["id"])
+                        payBulletin(bulletin)
                             .then(() => {
                                 setData(); // Call setData() to refresh the data after successful payment
                                 
@@ -168,7 +168,7 @@ export default function RecordScreen({ navigation }) {
                         "Zona": ticket["zone_name"],
                         "Duración": ticket["duration"] + " min",
                         "Matrícula": ticket["registration"],
-                        "Precio": ticket["price"] + " eur",
+                        "Precio": ticket["price"] + "0 eur",
                         "Precepto": ticket["precept"],
                         "Fecha": new Date().toLocaleDateString('es-ES'),
                         "Hora": new Date().toLocaleTimeString('es-ES'),
@@ -195,7 +195,7 @@ export default function RecordScreen({ navigation }) {
                 <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
                 <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
                 <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
-                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
+                <Text style={styles.ticket_text}>Precio: { item["price"] }0 €</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_text}>Hora: { time } h</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
@@ -221,7 +221,7 @@ export default function RecordScreen({ navigation }) {
                 <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
                 <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
                 <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
-                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
+                <Text style={styles.ticket_text}>Precio: { item["price"] }0 €</Text>
                 <Text style={styles.ticket_text}>Pagado: { payment_status }</Text>
                 <Text style={styles.ticket_text}>Precept: { item["precept"] }</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>

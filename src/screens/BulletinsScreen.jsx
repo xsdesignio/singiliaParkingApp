@@ -81,6 +81,7 @@ export default function BulletinsScreen() {
                         onChangeText={(registration) => 
                             updateBulletinInfo("registration", registration)
                         }
+                        onFocus={() => setShowOptionalData(false)}
                         placeholder="0000BBB"
                     />
 
@@ -169,6 +170,8 @@ export default function BulletinsScreen() {
                             placeholder="Color"
                         />
                         <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)}/>
+                        <View style={styles.margin}/>
+
                     </>
                     ) : (
                         <SecondaryButton text={"Añadir datos opcionales"} onPress={() => setShowOptionalData(!showOptionalData)}/>
@@ -190,7 +193,6 @@ let styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 0,
         minHeight: 180,
-        zIndex: 10,
     },
     bulletin_info_section: {
         alignItems: "center",
@@ -239,7 +241,9 @@ let styles = StyleSheet.create({
         marginBottom: 6,
         marginTop: 18,
     },
-
+    margin: {
+        height: 60
+    },
     picker: {
         width: 280,
     },
