@@ -15,7 +15,7 @@ export function createBulletinOnServer(bulletin_info) {
         .then( response => {
             if(response.status != 200)
                 throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
-            console.log("Response: ", response)
+            
             // If request was made successfully
             return response.json()
         })
