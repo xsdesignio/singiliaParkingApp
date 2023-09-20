@@ -23,9 +23,9 @@
       ]
     ],
     "android": {
-      "icon": "./assets/icons/app-icon.png",
+      "icon": "./assets/logo.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/app-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
@@ -37,6 +37,7 @@
       "package": "com.singiliabarba.parkingcontrol"
     },
     "ios": {
+      "icon": "./assets/logo.png",
       "bundleIdentifier": "com.singiliabarba.parkingcontrol"
     },
     "updates": {

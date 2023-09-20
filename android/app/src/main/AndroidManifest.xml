@@ -33,9 +33,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="mobile"/>
         <data android:scheme="com.singiliabarba.parkingcontrol"/>
-        <data android:scheme="exp+mobile"/>
         <data android:scheme="com.singiliabarba.parkingcontrol"/>
         <data android:scheme="exp+com-singiliabarba-parkingcontrol"/>
       </intent-filter>
