@@ -22,7 +22,6 @@ export default function PrintingSettingsScreen() {
         return () => {
             if(scanning)
                 stopScan();
-
         };
     }, []);
     

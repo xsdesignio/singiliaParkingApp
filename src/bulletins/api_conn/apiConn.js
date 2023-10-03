@@ -30,19 +30,25 @@ export function createBulletinOnServer(bulletin_info) {
 }
 
 
-export function payBulletinOnServer(bulletin_id, payment_method) {
+export function payBulletinOnServer(bulletin_id, payment_method, price, duration) {
+    let formData = new FormData()
+    formData.append('payment_method', payment_method)
+    formData.append('price', price)
+    formData.append('duration', duration)
+
     return new Promise((resolve) => {
         fetch(`${apiHost}/bulletins/pay/${bulletin_id}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded', 
+                'Content-Type': 'multipart/form-data', 
             },
-            body: `payment_method=${encodeURIComponent(payment_method)}`, 
+            body: formData, 
         })
         .then(response => {
             // Throw an error when server returns an error
+            console.log(response.status)
             if (response.status === 400) {
-                throw new Error("El boletín introducido no existe.");
+                throw new Error(response.message);
             }
             if (response.status !== 200) {
                 throw new Error("Ha ocurrido un error al pagar el boletín.");
@@ -51,10 +57,42 @@ export function payBulletinOnServer(bulletin_id, payment_method) {
             return response.json();
         })
         .then(response_json => {
-            let message = response_json["message"];
-            resolve(message);
+            console.log("Response json:")
+            resolve(response_json);
         })
-        .catch(() => resolve(null));
+        .catch((error) => {
+            console.log(error)
+            resolve(null)
+        });
     });
 }
 
+
+
+
+export function fetchAvailableBulletins() {
+    return new Promise((resolve) => {
+
+        fetch( `${ apiHost }/bulletins/available` , {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then( response => {
+            if(response.status != 200)
+                throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
+            
+            return response.json()
+        })
+        .then(bulletins => {
+            console.log("Bulletins:")
+            resolve(bulletins)
+        })
+        .catch((error) => {
+            console.log("Error here on bulletins api conn:")
+            console.log(error)
+            resolve(null)
+        })
+    })
+}

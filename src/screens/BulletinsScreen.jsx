@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { createAndPrintBulletin } from "../bulletins/bulletinsController";
 
-
 import { usePrinter } from "../printing/PrintingProvider";
 
 
@@ -19,17 +18,19 @@ import { colors } from "../styles/colorPalette";
 export default function BulletinsScreen() {
     
     const [bulletinInfo, setBulletinInfo] = useState({
-        "duration": 30,
         "registration": "",
-        "price": undefined,
         /* "payment_method": undefined, */
-        "paid": false,
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
         "brand": undefined,
         "model": undefined,
         "color": undefined,
     })
-    
+
+    // bulletinCancelationInfo = {
+    //     "bulletin_id": undefined,
+    //     "registration": undefined,
+    //     "payment_method": undefined,
+    //     "price": undefined,
     
     // Simple function to update the bulletinInfo state
     function updateBulletinInfo(key, value) {
@@ -41,6 +42,28 @@ export default function BulletinsScreen() {
 
     const printer = usePrinter()
 
+                    /* 
+                    <View style={styles.duration_picker_wraper}>
+                        <Picker
+                            style={styles.picker}
+                            selectedValue={duration}
+                            onValueChange={(duration) => 
+                                    setDuration(duration)
+                            }
+                            itemStyle={styles.picker_item}
+                        >
+                            {availableTickets.map((ticket) => {
+                                return(
+                                    <Picker.Item
+                                        key={ticket.id}
+                                        label={ticket.duration}
+                                        value={ticket.duration}
+                                    />
+                                )
+                            })}
+                        </Picker>
+                    </View> 
+                    */
 
     async function printManager() {
 
@@ -85,38 +108,8 @@ export default function BulletinsScreen() {
                         placeholder="0000BBB"
                     />
 
-                    <Text style={styles.label}>Duración</Text>
-                    <View style={styles.duration_picker_wraper}>
-                        <Picker
-                            style={styles.picker}
-                            selectedValue={bulletinInfo["duration"]}
-                            onValueChange={(duration) => 
-                                updateBulletinInfo("duration", duration)
-                            }
-                            itemStyle={styles.picker_item}
-                        >
-                            <Picker.Item
-                                label="30 minutos"
-                                value={30}
-                            />
-                            <Picker.Item
-                                label="60 minutos"
-                                value={60}
-                            />
-                            <Picker.Item
-                                label="90 minutos"
-                                value={90}
-                            />
-                            <Picker.Item
-                                label="120 minutos"
-                                value={120}
-                            />
-                        </Picker>
-                    </View>
-
                     {/* --------- Precept --------- */}
-                    <View style={styles.centered_element}>
-                        <Text style={styles.label}>Precepto Infringido:</Text>
+                    <Text style={styles.label}>Precepto Infringido:</Text>
 
                         <View style={styles.picker_wraper}>
                             <Picker
@@ -128,19 +121,21 @@ export default function BulletinsScreen() {
                                 itemStyle={styles.picker_item}
                             >
                                 <Picker.Item
+                                    style={styles.picker_item}
                                     label="Estacionar sin ticket de aparcamiento"
                                     value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
                                 />
                                 <Picker.Item
+                                    style={styles.picker_item}
                                     label="Rebosar el horario de permanencia asociado"
                                     value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
                                 />
                                 <Picker.Item
+                                    style={styles.picker_item}
                                     label="No colocar el ticket de forma visible"
                                     value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
                                 />
                             </Picker>
-                        </View>
                     </View>
                 </View>
 
@@ -192,7 +187,6 @@ let styles = StyleSheet.create({
         justifyContent: "center",
         marginBottom: 20,
         marginTop: 0,
-        minHeight: 180,
     },
     bulletin_info_section: {
         alignItems: "center",
@@ -207,26 +201,14 @@ let styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         gap: 20,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         paddingVertical: 20,
     },
 
 
-    duration_picker_wraper: {
-        alignItems: "center",
-        backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
-        borderRadius: 5,
-        borderWidth: 1,
-        height: 40,
-        justifyContent: "center",
-        padding: 0,
-        width: "100%",
-    },
-
     input: {
         backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
+        borderColor: colors.input_border,
         borderRadius: 5,
         borderWidth: 1,
         marginVertical: 4,
@@ -236,7 +218,7 @@ let styles = StyleSheet.create({
         width: 280,
     },
     label: {
-        color: colors.black,
+        color: colors.dark_green,
         fontSize: 16,
         marginBottom: 6,
         marginTop: 18,
@@ -250,14 +232,15 @@ let styles = StyleSheet.create({
 
 
     picker_item: {
-        fontSize: 8,
+        color: colors.dark_green,
+        fontSize: 16,
     },
 
     
     picker_wraper: {
         alignItems: "center",
         backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
+        borderColor: colors.input_border,
         borderRadius: 5,
         borderWidth: 1,
         height: 40,
@@ -266,7 +249,7 @@ let styles = StyleSheet.create({
         width: 280,
     },
     title: {
-        color: colors.black,
+        color: colors.dark_green,
         fontSize: 28,
         fontWeight: "bold",
         marginBottom: 10,

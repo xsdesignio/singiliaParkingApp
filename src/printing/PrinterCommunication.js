@@ -59,8 +59,17 @@ export default class PrinterCommunicationEncoder {
         dataToSend += this.escPos.CHARACTER_SPACING_2;
 
         Object.entries(data).forEach(([key, value]) => {
-            let formattedString = this.formatStringToPrint(key + ": " + value + "\n");
-            dataToSend += formattedString;
+            if (key == "Id") {
+                dataToSend += this.escPos.CHARACTER_SIZE_3;
+                dataToSend += this.formatStringToPrint(key + ": " + value + "\n");
+                dataToSend += this.escPos.CHARACTER_SIZE_1;
+            } else if (key == "Hora") {
+                dataToSend += this.escPos.CHARACTER_SIZE_3;
+                dataToSend += this.formatStringToPrint(key + ": " + value + "\n");
+                dataToSend += this.escPos.CHARACTER_SIZE_1;
+            }
+            else
+                dataToSend += this.formatStringToPrint(key + ": " + value + "\n");
         });
 
         dataToSend += this.escPos.EMPHASIZED_OFF;
@@ -74,7 +83,6 @@ export default class PrinterCommunicationEncoder {
     getSingiliaInfo() {
         let dataToSend = this.escPos.CHARACTER_SIZE_1;
 
-
         dataToSend += this.escPos.FONT_C;
 
         dataToSend += "Por Singilia Barba:\n";
@@ -83,10 +91,26 @@ export default class PrinterCommunicationEncoder {
         dataToSend += "Tlf./Fax: 952 70 17 70\n";
         dataToSend += "www.singiliabarba.org\n";
 
-
         dataToSend += this.escPos.FONT_A;
 
         dataToSend += this.utils.MARGIN;
+
+        return base64.encode(dataToSend);
+    }
+
+    getEncodedPricesTable(prices_table) {
+        let dataToSend = this.escPos.CHARACTER_SIZE_1;
+
+        dataToSend += this.escPos.EMPHASIZED_ON;
+        dataToSend += "TABLA DE PRECIOS:\n";
+        dataToSend += this.escPos.EMPHASIZED_OFF;
+
+        prices_table.forEach(price => {
+            dataToSend += "------------------------\n";
+            dataToSend += this.formatStringToPrint("- " + price["duration"] + ": " + price["price"] + "€\n");
+        })
+
+        dataToSend += this.utils.MARGIN.repeat(2);
 
         return base64.encode(dataToSend);
     }

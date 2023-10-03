@@ -8,7 +8,7 @@ export function getDatabase() {
     return db;
 }
 
-export function createSQLiteTables() {
+export function createSQLTables() {
     // Open or create the SQLite database
     const db = getDatabase()
     
@@ -18,38 +18,42 @@ export function createSQLiteTables() {
         // Create the 'tickets' table
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS tickets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER,
                 responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
-                duration INTEGER NOT NULL,
+                duration TEXT NOT NULL,
                 registration TEXT NOT NULL,
                 price REAL NOT NULL,
                 payment_method TEXT NOT NULL,
                 paid INTEGER NOT NULL DEFAULT 0,
-                reference_id INTEGER NOT NULL DEFAULT -1,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         );
 
+        // reference_id INTEGER NOT NULL DEFAULT -1,
+
         // Create the 'bulletins' table
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS bulletins (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER,
                 responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
-                duration INTEGER NOT NULL,
+                duration TEXT,
                 registration TEXT NOT NULL,
-                price REAL NOT NULL,
+                price REAL,
                 payment_method TEXT,
-                paid INTEGER NOT NULL DEFAULT 0,
-                reference_id INTEGER NOT NULL DEFAULT -1,
+                paid INTEGER DEFAULT 0,
                 precept TEXT NOT NULL DEFAULT 'Estacionar sin ticket de aparcamiento',
                 brand TEXT,
                 model TEXT,
                 color TEXT,
+                paid_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime'))
             );`
         )
+
+        // reference_id INTEGER NOT NULL DEFAULT -1,
+
     }, (error) => {
         console.log("Error at creating tables: ", error)
     }, () => {

@@ -28,3 +28,30 @@ export function createTicketOnServer(ticket_info) {
         })
     })
 }
+
+
+export function fetchAvailableTickets() {
+    return new Promise((resolve) => {
+
+        fetch( `${ apiHost }/tickets/available` , {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then( response => {
+            if(response.status != 200)
+                throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
+            
+            return response.json()
+        })
+        .then(tickets => {
+            resolve(tickets)
+        })
+        .catch((error) => {
+            console.log("Error here on tickets api conn:")
+            console.log(error)
+            resolve(null)
+        })
+    })
+}

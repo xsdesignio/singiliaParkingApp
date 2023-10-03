@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
-
 import { Picker } from '@react-native-picker/picker';
 import { colors } from "../styles/colorPalette";
 
 import { createAndPrintTicket } from "../tickets/ticketsController";
+import { obtainAvailableTickets } from "../tickets/availableTickets";
 
 import { usePrinter } from "../printing/PrintingProvider";
 
@@ -22,10 +22,24 @@ export default function TicketsScreen() {
         CARD: "CARD"
     })
 
+    const [duration, setDuration] = useState()
+    
+    const [availableTickets, setAvailableTickets] = useState([])
+
+    useEffect(() => {
+        obtainAvailableTickets().then(available_tickets => {
+            if (available_tickets != null) {
+                setAvailableTickets(available_tickets.reverse())
+                setDuration(availableTickets[0].duration)
+            }
+            else
+                setAvailableTickets([])
+
+            console.log(availableTickets)
+        })
+    }, [])
+
     const [paymentMethod, setPaymentMethod] = useState(null)
-
-
-    const [duration, setDuration] = useState(30)
 
 
     const printer = usePrinter()
@@ -65,22 +79,17 @@ export default function TicketsScreen() {
                             }
                             itemStyle={styles.picker_item}
                         >
-                            <Picker.Item
-                                label="30 minutos"
-                                value={30}
-                            />
-                            <Picker.Item
-                                label="60 minutos"
-                                value={60}
-                            />
-                            <Picker.Item
-                                label="90 minutos"
-                                value={90}
-                            />
-                            <Picker.Item
-                                label="120 minutos"
-                                value={120}
-                            />
+                            {/* Iterate the available tickets to get a picker item for each available ticket duration */}
+                            {availableTickets.map((ticket) => {
+                                return(
+                                    <Picker.Item
+                                        style={styles.picker_item}
+                                        key={ticket.id}
+                                        label={ticket.duration}
+                                        value={ticket.duration}
+                                    />
+                                )
+                            })}
                         </Picker>
                     </View>
 
@@ -97,7 +106,7 @@ export default function TicketsScreen() {
                                 }
                             ]}
                             onPress={() => setPaymentMethod(payment_methods.CARD)}>
-                            <Text>Tarjeta</Text>
+                            <Text style={styles.selector_text}>Tarjeta</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[
@@ -108,7 +117,7 @@ export default function TicketsScreen() {
                                 }
                             ]}
                             onPress={() => setPaymentMethod(payment_methods.CASH)}>
-                            <Text>Efectivo</Text>
+                            <Text style={styles.selector_text}>Efectivo</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -125,7 +134,7 @@ let styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         gap: 20,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         paddingVertical: 20,
     },
 
@@ -133,7 +142,7 @@ let styles = StyleSheet.create({
     duration_picker_wraper: {
         alignItems: "center",
         backgroundColor: colors.white,
-        borderColor: colors.dark_green,
+        borderColor: colors.input_border,
         borderRadius: 5,
         borderWidth: 1,
         height: 40,
@@ -144,7 +153,7 @@ let styles = StyleSheet.create({
 
     input: {
         backgroundColor: colors.white,
-        borderColor: colors.dark_green,
+        borderColor: colors.input_border,
         borderRadius: 5,
         borderWidth: 1,
         paddingHorizontal: 10,
@@ -154,7 +163,7 @@ let styles = StyleSheet.create({
     },
 
     label: {
-        color: colors.black,
+        color: colors.dark_green,
         fontSize: 16,
         marginBottom: 6,
         marginTop: 18,
@@ -162,6 +171,9 @@ let styles = StyleSheet.create({
 
     picker: {
         width: 280,
+    },
+    picker_item: {
+        color: colors.dark_green,
     },
 
     
@@ -171,12 +183,16 @@ let styles = StyleSheet.create({
     },
     
     selector_button: {
-        borderColor: colors.dark_green,
+        borderColor: colors.input_border,
         borderRadius: 20,
         borderWidth: 1,
         marginHorizontal: 6,
         paddingHorizontal: 20,
         paddingVertical: 10
+    },
+
+    selector_text: {
+        color: colors.dark_green,
     },
     
     ticket_info_section: {
@@ -187,12 +203,11 @@ let styles = StyleSheet.create({
         alignItems: "center",
         flex: 1,
         justifyContent: "center",
-        marginBottom: 20,
-        marginTop: 0,
+        marginBottom: 40,
         minHeight: 180,
     },
     title: {
-        color: colors.black,
+        color: colors.dark_green,
         fontSize: 28,
         fontWeight: "bold",
         marginBottom: 10,

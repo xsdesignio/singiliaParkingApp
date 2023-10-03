@@ -10,6 +10,7 @@ export const colors = {
     "light_green_selected": "#95e8c9",
     "dark_blue": "darkblue",
     "green_button": "#559f97",
+    "input_border": "#559f97",
     "background": "#F9FFFF",
     "green_background": "#60826a",
     "button_selected": "#95e8c9",

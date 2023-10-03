@@ -1,6 +1,8 @@
 import { getSession } from "../session/sessionStorage"
 import { saveTicket } from "./storage/ticketsStorage"
 
+import { obtainAssignedZone } from "../zone_manager"
+
 import { createTicketOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage"
 import { Alert } from "react-native";
@@ -13,18 +15,20 @@ import { Alert } from "react-native";
 // @return Promise with the created ticket information
 export async function createAndPrintTicket(printer, duration, registration, paymentMethod) {
 
-
     try {
-
+        
         const { connectedDevice, printTicket } = printer
 
-        // Obtaining required data to create the ticket
         if(connectedDevice == null) {
-            throw new Error("No se ha encontrado ninguna impresora conectada.")
+            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
+            // throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
         let session = await getSession()
         let zone = await getConfigValue("zone")
+        if (zone == null || zone == undefined)
+            zone = await obtainAssignedZone()
+
 
         let ticket_dict = {
             "responsible_id": session["id"],
@@ -36,36 +40,37 @@ export async function createAndPrintTicket(printer, duration, registration, paym
             "paid": true,
             "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
         }
+
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
-
+        
+        
         printTicket(formatTicketToBePrinted(ticket_dict))
-
-
-
+        
+        
         ticket_dict["created_at"] = convertDateFormat(ticket_dict["created_at"])
         let server_ticket = await createTicketOnServer(ticket_dict)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
         // If not, save it with a negative id so it can be identified as a local ticket that has not been created on the server yet
-        if (server_ticket) {
-            ticket_dict["created_at"] = server_ticket["created_at"]
-            ticket_dict["reference_id"] = server_ticket["id"]
+        if (!server_ticket) 
+            throw new Error("Error al crear el ticket")
 
-        } else {
-            ticket_dict["reference_id"] = -1
-        }
+         
+        ticket_dict["created_at"] = server_ticket["created_at"]
+        ticket_dict["id"] = server_ticket["id"]
+
 
         let result_ticket = await saveTicket(ticket_dict)
 
-        if(result_ticket == null) {
-
+        if(result_ticket == null) 
             throw new Error("Error al guardar el ticket")
-        }
+        
         // If everything went well, show a success message
         Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
     }
     catch(error) {
+        console.log(error)
         Alert.alert(`Ha ocurrido un error al crear el ticket`, error.message)
     }
 }
@@ -74,7 +79,7 @@ export async function createAndPrintTicket(printer, duration, registration, paym
 function formatTicketToBePrinted(ticket) {
     return{
         "Zona": ticket["zone"],
-        "Duración": ticket["duration"] + " min",
+        "Duración": ticket["duration"],
         "Matrícula": ticket["registration"],
         "Importe": ticket["price"] + "0 eur",
         "Fecha": ticket["created_at"].split(" ")[0],
@@ -82,7 +87,6 @@ function formatTicketToBePrinted(ticket) {
     }
 
 }
-
 
 // get the ticket price depending on the duration
 // @param duration, duration of the ticket

@@ -2,9 +2,9 @@ import { Alert } from "react-native"
 import { getSession } from "../session/sessionStorage"
 import { saveBulletin, payBulletinLocally, addPendingBulletinToPayOnServer } from "./storage/bulletinsStorage";
 import { createBulletinOnServer, payBulletinOnServer } from "./api_conn/apiConn";
+import { obtainAvailableBulletins } from "./availableBulletins";
 import { getConfigValue } from "../configStorage";
-
-
+import { obtainAssignedZone } from "../zone_manager";
 
 
 export async function createAndPrintBulletin(printer, bulletinInfo) {
@@ -12,57 +12,46 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         const { connectedDevice, printBulletin } = printer
 
-        // Obtaining required data to create the ticket
         if(connectedDevice == null) {
-            throw new Error("No se ha encontrado ninguna impresora conectada.")
+            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
+            //throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
         let session = await getSession()
         let zone = await getConfigValue("zone")
-
-        let price = getBulletinPrice(bulletinInfo["duration"])
+        if (zone == null || zone == undefined)
+            zone = await obtainAssignedZone()
 
 
         let bulletin_dict = {
             ...bulletinInfo,
             "responsible_id": session["id"],
             "zone_name": zone,
-            "price": price,
             "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
         }
-
-        console.log(bulletin_dict["created_at"])
 
          // Check if ticket_info has all required information and create the ticket on the server
         check_information(bulletin_dict)
 
-        printBulletin({
-            "Zona": bulletin_dict["zone_name"],
-            "Duración": bulletin_dict["duration"] + " min",
-            "Matrícula": bulletin_dict["registration"],
-            "Importe": bulletin_dict["price"] + "0 eur",
-            "Precepto": bulletin_dict["precept"],
-            "Fecha": bulletin_dict["created_at"].split(" ")[0],
-            "Hora": bulletin_dict["created_at"].split(" ")[1] + "h",
-        })
-
-        
 
         bulletin_dict["created_at"] = convertDateFormat(bulletin_dict["created_at"])
         
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
 
+
         // If the bulletin has been successfully created on the server, saave it locally
         // Otherwise, save it locally with a reference_id of -1 so it can be uploaded later
-        if(server_bulletin) {
-            bulletin_dict["reference_id"] = server_bulletin["id"]
-            bulletin_dict["created_at"] = server_bulletin["created_at"]
-        } else {
-            bulletin_dict["reference_id"] = -1
+        if(!server_bulletin) {
+            throw new Error("Error al crear el boletín")
         }
+
+        bulletin_dict["id"] = server_bulletin["id"]
+        bulletin_dict["created_at"] = server_bulletin["created_at"]
+        
+        let available_bulletins = await obtainAvailableBulletins()
+        printBulletin(formatBulletinToBePrinted(bulletin_dict), available_bulletins)
         
         let result = await saveBulletin(bulletin_dict)
-            
         if(result == null) {
             throw new Error("Error al guardar el boletín")
         } 
@@ -71,25 +60,27 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             [
                 {text: "Cancelar"}, 
                 {text: "Volver a imprimir", onPress: () => {
-            
-                    printer.printBulletin({
-                        "Zona": bulletin_dict["zone_name"],
-                        "Duración": bulletin_dict["duration"] + " min",
-                        "Matrícula": bulletin_dict["registration"],
-                        "Precio": bulletin_dict["price"] + "0 eur",
-                        "Precepto": bulletin_dict["precept"],
-                        "Fecha": bulletin_dict["created_at"].split(" ")[0],
-                        "Hora": bulletin_dict["created_at"].split(" ")[1] +"h",
-                    })
+                    printBulletin(formatBulletinToBePrinted(bulletin_dict))
                 }}
             ]
         );
  
-        return(bulletin_dict)
+        return bulletin_dict
     }
     catch(error) {
-        console.log(error)
         Alert.alert("Error al imprimir el boletín", error.message)
+    }
+}
+
+
+function formatBulletinToBePrinted(bulletin) {
+    return {
+        "Id": bulletin["id"],
+        "Zona": bulletin["zone_name"],
+        "Matrícula": bulletin["registration"],
+        "Precepto": bulletin["precept"],
+        "Fecha": bulletin["created_at"].split(" ")[0],
+        "Hora": bulletin["created_at"].split(" ")[1] +"h",
     }
 }
 
@@ -97,44 +88,28 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 // Pay a certain bulletin, updating it's paid status on the server and locally
 // Create an alert with the result of the operation
 // @param bulletin_id, id of the bulletin to pay (from the local database)
-export function payBulletin(bulletin_info) {
-    return new Promise((resolve) => {
-        const paymentMethods = [
-            {
-                text: "Efectivo",
-                method: "CASH",
-            },
-            {
-                text: "Tarjeta",
-                method: "CARD",
-            },
-        ];
-    
-        Alert.alert("Pagar Boletín", "Elige el método de pago", paymentMethods.map((method) => ({
-            text: method.text,
-            onPress: async () => {
-                await pay(bulletin_info["id"], (bulletin_info["reference_id"] || -1), method.method);
-                resolve()
-            },
-        })));
-    })
-}
-
-
-
-async function pay(bulletin_id, reference_id, payment_method) {
+export async function cancelBulletin(printer, id, payment_method, duration, price) {
     try {
-        let paid_locally = await payBulletinLocally(bulletin_id, payment_method)
 
-        console.log("paid locally:", paid_locally)
+        const { connectedDevice, printBulletinCancellation } = printer
         
+        if (connectedDevice == null) {
+            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
+            //throw new Error("No se ha encontrado ninguna impresora conectada.")
+        }
+        
+        let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
+
+        if(paid_bulletin == null) 
+            throw new Error("Error al pagar el boletín")
+            //await addBulletinToUploadQueue(id, payment_method, duration, price)
+        
+        let paid_locally = await payBulletinLocally(id, payment_method, duration, price)
+
+        printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
+
         if(!paid_locally)
             throw new Error("Error al pagar el boletín")
-            
-        let sent_to_server = await payBulletinOnServer(reference_id, payment_method)
-
-        if(!sent_to_server) 
-            await addBulletinToUploadQueue(bulletin_id, payment_method)
 
         setTimeout(() => {
             Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito", [{
@@ -142,7 +117,9 @@ async function pay(bulletin_id, reference_id, payment_method) {
             }]);
         }, 100); // Show the second alert after a 100ms delay
         
+        return true
     } catch (error) {
+        console.log(error)
         setTimeout(() => {
             Alert.alert("Error", "Ha ocurrido un error al pagar el boletín", [{
                 text: "Ok",
@@ -153,52 +130,32 @@ async function pay(bulletin_id, reference_id, payment_method) {
 
 
 
+function formatBulletinCancellationToBePrinted(bulletin) {
+    return  {
+        "Id": bulletin["id"],
+        "Matrícula": bulletin["registration"],
+        "duration": bulletin["duration"],
+        "price": bulletin["price"],
+        "created_at": bulletin["created_at"],
+        "paid": bulletin["paid"],
+        "payment_method": bulletin["payment_method"]
+    }
+}
+
+
 function check_information(bulletin_info) {
     // Check if bulletin_info has all required information
+
     if (!bulletin_info["responsible_id"] || bulletin_info["responsible_id"] == "") 
         throw new Error("No se ha encontrado el nombre del responsable.")
     
-    if (!bulletin_info["duration"] || bulletin_info["duration"] == "") 
-        throw new Error("No se ha encontrado la duración del boletín.")
-    
     if (!bulletin_info["registration"] || bulletin_info["registration"] == "") 
         throw new Error("No se ha encontrado la matrícula del vehículo.")
-    
-    if (!bulletin_info["price"] || bulletin_info["price"] == "") 
-        throw new Error("No se ha encontrado el precio del boletín.")
-    
-    if (bulletin_info["paid"] == undefined || bulletin_info["paid"] == null)
-        throw new Error("No se ha encontrado el estado de pago del boletín.")
     
     if (!bulletin_info["zone_name"] || bulletin_info["zone_name"] == "") 
         throw new Error("No se ha encontrado la ubicación del boletín.")
     
 }
-
-
-
-// get the bulletin price depending on the duration
-// @param duration, duration of the bulletin
-// @return price of the bulletin
-export function getBulletinPrice(duration) {
-    if(duration == null || 
-        duration == undefined || 
-        duration <= 0) 
-        return 0
-
-    if(duration <= 30) 
-        return 0.7
-    
-    if(duration <= 60) 
-        return 0.9
-    
-    if(duration <= 90) 
-        return 1.4
-    
-    return 1.8
-    
-}
-
 
 
 // Add a bulletin to the upload queue

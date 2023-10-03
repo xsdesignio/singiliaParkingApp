@@ -67,42 +67,42 @@ export function getBulletinsByDuration(duration = null) {
 // @param id: id of the bulletin to be paid
 // @returns a promise with the bulletin paid
 // @throws an error if the bulletins doesn't exist or the bulletin is already paid
-export function payBulletinLocally(id, payment_method) {
-  return new Promise((resolve, reject) => {
-      let db = getDatabase();
-
-      db.transaction((tx) => {
-          // Check if the bulletin exists and is not paid
-          tx.executeSql(
-              "SELECT * FROM bulletins WHERE id = ?",
-              [id],
-              (_, result) => {
-                  if (result.rows.length === 0) {
-                      resolve(null);
-                  } else if (result.rows.item(0)["paid"] === 1) {
-                      reject("Bulletin already paid");
-                  } else {
-                      // Bulletin exists and is not paid, proceed with the update
-                      tx.executeSql(
-                          "UPDATE bulletins SET paid = 1, payment_method = ? WHERE id = ?",
-                          [payment_method, id],
-                          () => {
-                              resolve(true);
-                          },
-                          (_, error) => {
-                              resolve(false);
-                          }
-                      );
-                  }
-              },
-              () => {
-                  resolve(null);
-              }
-          );
-      }, () => {
-          resolve(null);
-      });
-  });
+export function payBulletinLocally(id, payment_method, duration, price) {
+	return new Promise((resolve, reject) => {
+		let db = getDatabase();
+		db.transaction((tx) => {
+			// Check if the bulletin exists and is not paid
+			tx.executeSql(
+				"SELECT * FROM bulletins WHERE id = ?",
+				[id],
+				(_, result) => {
+					if (result.rows.length === 0) {
+						resolve(null);
+					} else if (result.rows.item(0)["paid"] === 1) {
+						reject("Bulletin already paid");
+					} else {
+						// Bulletin exists and is not paid, proceed with the update
+						tx.executeSql(
+							"UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ? WHERE id = ?",
+							[payment_method, duration, price, id],
+							() => {
+								resolve(true);
+							},
+							(_, error) => {
+								console.log(error)
+								resolve(false);
+							}
+						);
+					}
+				},
+				(_, error) => {
+					reject(error);
+				}
+			);
+		}, (_, error) => {
+			reject(error);
+		});
+	});
 }
 
 
@@ -195,25 +195,23 @@ export function saveBulletin(bulletin_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO bulletins (responsible_id, zone_name, duration, registration, price, payment_method, paid, precept, brand, model, color, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO bulletins (id, responsible_id, zone_name, registration, paid, precept, brand, model, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
+                    bulletin_info["id"], 
                     bulletin_info["responsible_id"], 
                     bulletin_info["zone_name"], 
-                    bulletin_info["duration"], 
                     bulletin_info["registration"], 
-                    bulletin_info["price"], 
-                    bulletin_info["payment_method"], 
                     bulletin_info["paid"], 
                     bulletin_info["precept"],
                     bulletin_info["brand"] || "", 
                     bulletin_info["model"] || "", 
                     bulletin_info["color"] || "",
-                    bulletin_info["reference_id"] || -1 
                 ], 
                 (_, result) => {
                   resolve(result.rows._array)
                 },
-                (_, error) => reject(error.message));
+                (_, error) => {
+                    reject(error.message)});
             },
             (error) => {
               reject(error.message)

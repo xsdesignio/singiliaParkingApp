@@ -1,6 +1,7 @@
 import { getDatabase } from "../../database";
 
 
+
 // Get all tickets saved in the database
 // @returns a promise with the tickets array
 export function getTicketsSaved() {
@@ -26,6 +27,37 @@ export function getTicketsSaved() {
       );
     });
   }
+
+
+
+// Get all tickets saved in the database
+// @returns a promise with the tickets array
+export function getTicketsSavedByPage(page) {
+    let page_size = 10
+    // Return the tickets of the page given
+    return new Promise((resolve, reject) => {
+        let db = getDatabase();
+    
+        db.transaction(
+            (tx) => {
+            tx.executeSql(
+                "SELECT * FROM tickets LIMIT ? OFFSET ?;",
+                [page_size, page_size * page],
+                (_, result) => {
+                resolve(result.rows._array);
+                },
+                (_, error) => {
+                    reject(error.message)
+                    return true
+                }
+            );
+            },
+            (error) => reject(error.message),
+            () => {}
+        );
+    });
+  }
+
 
 // Get all tickets saved in the database
 // @returns a promise with the tickets array
@@ -113,7 +145,7 @@ export function deleteOldTickets() {
 
         db.transaction((tx) => {
             tx.executeSql(
-                "DELETE FROM tickets WHERE paid = 1 AND created_at < datetime('now', '-1 day')",
+                "DELETE FROM tickets WHERE created_at < datetime('now', '-1 day')",
                 [],
                 (_, result) => resolve(result.rows._array),
                 (_, error) => reject(error.message)
@@ -150,8 +182,9 @@ export function saveTicket(ticket_info) {
         db.transaction(
             (tx) => {
             tx.executeSql(
-                "INSERT INTO tickets (responsible_id, zone_name, duration, registration, price, payment_method, paid, reference_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (id, responsible_id, zone_name, duration, registration, price, payment_method, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
+                    ticket_info["id"], 
                     ticket_info["responsible_id"], 
                     ticket_info["zone"], 
                     ticket_info["duration"], 
@@ -159,7 +192,6 @@ export function saveTicket(ticket_info) {
                     ticket_info["price"], 
                     ticket_info["payment_method"], 
                     ticket_info["paid"], 
-                    ticket_info["reference_id"] || -1, 
                 ], 
                 (_, result) => {
                     resolve(result)

@@ -1,28 +1,31 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, Image, TextInput } from "react-native";
 import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
 
+import BulletinCancellationModel from "../components/bulletinCancellationModel";
+
 import { colors } from "../styles/colorPalette";
 
-import { payBulletin } from "../bulletins/bulletinsController";
 import { usePrinter } from "../printing/PrintingProvider";
 
 export default function RecordScreen({ navigation }) {
 
-    const [ticketsActive, setTicketsActive] = useState(true);
-
-    const [tickets, setTickets] = useState([])
 
     const { connectedDevice, printTicket, printBulletin } = usePrinter();
 
+    const [ticketsActive, setTicketsActive] = useState(true);
+    const [tickets, setTickets] = useState([])
     
     const [bulletins, setBulletins] = useState([])
+    const [filteredBulletins, setFilteredBulletins]  = useState([])
 
+    
     useEffect(() => {
+
         const unsubscribe = navigation.addListener('focus', () => {
             setData();
         });
@@ -30,7 +33,7 @@ export default function RecordScreen({ navigation }) {
         return unsubscribe;
     }, []);
 
-    
+
     // Set the data to the states if data is not empty
     function setData() {
         getTicketsSaved().then((tickets) => {
@@ -46,11 +49,13 @@ export default function RecordScreen({ navigation }) {
             ])
         })
 
-        getBulletinsSaved().then((bulletins) => {
+        getBulletinsSaved().then((obtained_bulletins) => {
             
-            if (bulletins.length > 0) {
-                setBulletins(bulletins.reverse())
+            if (obtained_bulletins.length > 0) {
+                setBulletins(obtained_bulletins.reverse())
+                setFilteredBulletins(obtained_bulletins)
             }
+
         }).catch((error) => {
             Alert.alert("Error al cargar los datos", error, [
                 {
@@ -112,11 +117,11 @@ export default function RecordScreen({ navigation }) {
                 text: "pagar",
                 onPress: () => {
                     try {
-                        payBulletin(bulletin)
+                        managePayment(bulletin)/* 
                             .then(() => {
                                 setData(); // Call setData() to refresh the data after successful payment
                                 
-                            });
+                            }); */
                     } catch (error) {
                         Alert.alert("Error al pagar", error, [
                             {
@@ -132,6 +137,12 @@ export default function RecordScreen({ navigation }) {
 
     }
 
+
+    function managePayment(bulletin) {
+        setSelectedBulletin(bulletin)
+        setBulletinPayment(true)
+    }
+    
     function openTicket(ticket) {
         // Make the same as openBulletin but with tickets. Just delete the pay option and the "color", "model" and "brand" fields
         
@@ -179,12 +190,11 @@ export default function RecordScreen({ navigation }) {
         ])
     }
     
-
     const renderTicket = ({ item }) => {
         if(item == null || item == undefined)
             return
 
-        let ticket_style = getTicketAppareanceByDuration(item["duration"])
+        let ticket_style = styles.green_box
         let date = formatDate(item["created_at"].split(" ")[0])
         let time = item["created_at"].split(" ")[1].substring(0, 5)
         let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
@@ -193,9 +203,11 @@ export default function RecordScreen({ navigation }) {
             <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
                 <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
+                <Text style={styles.ticket_text}>Id { item["id"] }</Text>
                 <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
+                <Text style={styles.ticket_text}>Zona: { item["zone_name"] }</Text>
                 <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
-                <Text style={styles.ticket_text}>Precio: { item["price"] }0 €</Text>
+                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_text}>Hora: { time } h</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
@@ -204,14 +216,14 @@ export default function RecordScreen({ navigation }) {
         
     }
     
-
     const renderBulletin = ({item}) => {
         if(item == null || item == undefined)
             return
 
         let date = formatDate(item["created_at"].split(" ")[0])
         let time = item["created_at"].split(" ")[1].substring(0, 5)
-        let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
+        
+        let payment_method =  item["payment_method"] ? item["payment_method"] == "CASH" ? "efectivo":"tarjeta" : null;
 
         let payment_status = item["paid"] ? "Sí" : "No"
 
@@ -219,10 +231,14 @@ export default function RecordScreen({ navigation }) {
             <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
                 <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
+                <Text style={styles.ticket_text}>Id { item["id"] }</Text>
                 <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
-                <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
-                <Text style={styles.ticket_text}>Precio: { item["price"] }0 €</Text>
                 <Text style={styles.ticket_text}>Pagado: { payment_status }</Text>
+
+                { item["duration"] != null  && item["duration"].length > 0 ? <Text style={styles.ticket_text}>Duración: { item["duration"] }</Text> : <></> }
+                { item["price"] != null  && item["price"] > 0 ? <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text> : <></> }
+                { payment_method != null ? <Text style={styles.ticket_text}>Método de pago: { payment_method } €</Text> : <></> }
+
                 <Text style={styles.ticket_text}>Precept: { item["precept"] }</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_text}>Hora: { time } h</Text>
@@ -240,36 +256,45 @@ export default function RecordScreen({ navigation }) {
         return `${day}/${month}/${year}`
     }
 
-
     const tickets_list = (tickets==[] || tickets.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún ticket</Text>) : (<FlatList
         data={tickets}
         renderItem={renderTicket}
         keyExtractor={(ticket) => ticket.id.toString()}
     />))
 
-    const bulletins_list = (bulletins==[] || bulletins.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún boletín</Text>) : (<FlatList
-        data={bulletins}
+    const bulletins_list = (filteredBulletins==[] || filteredBulletins.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún boletín</Text>) : (<FlatList
+        data={filteredBulletins}
         renderItem={renderBulletin}
-        keyExtractor={(ticket) => ticket.id.toString()}
+        keyExtractor={(bulletin) => bulletin.id.toString()}
     />))
 
 
-    function getTicketAppareanceByDuration(duration) {
-        switch(duration) {
-            case 30:
-                return styles.yellow_box
-            case 60:
-                return styles.green_box
-            case 90:
-                return styles.orange_box
-            case 120:
-                return styles.pink_box
-        }
+
+    const [selectedBulletin, setSelectedBulletin] = useState()
+
+    const [bulletinPayment, setBulletinPayment] = useState(false)
+
+    const [filterId, setFilterId] = useState(null)
+
+    
+    function filterBulletins(id) {
+        console.log(id);
+        setFilterId(id);
+        
+        let updated_bulletins = bulletins.filter((bulletin) => {
+            return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(id);
+        });
+    
+        setFilteredBulletins(updated_bulletins);
     }
 
+
     return(<View style={styles.container}>
-            <Text style={styles.title} horizontal="true">Historial de impresión:</Text>
-            
+
+            {/* Bulletin Modal to manage bulletin cancellation and printing */}
+            { bulletinPayment ? <BulletinCancellationModel bulletin={selectedBulletin} closeModal={() => setBulletinPayment(false)}></BulletinCancellationModel> : <></>}
+
+            {/* Selector to switch between tickets and bulletins list */}
             <View style={styles.selector}>
                 <TouchableOpacity 
                     style={[styles.selector_button, {
@@ -292,8 +317,28 @@ export default function RecordScreen({ navigation }) {
                 </TouchableOpacity>
 
             </View>
+
+            {/* The choosen list */}
             <View style={styles.tickets_list}>
+                
+                {/* If tickets are not active, it means that bulletins are active */}
+                { !ticketsActive ? (
+                    <>
+                        <Text style={styles.label}>Filtrar boletines mediante id:</Text>
+                        <TextInput
+                                style={styles.input}
+                                value = {filterId}
+                                keyboardType="numeric"
+                                onChangeText={(value) => filterBulletins(value)}
+                                placeholder="000">
+                        </TextInput>
+                    </>
+                    
+                    
+                ) : (<></>) }
+
                 { ticketsActive? tickets_list: bulletins_list }
+
             </View>
         </View>)
 }
@@ -306,6 +351,16 @@ const styles = {
         alignItems: "center",
         zIndex: -20,
         height: "100%",
+    },
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+        borderRadius: 8,
+        width: "80%",
+        alignSelf: "center",
+        backgroundColor: colors.white,
     },
     selector: {
         flexDirection: "row",
@@ -336,9 +391,19 @@ const styles = {
         marginTop: 20,
         color: colors.black,
     },
+    label: {
+        fontSize: 14,
+        fontWeight: '400',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 0,
+        marginTop: 20,
+        color: colors.black,
+    },
     tickets_list: {
         width: "80%",
-        height: "76%",
+        height: "84%",
+        alignItems: "center",
         marginTop: 10,
         marginBottom: 0,
         borderRadius: 12,
@@ -402,4 +467,17 @@ const styles = {
         borderColor: "rgba(63, 77, 202, 0.8)",
         borderWidth: 2,
     }
+    /* 
+    duration_picker_wraper: {
+        alignItems: "center",
+        backgroundColor: colors.white,
+        borderColor: colors.dark_blue,
+        borderRadius: 5,
+        borderWidth: 1,
+        height: 40,
+        justifyContent: "center",
+        padding: 0,
+        width: "100%",
+    },
+ */
 }

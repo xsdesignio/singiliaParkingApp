@@ -60,8 +60,9 @@ function DefaultNavigator() {
   
 	/* const [userName, setUserName] = useState(""); */
 	useEffect(() => {
-		checkLogin().then(() => {
-			initApp();
+		checkLogin().then((logged_in) => {
+			if(logged_in)
+				initApp();
 		})
 	}, []);
 
@@ -73,6 +74,7 @@ function DefaultNavigator() {
 		if(session != null) {
 			if ("id" in session && "role" in session && "name" in session && "email" in session) {
 				setIsLoggedIn(true);
+				return true;
 			}
 		
 			let serverSession = await getServerSession();
@@ -80,12 +82,12 @@ function DefaultNavigator() {
 			if(serverSession != null)
 				if ("id" in serverSession && "role" in serverSession && "name" in serverSession && "email" in serverSession) {
 					setIsLoggedIn(true);
-					return;
+					return true;
 				}
 		}
-			
 		
 		setIsLoggedIn(false);
+		return false
 	}
 
 
@@ -144,7 +146,7 @@ function DefaultNavigator() {
 							{
 								"display": isKeyboardOpen ? "none": "flex",
 								height: 72,
-								borderTopColor: colors.dark_green,
+								borderTopColor: colors.input_border,
 								borderTopWidth: 1,
 							},
 							null
