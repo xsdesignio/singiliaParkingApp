@@ -67,7 +67,6 @@ function DefaultNavigator() {
 
 	async function checkLogin() {
 
-
 		let session = await getSession();
 
 		if(session != null) {
