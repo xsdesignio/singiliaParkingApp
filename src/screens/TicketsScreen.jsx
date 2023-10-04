@@ -22,20 +22,21 @@ export default function TicketsScreen() {
         CARD: "CARD"
     })
 
-    const [duration, setDuration] = useState()
+    const [duration, setDuration] = useState(null)
+    const [price, setPrice] = useState()
     
     const [availableTickets, setAvailableTickets] = useState([])
 
     useEffect(() => {
         obtainAvailableTickets().then(available_tickets => {
-            if (available_tickets != null) {
+            if (availableTickets.length == 0 && available_tickets != null) {
                 setAvailableTickets(available_tickets.reverse())
                 setDuration(availableTickets[0].duration)
+                setPrice(availableTickets[0].price)
             }
             else
                 setAvailableTickets([])
 
-            console.log(availableTickets)
         })
     }, [])
 
@@ -74,9 +75,14 @@ export default function TicketsScreen() {
                         <Picker
                             style={styles.picker}
                             selectedValue={duration}
-                            onValueChange={(duration) => 
+                            onValueChange={(duration) =>  {
                                     setDuration(duration)
-                            }
+
+                                    const selectedTicket = availableTickets.find((ticket) => ticket.duration === duration);
+                                    if (selectedTicket) {
+                                        setPrice(selectedTicket.price);
+                                    }
+                            }}
                             itemStyle={styles.picker_item}
                         >
                             {/* Iterate the available tickets to get a picker item for each available ticket duration */}
@@ -91,8 +97,11 @@ export default function TicketsScreen() {
                                 )
                             })}
                         </Picker>
+                        
                     </View>
 
+                    <Text style={styles.label}>Precio:</Text>
+                    <Text style={styles.price_text}>{price}€</Text>
 
                     <Text style={styles.label}>Métodos de pago:</Text>
                     
@@ -176,6 +185,12 @@ let styles = StyleSheet.create({
         color: colors.dark_green,
     },
 
+    price_text: {
+        color: colors.dark_green,
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+
     
     selector: {
         flexDirection: "row",
@@ -203,7 +218,7 @@ let styles = StyleSheet.create({
         alignItems: "center",
         flex: 1,
         justifyContent: "center",
-        marginBottom: 40,
+        marginBottom: -40,
         minHeight: 180,
     },
     title: {

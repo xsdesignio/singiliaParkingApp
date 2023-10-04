@@ -8,7 +8,7 @@ export async function obtainAvailableTickets() {
 
     if(availableTickets==null) {
         availableTickets = await fetchAvailableTickets()
-        console.log("available server tickets: ", availableTickets)
+        
         if(availableTickets == null) 
             return null
 

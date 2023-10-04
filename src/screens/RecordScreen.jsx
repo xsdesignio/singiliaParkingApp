@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, {memo} from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, Image, TextInput } from "react-native";
 import { useState, useEffect } from "react";
 
@@ -12,8 +12,9 @@ import { colors } from "../styles/colorPalette";
 
 import { usePrinter } from "../printing/PrintingProvider";
 
-export default function RecordScreen({ navigation }) {
 
+
+export default function RecordScreen({ navigation }) {
 
     const { connectedDevice, printTicket, printBulletin } = usePrinter();
 
@@ -26,8 +27,8 @@ export default function RecordScreen({ navigation }) {
     
     useEffect(() => {
 
-        const unsubscribe = navigation.addListener('focus', () => {
-            setData();
+        const unsubscribe = navigation.addListener('focus', async () => {
+            await setData();
         });
     
         return unsubscribe;
@@ -37,34 +38,35 @@ export default function RecordScreen({ navigation }) {
     // Set the data to the states if data is not empty
     function setData() {
         getTicketsSaved().then((tickets) => {
-            
             if (tickets.length > 0) {
-                setTickets(tickets.reverse())
+                setTickets(tickets.reverse());
             }
         }).catch((error) => {
-            Alert.alert("Error al cargar los datos", error, [
-                {
-                    text: "Ok",
-                }
-            ])
-        })
-
+            Alert.alert("Error al cargar los datos", error, [{
+                text: "Ok",
+            }]);
+        });
+    
         getBulletinsSaved().then((obtained_bulletins) => {
-            
             if (obtained_bulletins.length > 0) {
-                setBulletins(obtained_bulletins.reverse())
-                setFilteredBulletins(obtained_bulletins)
-            }
-
-        }).catch((error) => {
-            Alert.alert("Error al cargar los datos", error, [
-                {
-                    text: "Vale",
+                setBulletins(obtained_bulletins.reverse());
+                // Filter bulletins based on filterId
+                if (filterId !== null) {
+                    const updated_bulletins = obtained_bulletins.filter((bulletin) => {
+                        return bulletin.id && bulletin.id.toString().includes(filterId);
+                    });
+                    setFilteredBulletins(updated_bulletins);
+                } else {
+                    setFilteredBulletins(obtained_bulletins);
                 }
-            ])
-        })
-        
+            }
+        }).catch((error) => {
+            Alert.alert("Error al cargar los datos", error, [{
+                text: "Vale",
+            }]);
+        });
     }
+    
 
     function openBulletin(bulletin) {
         // Open an alert where the user can print the bulletin again such as pay it
@@ -190,62 +192,90 @@ export default function RecordScreen({ navigation }) {
         ])
     }
     
-    const renderTicket = ({ item }) => {
-        if(item == null || item == undefined)
+    const RenderTicket = memo(({ ticket }) => {
+        if(ticket == null || ticket == undefined)
             return
 
         let ticket_style = styles.green_box
-        let date = formatDate(item["created_at"].split(" ")[0])
-        let time = item["created_at"].split(" ")[1].substring(0, 5)
-        let payment_method = item["payment_method"] == "CASH"? "efectivo":"tarjeta"
+        let date = formatDate(ticket["created_at"].split(" ")[0])
+        let time = ticket["created_at"].split(" ")[1].substring(0, 5)
+        let payment_method = ticket["payment_method"] == "CASH"? "efectivo":"tarjeta"
 
         return (<View style={[styles.ticket, ticket_style]}>
-            <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(item)}>
+            <TouchableOpacity style={styles.ticket_button} onPress={() => openTicket(ticket)}>
                 <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
-                <Text style={styles.ticket_text}>Id { item["id"] }</Text>
-                <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
-                <Text style={styles.ticket_text}>Zona: { item["zone_name"] }</Text>
-                <Text style={styles.ticket_text}>Duración { item["duration"] }</Text>
-                <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text>
+                <Text style={styles.ticket_important_text}>Id: { ticket["id"] }</Text>
+                <Text style={styles.ticket_text}>Matrícula { ticket["registration"] }</Text>
                 <Text style={styles.ticket_text}>Fecha: { date } </Text>
-                <Text style={styles.ticket_text}>Hora: { time } h</Text>
+                <Text style={styles.ticket_important_text}>Hora: { time } h</Text>
+                <Text style={styles.ticket_text}>Zona: { ticket["zone_name"] }</Text>
+                <Text style={styles.ticket_text}>Duración { ticket["duration"] }</Text>
+                <Text style={styles.ticket_text}>Precio: { ticket["price"] } €</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>);
-        
-    }
+    })
+    RenderTicket.displayName = 'RenderedTicket';
     
-    const renderBulletin = ({item}) => {
-        if(item == null || item == undefined)
-            return
-
-        let date = formatDate(item["created_at"].split(" ")[0])
-        let time = item["created_at"].split(" ")[1].substring(0, 5)
-        
-        let payment_method =  item["payment_method"] ? item["payment_method"] == "CASH" ? "efectivo":"tarjeta" : null;
-
-        let payment_status = item["paid"] ? "Sí" : "No"
-
-        return(<View style={[styles.ticket, styles.bulletin_box]}>
-            <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(item)}>
-                <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
-                <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
-                <Text style={styles.ticket_text}>Id { item["id"] }</Text>
-                <Text style={styles.ticket_text}>Matrícula { item["registration"] }</Text>
-                <Text style={styles.ticket_text}>Pagado: { payment_status }</Text>
-
-                { item["duration"] != null  && item["duration"].length > 0 ? <Text style={styles.ticket_text}>Duración: { item["duration"] }</Text> : <></> }
-                { item["price"] != null  && item["price"] > 0 ? <Text style={styles.ticket_text}>Precio: { item["price"] } €</Text> : <></> }
-                { payment_method != null ? <Text style={styles.ticket_text}>Método de pago: { payment_method } €</Text> : <></> }
-
-                <Text style={styles.ticket_text}>Precept: { item["precept"] }</Text>
-                <Text style={styles.ticket_text}>Fecha: { date } </Text>
-                <Text style={styles.ticket_text}>Hora: { time } h</Text>
-                <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
-            </TouchableOpacity>
-        </View>)
-    }
+    const RenderedBulletin = memo(({ bulletin }) => {
+        if (bulletin == null || bulletin == undefined)
+            return null;
+    
+        let date = formatDate(bulletin["created_at"].split(" ")[0]);
+        let time = bulletin["created_at"].split(" ")[1].substring(0, 5);
+    
+        let payment_method = bulletin["payment_method"] ? (bulletin["payment_method"] == "CASH" ? "efectivo" : "tarjeta") : null;
+    
+        let payment_status = bulletin["paid"] ? "Sí" : "No";
+    
+        return (
+            <View style={[styles.ticket, styles.bulletin_box]}>
+                <TouchableOpacity style={styles.ticket_button} onPress={() => openBulletin(bulletin)}>
+                    <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image} />
+                    <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
+                    <Text style={styles.ticket_important_text}>Id: {bulletin["id"]}</Text>
+                    <Text style={styles.ticket_text}>Matrícula: {bulletin["registration"]}</Text>
+                    <Text style={styles.ticket_text}>Fecha: {date}</Text>
+                    <Text style={styles.ticket_important_text}>Hora: {time} h</Text>
+                    <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
+                    {bulletin["duration"] != null && bulletin["duration"].length > 0 ? (
+                        <Text style={styles.ticket_text}>Duración: {bulletin["duration"]}</Text>
+                    ) : (
+                        <></>
+                    )}
+                    {bulletin["price"] != null && bulletin["price"] > 0 ? (
+                        <Text style={styles.ticket_text}>Precio: {bulletin["price"]} €</Text>
+                    ) : (
+                        <></>
+                    )}
+                    {payment_method != null ? (
+                        <Text style={styles.ticket_text}>Método de pago: {payment_method} €</Text>
+                    ) : (
+                        <></>
+                    )}
+    
+                    {bulletin["brand"] != null && bulletin["brand"].length > 0 ? (
+                        <Text style={styles.ticket_text}>Marca: {bulletin["brand"]}</Text>
+                    ) : (
+                        <></>
+                    )}
+                    {bulletin["model"] != null && bulletin["model"] > 0 ? (
+                        <Text style={styles.ticket_text}>Modelo: {bulletin["model"]}</Text>
+                    ) : (
+                        <></>
+                    )}
+                    {bulletin["color"] != null && bulletin["color"].length > 0 ? (
+                        <Text style={styles.ticket_text}>Color: {bulletin["color"]}</Text>
+                    ) : (
+                        <></>
+                    )}
+                    <Text style={styles.ticket_text}>Precept: {bulletin["precept"]}</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    });
+    RenderedBulletin.displayName = 'RenderedBulletin';
 
     function formatDate(date) {
         let elements = date.split("-")
@@ -258,16 +288,16 @@ export default function RecordScreen({ navigation }) {
 
     const tickets_list = (tickets==[] || tickets.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún ticket</Text>) : (<FlatList
         data={tickets}
-        renderItem={renderTicket}
+        renderItem={({item}) => <RenderTicket ticket={item} />}
         keyExtractor={(ticket) => ticket.id.toString()}
     />))
 
-    const bulletins_list = (filteredBulletins==[] || filteredBulletins.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún boletín</Text>) : (<FlatList
+    const bulletins_list = (filteredBulletins==[] || filteredBulletins.length === 0 ? (<Text style={styles.no_elements_text}>Aún no has impreso ningún boletín</Text>) : 
+    (<FlatList
         data={filteredBulletins}
-        renderItem={renderBulletin}
+        renderItem={({ item }) => <RenderedBulletin bulletin={item} />}
         keyExtractor={(bulletin) => bulletin.id.toString()}
     />))
-
 
 
     const [selectedBulletin, setSelectedBulletin] = useState()
@@ -278,7 +308,6 @@ export default function RecordScreen({ navigation }) {
 
     
     function filterBulletins(id) {
-        console.log(id);
         setFilterId(id);
         
         let updated_bulletins = bulletins.filter((bulletin) => {
@@ -438,6 +467,13 @@ const styles = {
         padding: 0,
         color: colors.black,
     },
+
+    ticket_important_text: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        padding: 0,
+        color: colors.black,
+    },
     ticket_selector_image: {
         width: 280,
         height: 160,
@@ -467,17 +503,4 @@ const styles = {
         borderColor: "rgba(63, 77, 202, 0.8)",
         borderWidth: 2,
     }
-    /* 
-    duration_picker_wraper: {
-        alignItems: "center",
-        backgroundColor: colors.white,
-        borderColor: colors.dark_blue,
-        borderRadius: 5,
-        borderWidth: 1,
-        height: 40,
-        justifyContent: "center",
-        padding: 0,
-        width: "100%",
-    },
- */
 }

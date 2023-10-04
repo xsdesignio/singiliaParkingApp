@@ -3,10 +3,10 @@ import { fetchAvailableBulletins } from "./api_conn/apiConn";
 
 
 export async function obtainAvailableBulletins() {
-    let availableTickets = await getAvailableBulletinsDict()
+    let availableTickets = await fetchAvailableBulletins()
 
     if(availableTickets==null) {
-        availableTickets = await fetchAvailableBulletins()
+        availableTickets = await getAvailableBulletinsDict()
         
         if(availableTickets == null) 
             return null

@@ -16,15 +16,14 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
     
     const printer = usePrinter()
 
-    // const { printBulletinCancellation } = usePrinter()
 
     const payment_methods = Object.freeze({
         CASH: "CASH",
         CARD: "CARD"
     })
 
-    const [duration, setDuration] = useState()
-    const [price, setPrice] = useState()
+    const [duration, setDuration] = useState(null)
+    const [price, setPrice] = useState(null)
     
     const [availableBulletins, setAvailableBulletins] = useState([])
 
@@ -32,12 +31,13 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
 
 
     async function handlePayment() {
-        await cancelBulletin(printer, bulletin["id"], paymentMethod, duration, price)
+        let cancelled_bulletin = await cancelBulletin(printer, bulletin["id"], paymentMethod, duration, price)
+        if(!cancelled_bulletin)
+            return
         bulletin["paid"] = true
         bulletin["payment_method"] = paymentMethod
         bulletin["duration"] = duration
         bulletin["price"] = price
-        // printBulletinCancellation(bulletin)
         closeModal()
 
     }
@@ -47,25 +47,19 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
 
         obtainAvailableBulletins().then(available_bulletins => {
             if (available_bulletins != null) {
-                setDuration(available_bulletins[0].duration)
                 setAvailableBulletins(available_bulletins.reverse())
-                console.log("Set available bulletins duration: ", setAvailableBulletins[0].duration)
+                setDuration(available_bulletins[0].duration)
+                setPrice(available_bulletins[0].price)
             }
             else
                 setAvailableBulletins([])
 
-            console.log(setAvailableBulletins)
         }).catch(error => {
             console.log(error)
         })
     }, [])
     
 
-    function manageBulletin(bulletin) {
-        console.log("manageBulletin bulletin duration: ", bulletin.duration)
-        setDuration(bulletin.duration)
-        setPrice(bulletin.price)
-    }
 
     return (
         <Modal
@@ -82,9 +76,9 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
                     <View style={styles.content}>
                         
                         <Text style={styles.title}>Boletín con ID: { bulletin["id"] }</Text>
-                        <Text>Matrícula: <Text style={styles.bold_text}>{ bulletin["registration"] }</Text></Text>
-                        <Text>Día: <Text style={styles.bold_text}>{ bulletin["created_at"].split(" ")[0] }</Text></Text>
-                        <Text>Hora: <Text style={styles.bold_text}>{ bulletin["created_at"].split(" ")[1].substring(0, 5) } h </Text></Text>
+                        <Text style={styles.info_text}>Matrícula: <Text style={styles.bold_text}>{ bulletin["registration"] }</Text></Text>
+                        <Text style={styles.info_text}>Día: <Text style={styles.bold_text}>{ bulletin["created_at"].split(" ")[0] }</Text></Text>
+                        <Text style={styles.info_text}>Hora: <Text style={styles.bold_text}>{ bulletin["created_at"].split(" ")[1].substring(0, 5) } h </Text></Text>
                         <Text style={ styles.label}>Duración</Text>
                         <View style={styles.duration_picker_wraper}>
                             
@@ -92,9 +86,15 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
                             <Picker
                                 style={styles.picker}
                                 selectedValue={duration}
-                                onValueChange={(bulletin) => 
-                                    manageBulletin(bulletin)
-                                }
+                                onValueChange={(duration) => {
+                                    setDuration(duration)
+
+                                    const selectedBulletin = availableBulletins.find((bulletin) => bulletin.duration === duration);
+                                    if (selectedBulletin) {
+                                        setPrice(selectedBulletin.price);
+                                    }
+                                }}
+
                                 itemStyle={styles.picker_item}
                             >
                                 {/* Iterate the available tickets to get a picker item for each available ticket duration */}
@@ -105,7 +105,7 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
                                             style={styles.picker_item}
                                             key={bulletin.id}
                                             label={bulletin.duration}
-                                            value={bulletin}
+                                            value={bulletin.duration}
                                         />
                                     )
                                 })
@@ -206,7 +206,9 @@ const styles = StyleSheet.create({
         padding: 0,
         width: "100%",
     },
-
+    info_text: {
+        color: colors.dark_green,
+    },
     label: {
         color: colors.dark_green,
         fontSize: 16,

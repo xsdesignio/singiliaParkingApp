@@ -5,7 +5,6 @@ import AsyncStorage  from "@react-native-async-storage/async-storage"
 export async function getAvailableTicketsDict() {
     try {
         let availableTicketsJSON = await AsyncStorage.getItem("@availableTickets")
-        console.log("available_tickets: ",JSON.parse(availableTicketsJSON))
         if(availableTicketsJSON!=null)
             return JSON.parse(availableTicketsJSON)
 

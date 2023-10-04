@@ -25,7 +25,7 @@ export default function SettingsScreen({ navigation }) {
     const { setIsLoggedIn } = useLogin()
     const { connectedDevice } = usePrinter()
 
-    const [ session , setSession] = useState({})
+    // const [ session , setSession] = useState({})
     const [ sessionName, setSessionName ] = useState("")
 
 
@@ -56,7 +56,7 @@ export default function SettingsScreen({ navigation }) {
         getAvailableZones();
 
         getSession().then(session => {
-            setSession(session)
+            // setSession(session)
             setSessionName(session["name"])
         })
 
@@ -83,7 +83,6 @@ export default function SettingsScreen({ navigation }) {
 
         let available_zones = await getConfigValue("available_zones")
 
-        console.log("available_zones: ", available_zones)
         if(available_zones != null) {
             setAvailableZones(available_zones)
         } else {

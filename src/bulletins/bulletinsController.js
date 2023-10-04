@@ -124,7 +124,8 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
             Alert.alert("Error", "Ha ocurrido un error al pagar el boletín", [{
                 text: "Ok",
             }]);
-        }, 100); // Show the second alert after a 100ms delay
+        }, 100);
+        return false // Show the second alert after a 100ms delay
     }
 }
 

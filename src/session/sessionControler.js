@@ -31,7 +31,6 @@ export function loginUser(form) {
         .then( session => {
             // Store the session returned
             // Resolve with the session if stored successfully or reject with an error message otherwise
-            console.log(session.associated_zone)
 
             if (!(session.associated_zone == null || session.associated_zone == undefined))
                 setConfigValue("zone", session.associated_zone)
@@ -65,9 +64,7 @@ export async function logoutUser() {
         fetch( `${ apiHost }/auth/logout`)
         .then( async (response_json) => {
             // Throw an error when server returns an error
-            console.log("Response json")
-            console.log(response_json.toString())
-            console.log("loging out 3")
+            
             if(response_json.status != 200)
                 throw new Error("Ha ocurrido un error cerrando sesión, si no ha sido cerrada inténtelo de nuevo.")
             

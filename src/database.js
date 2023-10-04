@@ -57,7 +57,7 @@ export function createSQLTables() {
     }, (error) => {
         console.log("Error at creating tables: ", error)
     }, () => {
-        console.log("Tables created successfully")
+        // console.log("Tables created successfully")
     })
 }
 
@@ -71,6 +71,6 @@ export function deleteAllTables() {
     }, (error) => {
         console.log("Error at deleting tables: ", error)
     }, () => {
-        console.log("Tables deleted")
+        // console.log("Tables deleted")
     })
 }

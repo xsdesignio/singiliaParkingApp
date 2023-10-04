@@ -146,6 +146,7 @@ export default function BulletinsScreen() {
                     (<>
                         <TextInput
                             style={styles.input}
+                            value={bulletinInfo["brand"]}
                             onChangeText={(brand) => 
                                 updateBulletinInfo("brand", brand)}
                             placeholder="Marca"
@@ -153,6 +154,7 @@ export default function BulletinsScreen() {
 
                         <TextInput
                             style={styles.input}
+                            value={bulletinInfo["model"]}
                             onChangeText={(model) => 
                                 updateBulletinInfo("model", model)}
                             placeholder="Modelo"
@@ -160,6 +162,7 @@ export default function BulletinsScreen() {
 
                         <TextInput
                             style={styles.input}
+                            value={bulletinInfo["color"]}
                             onChangeText={(color) => 
                                 updateBulletinInfo("color", color)}
                             placeholder="Color"
