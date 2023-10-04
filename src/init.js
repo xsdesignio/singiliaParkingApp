@@ -16,11 +16,13 @@ export async function initApp() {
     
     let app_already_started = await firstTimeAppStarts()
 
-    createSQLTables()
 
     if(!app_already_started) {
         // If it is the first time the app is loaded SQLite tables are created
         // and the default config object is saved
+
+        createSQLTables()
+
         try {
             // Save default config object and set app_already_started as true for the next time
             await saveConfigDict({})

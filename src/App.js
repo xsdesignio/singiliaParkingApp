@@ -60,9 +60,8 @@ function DefaultNavigator() {
   
 	/* const [userName, setUserName] = useState(""); */
 	useEffect(() => {
-		checkLogin().then((logged_in) => {
-			if(logged_in)
-				initApp();
+		checkLogin().then(() => {
+			initApp();
 		})
 	}, []);
 
