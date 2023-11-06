@@ -20,35 +20,11 @@ import { setConfigValue, getConfigValue } from "../configStorage";
 
 export default function SettingsScreen({ navigation }) {
 
-    // const [bulletinsAmount, setBulletinsAmount] = useState(1)
-
     const { setIsLoggedIn } = useLogin()
     const { connectedDevice } = usePrinter()
-
-    // const [ session , setSession] = useState({})
     const [ sessionName, setSessionName ] = useState("")
-
-
     const [zone, setZone] = useState(null)
     const [availableZones, setAvailableZones] = useState([])
-
-
-    // const [provisionalLocation, setprovisionalLocation] = useState("")
-
-    function logout() {
-        logoutUser().then(logout_successfull => {
-            setIsLoggedIn(false)
-            
-            if(logout_successfull) {
-                setIsLoggedIn(false)
-            }
-            else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
-        }).catch(error => {
-            Alert.alert("Error al cerrar la sesión", error, [{text: "OK"}])
-        })
-    }
-
-
 
     useEffect(() => {
 
@@ -62,6 +38,19 @@ export default function SettingsScreen({ navigation }) {
 
     }, [])
 
+
+    function logout() {
+        logoutUser().then(logout_successfull => {
+            setIsLoggedIn(false)
+            
+            if(logout_successfull) {
+                setIsLoggedIn(false)
+            }
+            else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
+        }).catch(error => {
+            Alert.alert("Error al cerrar la sesión", error, [{text: "OK"}])
+        })
+    }
 
 
 

@@ -120,13 +120,14 @@ function DefaultNavigator() {
 							let rn = route.name;
 
 							if (rn === "Tickets") {
-							iconName = focused ? 'document-text' : 'document-text-outline';
+								iconName = focused ? 'document-text' : 'document-text-outline';
 
 							} else if (rn === "Boletines") {
-							iconName = focused ? 'documents' : 'documents-outline';
+								iconName = focused ? 'documents' : 'documents-outline';
 
 							} else if (rn === "Historial") {
-							iconName = focused ? 'list' : 'list-outline';
+								iconName = focused ? 'list' : 'list-outline';
+
 							}else if (rn === "Ajustes") {
 								iconName = focused ? 'settings' : 'settings-outline';
 							}
@@ -148,7 +149,15 @@ function DefaultNavigator() {
 								borderTopWidth: 1,
 							},
 							null
-						]
+						],
+						"headerStyle": [
+							{
+								height: 86,
+								borderBottomColor: colors.input_border,
+								borderBottomWidth: 1,
+							},
+							null
+						],
 
 					})
 				}>

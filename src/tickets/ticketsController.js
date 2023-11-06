@@ -13,16 +13,14 @@ import { Alert } from "react-native";
 // @param registration, registration of the vehicle
 // @param paymentMethod, payment method used to pay the ticket ('CASH' or 'CARD')
 // @return Promise with the created ticket information
-export async function createAndPrintTicket(printer, duration, registration, paymentMethod) {
+export async function createAndPrintTicket(printer, ticketInfo) {
 
     try {
         
         const { connectedDevice, printTicket } = printer
-
-        if(connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            // throw new Error("No se ha encontrado ninguna impresora conectada.")
-        }
+        if(connectedDevice == null) 
+            throw new Error("No se ha encontrado ninguna impresora conectada.")
+        
 
         let session = await getSession()
         let zone = await getConfigValue("zone")
@@ -33,12 +31,9 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         let ticket_dict = {
             "responsible_id": session["id"],
             "zone": zone,
-            "duration": duration,
-            "registration": registration,
-            "price": getTicketPrice(duration),
-            "payment_method": paymentMethod,
             "paid": true,
-            "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
+            "created_at": obtainDateTime(),
+            ...ticketInfo,
         }
 
         // Check if ticket_info has all required information and create the ticket on the server
@@ -47,8 +42,6 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         
         printTicket(formatTicketToBePrinted(ticket_dict))
         
-        
-        ticket_dict["created_at"] = convertDateFormat(ticket_dict["created_at"])
         let server_ticket = await createTicketOnServer(ticket_dict)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
@@ -61,6 +54,7 @@ export async function createAndPrintTicket(printer, duration, registration, paym
         ticket_dict["id"] = server_ticket["id"]
 
 
+        // Saving ticket locally
         let result_ticket = await saveTicket(ticket_dict)
 
         if(result_ticket == null) 
@@ -91,6 +85,7 @@ function formatTicketToBePrinted(ticket) {
 // get the ticket price depending on the duration
 // @param duration, duration of the ticket
 // @return price of the ticket
+/* 
 function getTicketPrice(duration) {
     if(duration == null || 
         duration == undefined || 
@@ -108,7 +103,7 @@ function getTicketPrice(duration) {
     
     return 1.80
     
-}
+} */
 
 
 // Check if ticket_info has all required information
@@ -138,9 +133,10 @@ function check_information(ticket_info) {
 }
 
 
-function convertDateFormat(input) {
-    const [day, month, yearTime] = input.split('/');
-    const [year, time] = yearTime.split(' ');
 
+function obtainDateTime() {
+    let date = new Date().toLocaleString('es-ES').replace(",", "")
+    const [day, month, yearTime] = date.split('/');
+    const [year, time] = yearTime.split(' ');
     return `${year}/${month}/${day} ${time}`;
 }

@@ -118,17 +118,9 @@ export const PrinterProvider = ({ children }) => {
 
 
     async function printTicket(ticket_data) {
-        
-        if(connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            return true
-            // Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes")
-            
-        }
 
         try {
-            const logo = communicationEncoder.getSingiliaLogo()
-            await sendDataToDevice(logo)
+            await printLogo()
 
             const title = communicationEncoder.getEncodedTitle("Servicio Municipal \nEstacionamiento Regulado")
             await sendDataToDevice(title)
@@ -146,26 +138,25 @@ export const PrinterProvider = ({ children }) => {
 
         } catch (error) {
             console.log("Error sending data: ", error)
-            return false
+            return Error("Error enviando contenido a la impresora")
         }
 
     }
 
+    async function printLogo() {
+        // const logo = communicationEncoder.getAntequeraLogo()
+        const logo = communicationEncoder.getLogo()
+        await sendDataToDevice(logo[0])
+        await sendDataToDevice(logo[1])
+    }
+
     async function printBulletin(bulletin_data, available_bulletins) {
-
-        console.log("Available Bulletins: ", available_bulletins)
-
-        if(connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            return true
-            // Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes.")
-        }
 
         try {
             const logo = communicationEncoder.getSingiliaLogo()
             await sendDataToDevice(logo)
 
-            const title = communicationEncoder.getEncodedTitle("Anulación de Boletín")
+            const title = communicationEncoder.getEncodedTitle("Boletín \nEstacionamiento Regulado")
             await sendDataToDevice(title)
 
             const encoded_bulletin_data = communicationEncoder.getEncodedDict(bulletin_data)
@@ -192,17 +183,11 @@ export const PrinterProvider = ({ children }) => {
 
     async function printBulletinCancellation(bulletin_data) {
 
-        if(connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            return true
-            // Alert.alert("Error", "No se ha encontrado ninguna impresora conectada. Puedes conectar una desde ajustes.")
-        }
-
         try {
             const logo = communicationEncoder.getSingiliaLogo()
             await sendDataToDevice(logo)
 
-            const title = communicationEncoder.getEncodedTitle("Boletín \nEstacionamiento Regulado")
+            const title = communicationEncoder.getEncodedTitle("Anulación de Boletín")
             await sendDataToDevice(title)
 
             const encoded_bulletin_data = communicationEncoder.getEncodedDict(bulletin_data)
@@ -235,7 +220,7 @@ export const PrinterProvider = ({ children }) => {
             return true
 
         } catch (error) {
-            console.log("Error sending data: ", error)
+            console.log("Error sending data to device: ", error)
             return false
         }
     }

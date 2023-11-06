@@ -14,25 +14,38 @@ import DefaultButton from "../components/atoms/default-button";
 
 
 export default function TicketsScreen() {
-
-    const [registration, setRegistration] = useState("")
-
+    const printer = usePrinter()
+    const [availableTickets, setAvailableTickets] = useState([])
     const payment_methods = Object.freeze({
         CASH: "CASH",
         CARD: "CARD"
     })
 
-    const [duration, setDuration] = useState(null)
-    const [price, setPrice] = useState()
-    
-    const [availableTickets, setAvailableTickets] = useState([])
+    const [ticketInfo, setTicketInfo] = useState({
+        "registration": "",
+        /* "payment_method": undefined, */
+        "duration": "",
+        "price": undefined,
+        "payment_method": undefined,
+    })
+
+
+    // Simple function to update the bulletinInfo state
+    function updateTicketInfo(key, value) {
+        setTicketInfo((prevBulletinInfo) => ({
+          ...prevBulletinInfo,
+          [key]: value,
+        }));
+    }
+
 
     useEffect(() => {
         obtainAvailableTickets().then(available_tickets => {
             if (availableTickets.length == 0 && available_tickets != null) {
                 setAvailableTickets(available_tickets.reverse())
-                setDuration(availableTickets[0].duration)
-                setPrice(availableTickets[0].price)
+                console.log(availableTickets)
+                updateTicketInfo("duration", availableTickets[0].duration)
+                updateTicketInfo("price", availableTickets[0].price)
             }
             else
                 setAvailableTickets([])
@@ -40,20 +53,15 @@ export default function TicketsScreen() {
         })
     }, [])
 
-    const [paymentMethod, setPaymentMethod] = useState(null)
-
-
-    const printer = usePrinter()
-
-    
     async function printManager() {
-        
-        await createAndPrintTicket(printer, duration, registration, paymentMethod);
+        await createAndPrintTicket(printer, ticketInfo);
 
-        setPaymentMethod(null);
-        setRegistration("");
+        // Reset data
+        updateTicketInfo("registration", "");
+        updateTicketInfo("payment_method", undefined);
     }
 
+    
     return(
         <View style={styles.container}>
             <View style={styles.tickets_info_form}>
@@ -65,43 +73,45 @@ export default function TicketsScreen() {
                     <TextInput
                         style={styles.input}
                         autoCapitalize="characters"
-                        value = {registration}
-                        onChangeText={(value) => setRegistration(value)}
+                        value = {ticketInfo["registration"]}
+                        onChangeText={(value) => updateTicketInfo("registration", value)}
                         placeholder="0000BBB"
                     />
 
                     <Text style={styles.label}>Duración</Text>
                     <View style={styles.duration_picker_wraper}>
                         <Picker
-                            style={styles.picker}
-                            selectedValue={duration}
-                            onValueChange={(duration) =>  {
-                                    setDuration(duration)
+                                style={styles.picker}
+                                selectedValue={ticketInfo["duration"]}
+                                onValueChange={(duration) =>  {
+                                    updateTicketInfo("duration", duration)
 
                                     const selectedTicket = availableTickets.find((ticket) => ticket.duration === duration);
                                     if (selectedTicket) {
-                                        setPrice(selectedTicket.price);
+                                        updateTicketInfo("price", selectedTicket.price)
                                     }
-                            }}
-                            itemStyle={styles.picker_item}
-                        >
-                            {/* Iterate the available tickets to get a picker item for each available ticket duration */}
-                            {availableTickets.map((ticket) => {
-                                return(
-                                    <Picker.Item
-                                        style={styles.picker_item}
-                                        key={ticket.id}
-                                        label={ticket.duration}
-                                        value={ticket.duration}
-                                    />
-                                )
-                            })}
-                        </Picker>
+                                }}
+                                itemStyle={styles.picker_item}
+                            >
+                                {/* Iterate the available tickets to get a picker item for each available ticket duration */}
+                                {availableTickets.map((ticket) => {
+                                    return(
+                                        <Picker.Item
+                                            style={styles.picker_item}
+                                            key={ticket.id}
+                                            label={ticket.duration}
+                                            value={ticket.duration}
+                                        />
+                                    )
+                                })}
+                            </Picker> 
+                        
+                        
                         
                     </View>
 
                     <Text style={styles.label}>Precio:</Text>
-                    <Text style={styles.price_text}>{price}€</Text>
+                    <Text style={styles.price_text}>{ticketInfo["price"]}€</Text>
 
                     <Text style={styles.label}>Métodos de pago:</Text>
                     
@@ -110,22 +120,22 @@ export default function TicketsScreen() {
                             style={[
                                 styles.selector_button, 
                                 {
-                                    backgroundColor: (paymentMethod==payment_methods.CARD) ? 
+                                    backgroundColor: (ticketInfo["payment_method"]==payment_methods.CARD) ? 
                                         colors.light_green_selected : colors.light_green
                                 }
                             ]}
-                            onPress={() => setPaymentMethod(payment_methods.CARD)}>
+                            onPress={() => updateTicketInfo("payment_method", payment_methods.CARD)}>
                             <Text style={styles.selector_text}>Tarjeta</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[
                                 styles.selector_button, 
                                 {
-                                    backgroundColor: (paymentMethod==payment_methods.CASH) ? 
+                                    backgroundColor: (ticketInfo["payment_method"]==payment_methods.CASH) ? 
                                         colors.light_green_selected : colors.light_green
                                 }
                             ]}
-                            onPress={() => setPaymentMethod(payment_methods.CASH)}>
+                            onPress={() => updateTicketInfo("payment_method", payment_methods.CASH)}>
                             <Text style={styles.selector_text}>Efectivo</Text>
                         </TouchableOpacity>
                     </View>

@@ -36,7 +36,7 @@ export default function RecordScreen({ navigation }) {
 
 
     // Set the data to the states if data is not empty
-    function setData() {
+    async function setData() {
         getTicketsSaved().then((tickets) => {
             if (tickets.length > 0) {
                 setTickets(tickets.reverse());

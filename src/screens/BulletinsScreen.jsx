@@ -26,12 +26,7 @@ export default function BulletinsScreen() {
         "color": undefined,
     })
 
-    // bulletinCancelationInfo = {
-    //     "bulletin_id": undefined,
-    //     "registration": undefined,
-    //     "payment_method": undefined,
-    //     "price": undefined,
-    
+
     // Simple function to update the bulletinInfo state
     function updateBulletinInfo(key, value) {
         setBulletinInfo((prevBulletinInfo) => ({
@@ -42,38 +37,13 @@ export default function BulletinsScreen() {
 
     const printer = usePrinter()
 
-                    /* 
-                    <View style={styles.duration_picker_wraper}>
-                        <Picker
-                            style={styles.picker}
-                            selectedValue={duration}
-                            onValueChange={(duration) => 
-                                    setDuration(duration)
-                            }
-                            itemStyle={styles.picker_item}
-                        >
-                            {availableTickets.map((ticket) => {
-                                return(
-                                    <Picker.Item
-                                        key={ticket.id}
-                                        label={ticket.duration}
-                                        value={ticket.duration}
-                                    />
-                                )
-                            })}
-                        </Picker>
-                    </View> 
-                    */
-
     async function printManager() {
 
         await createAndPrintBulletin(printer, bulletinInfo);
         
         setBulletinInfo({
-            "duration": 30,
-            "registration": undefined,
+            "registration": "",
             "price": undefined,
-            /* "payment_method": undefined, */
             "paid": false,
             "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
             "brand": undefined,

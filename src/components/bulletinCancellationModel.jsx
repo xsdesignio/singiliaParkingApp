@@ -117,7 +117,6 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
 
                         <Text style={styles.label}>Precio</Text>
                         <Text style={styles.price}>
-
                             { price } €
                         </Text>
 

@@ -7,17 +7,21 @@ import { getConfigValue } from "../configStorage";
 import { obtainAssignedZone } from "../zone_manager";
 
 
+// Pay a certain bulletin, updating it's paid status on the server and locally
+// Create an alert with the result of the operation
+// @param printer, printer provider containing functions to work with the printer
+// @param bulletinInfo, dictionary with the bulletin  information
 export async function createAndPrintBulletin(printer, bulletinInfo) {
     try {
 
+        // obtain required functions from printer provider
         const { connectedDevice, printBulletin } = printer
 
         if(connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            //throw new Error("No se ha encontrado ninguna impresora conectada.")
+            // console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
+            throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
-        let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
@@ -25,33 +29,29 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         let bulletin_dict = {
             ...bulletinInfo,
-            "responsible_id": session["id"],
+            "responsible_id": (await getSession())["id"],
             "zone_name": zone,
-            "created_at": new Date().toLocaleString('es-ES').replace(",", ""),
+            "created_at": obtainDateTime()
         }
 
-         // Check if ticket_info has all required information and create the ticket on the server
+         // Check if ticket_info has all required information and crete the ticket on server
         check_information(bulletin_dict)
-
-
-        bulletin_dict["created_at"] = convertDateFormat(bulletin_dict["created_at"])
-        
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
-
-
-        // If the bulletin has been successfully created on the server, saave it locally
-        // Otherwise, save it locally with a reference_id of -1 so it can be uploaded later
         if(!server_bulletin) {
-            throw new Error("Error al crear el boletín")
+            throw new Error("Error al crear el boletín en el servidor. Inténtalo de nuevo o Revisa la conexión a internet.")
         }
 
         bulletin_dict["id"] = server_bulletin["id"]
         bulletin_dict["created_at"] = server_bulletin["created_at"]
         
+
+        // Print bulletin
+        let formatted_bulletin = formatBulletinToBePrinted(bulletin_dict)
         let available_bulletins = await obtainAvailableBulletins()
-        printBulletin(formatBulletinToBePrinted(bulletin_dict), available_bulletins)
-        
-        let result = await saveBulletin(bulletin_dict)
+        await printBulletin(formatted_bulletin, available_bulletins)
+
+        // Save bulletin locally after printing
+        let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
         if(result == null) {
             throw new Error("Error al guardar el boletín")
         } 
@@ -59,8 +59,8 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         Alert.alert("Boletín Creado", "El boletín ha sido creado he impreso con éxito", 
             [
                 {text: "Cancelar"}, 
-                {text: "Volver a imprimir", onPress: () => {
-                    printBulletin(formatBulletinToBePrinted(bulletin_dict))
+                {text: "Volver a imprimir", onPress: async () => {
+                    await printBulletin(formatted_bulletin, available_bulletins)
                 }}
             ]
         );
@@ -94,8 +94,8 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         const { connectedDevice, printBulletinCancellation } = printer
         
         if (connectedDevice == null) {
-            console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
-            //throw new Error("No se ha encontrado ninguna impresora conectada.")
+            // console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
+            throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
         
         let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
@@ -135,11 +135,11 @@ function formatBulletinCancellationToBePrinted(bulletin) {
     return  {
         "Id": bulletin["id"],
         "Matrícula": bulletin["registration"],
-        "duration": bulletin["duration"],
-        "price": bulletin["price"],
-        "created_at": bulletin["created_at"],
-        "paid": bulletin["paid"],
-        "payment_method": bulletin["payment_method"]
+        "Duración": bulletin["duration"],
+        "Precio": bulletin["price"],
+        "Fecha": bulletin["created_at"],
+        "Estado": bulletin["paid"] ? "pagado" : "aún por pagar",
+        "Método de pago": bulletin["payment_method"]
     }
 }
 
@@ -153,8 +153,11 @@ function check_information(bulletin_info) {
     if (!bulletin_info["registration"] || bulletin_info["registration"] == "") 
         throw new Error("No se ha encontrado la matrícula del vehículo.")
     
+    if (!bulletin_info["precept"] || bulletin_info["precept"] == "") 
+        throw new Error("No se ha encontrado el precepto del boletín.")
+
     if (!bulletin_info["zone_name"] || bulletin_info["zone_name"] == "") 
-        throw new Error("No se ha encontrado la ubicación del boletín.")
+    throw new Error("No se ha encontrado la ubicación del boletín.")
     
 }
 
@@ -168,10 +171,9 @@ export async function addBulletinToUploadQueue(bulletin_id) {
 
 
 
-
-function convertDateFormat(input) {
-    const [day, month, yearTime] = input.split('/');
+function obtainDateTime() {
+    let date = new Date().toLocaleString('es-ES').replace(",", "")
+    const [day, month, yearTime] = date.split('/');
     const [year, time] = yearTime.split(' ');
-
     return `${year}/${month}/${day} ${time}`;
 }
