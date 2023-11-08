@@ -138,7 +138,7 @@ export const PrinterProvider = ({ children }) => {
 
         } catch (error) {
             console.log("Error sending data: ", error)
-            return Error("Error enviando contenido a la impresora")
+            throw Error("Error enviando contenido a la impresora")
         }
 
     }
@@ -146,8 +146,7 @@ export const PrinterProvider = ({ children }) => {
     async function printLogo() {
         // const logo = communicationEncoder.getAntequeraLogo()
         const logo = communicationEncoder.getLogo()
-        await sendDataToDevice(logo[0])
-        await sendDataToDevice(logo[1])
+        await sendDataToDevice(logo)
     }
 
     async function printBulletin(bulletin_data, available_bulletins) {

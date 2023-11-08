@@ -1,8 +1,6 @@
 import base64 from "react-native-base64";
+const printImage = require('print-image');
 
-
-// const margin = '\n\r\n\r'
-// const divider = '------------------------'
 
 
 export class communicationCreator {
@@ -96,22 +94,32 @@ export default class PrinterCommunicationEncoder {
         // Mode: This is just an example value; adjust as per your printer's specification.
         const mode = "\x33";
 
+        
+        const imageSource = require('../../assets/logosBig.bmp');
+        
+        // Convert the image to a buffer in PCL format
+        const pclImageBuffer = printImage(imageSource, { width: IMAGE_WIDTH, height: IMAGE_HEIGHT });
+
+        // Convert the PCL buffer to a hexadecimal representation
+        const hexData = pclImageBuffer.toString('hex');
+        console.log(hexData); 
+        
+
         const xL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0x00);
         const xH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
         const yL = String.fromCharCode(IMAGE_HEIGHT_BYTES & 0x00);
         const yH = String.fromCharCode((IMAGE_HEIGHT_BYTES >> 8) & 0xFF);
+        
 
         let logoToBeSent = this.escPos.INIT + 
                             this.escPos.ALIGN_CENTER + 
                             this.escPos.BITMAP_PRINT + 
                             mode + xL + xH + yL + yH + 
-                            this.utils.LOGO1 ;
-
-        
-        let logo2ToBeSent = this.utils.LOGO2 + this.utils.MARGIN;
+                            this.utils.hexData + 
+                            this.utils.MARGIN;
         
         
-        return [base64.encode(logoToBeSent), base64.encode(logo2ToBeSent)];
+        return logoToBeSent;
     }
 
 
