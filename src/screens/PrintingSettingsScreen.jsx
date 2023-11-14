@@ -13,12 +13,13 @@ import LoadingCircle from '../components/atoms/loading-circle';
 
 
 export default function PrintingSettingsScreen() {
-    const { connectedDevice, connectToDevice, allDevices, disconnectFromDevice, scanForPeripherals, stopScan } = usePrinter()
+    const { bluetoothEnabled, checkBluetoothStatus, connectedDevice, connectToDevice, allDevices, disconnectFromDevice, scanForPeripherals, stopScan } = usePrinter()
 
     const [scanning, setScanning] = useState(false)
-    
+
 
     useEffect(() => {
+        checkBluetoothStatus()
         return () => {
             if(scanning)
                 stopScan();
@@ -55,6 +56,7 @@ export default function PrintingSettingsScreen() {
 
     return (
         <View style={styles.container}>
+
             { connectedDevice ? 
                 (
                     <Text style={styles.title}>Conectado</Text>
@@ -86,27 +88,48 @@ export default function PrintingSettingsScreen() {
                         <LoadingCircle></LoadingCircle>
                      </>) : 
                     (
-                        <Text style={styles.normal_text}>Escanea para mostrar dispositivos cercanos</Text>
+                        <>
+                        
+                        { bluetoothEnabled ? 
+                            <Text style={styles.normal_text}>
+                                Escanea para mostrar dispositivos cercanos
+                            </Text> :
+                            <Text style={ styles.advice_text }>
+                                    Activa el blutooth y vuelve a entrar a esta pantalla para poder escanear en busca de impresoras.
+                            </Text>
+                        }</>
+                        
                     )        
                 )}
             </View>
-            
-            { connectedDevice ? 
-                <DefaultButton text='Desconectar' onPress={disconnectFromDevice} /> : 
-                ( 
-                    !scanning ? 
-                    (
-                        <DefaultButton text='Escanear dispositivos' onPress={ startScanning } />
-                    ) : (
-                        <DefaultButton text='Parar de escanear' onPress={ stopScanning } />
+            {
+                bluetoothEnabled ?
+                <>
+                    { connectedDevice ? 
+                    <DefaultButton text='Desconectar' onPress={disconnectFromDevice} /> : 
+                    ( 
+                        !scanning ? 
+                        (
+                            <DefaultButton text='Escanear dispositivos' onPress={ startScanning } />
+                        ) : (
+                            <DefaultButton text='Parar de escanear' onPress={ stopScanning } />
+                        )
                     )
-                )
+                }</>:
+                <></>
             }
+            
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    advice_text: {
+        color: colors.error_color,
+        fontSize: 18,
+        maxWidth: 300,
+        textAlign: "center",
+    },
     connected_device: {
         alignItems: 'center',
         backgroundColor: colors.light_green,

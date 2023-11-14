@@ -39,7 +39,6 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         
-        
         printTicket(formatTicketToBePrinted(ticket_dict))
         
         let server_ticket = await createTicketOnServer(ticket_dict)
@@ -71,39 +70,26 @@ export async function createAndPrintTicket(printer, ticketInfo) {
 
 
 function formatTicketToBePrinted(ticket) {
+    console.log(ticket["created_at"])
     return{
         "Zona": ticket["zone"],
         "Duración": ticket["duration"],
         "Matrícula": ticket["registration"],
-        "Importe": ticket["price"] + "0 eur",
-        "Fecha": ticket["created_at"].split(" ")[0],
+        "Importe": ticket["price"] + " eur",
+        "Fecha": formatDate(ticket["created_at"].split(" ")[0]),
         "Hora": ticket["created_at"].split(" ")[1].substring(0, 5) + " h",
     }
 
 }
 
-// get the ticket price depending on the duration
-// @param duration, duration of the ticket
-// @return price of the ticket
-/* 
-function getTicketPrice(duration) {
-    if(duration == null || 
-        duration == undefined || 
-        duration <= 0) 
-        return 0
+function formatDate(date) {
+    let elements = date.split("/")
+    let day = elements[2]
+    let month = elements[1]
+    let year = elements[0]
 
-    if(duration <= 30) 
-        return 0.70
-    
-    if(duration <= 60) 
-        return 0.90
-    
-    if(duration <= 90) 
-        return 1.40
-    
-    return 1.80
-    
-} */
+    return `${day}/${month}/${year}`
+}
 
 
 // Check if ticket_info has all required information

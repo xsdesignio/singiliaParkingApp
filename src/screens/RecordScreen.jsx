@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, {memo} from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, Image, TextInput, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
@@ -11,12 +11,13 @@ import BulletinCancellationModel from "../components/bulletinCancellationModel";
 import { colors } from "../styles/colorPalette";
 
 import { usePrinter } from "../printing/PrintingProvider";
+import { formatBulletinCancellationToBePrinted, formatBulletinToBePrinted } from "../bulletins/bulletinsController";
 
 
 
 export default function RecordScreen({ navigation }) {
 
-    const { connectedDevice, printTicket, printBulletin } = usePrinter();
+    const { connectedDevice, printTicket, printBulletin, printBulletinCancellation } = usePrinter();
 
     const [ticketsActive, setTicketsActive] = useState(true);
     const [tickets, setTickets] = useState([])
@@ -70,16 +71,17 @@ export default function RecordScreen({ navigation }) {
 
     function openBulletin(bulletin) {
         // Open an alert where the user can print the bulletin again such as pay it
+        bulletin["price"] = parseFloat(bulletin["price"]).toFixed(2)
 
         let title = `Boletín de matrícula ${bulletin["registration"]}`
 
         let date = formatDate(bulletin["created_at"].split(" ")[0])
-        let time = bulletin["created_at"].split(" ")[1].substring(0, 5)
+        let time = `${bulletin["created_at"].split(" ")[1].substring(0, 5)} h`
 
         let bulletin_data = ''
         bulletin_data += `Fecha: ${ date } \n`
         
-        bulletin_data += `Hora: ${ time } h`
+        bulletin_data += `Hora: ${ time }`
 
         let alertOptions = [
             {
@@ -99,16 +101,15 @@ export default function RecordScreen({ navigation }) {
                         return
                     }
 
-                    let data_to_print = {
-                        "Zona": bulletin["zone_name"],
-                        "Duración": bulletin["duration"] + " min",
-                        "Matrícula": bulletin["registration"],
-                        "Precio": bulletin["price"] + "0 eur",
-                        "Precepto": bulletin["precept"],
-                        "Fecha": new Date(bulletin["created_at"]).toLocaleDateString('es-ES'),
-                        "Hora": new Date(bulletin["created_at"]).toLocaleTimeString('es-ES'),
+
+                    if(bulletin["paid"]){
+                        bulletin = formatBulletinCancellationToBePrinted(bulletin)
+                        printBulletinCancellation(bulletin)
+                    } else {
+                        bulletin = formatBulletinToBePrinted(bulletin)
+                        printBulletin(bulletin)
                     }
-                    printBulletin(data_to_print)
+
                 }
             }
         ];
@@ -147,16 +148,17 @@ export default function RecordScreen({ navigation }) {
     
     function openTicket(ticket) {
         // Make the same as openBulletin but with tickets. Just delete the pay option and the "color", "model" and "brand" fields
-        
-        let title = `Ticket de matrícula ${ticket["registration"]}`
+        ticket["price"] = parseFloat(ticket["price"]).toFixed(2)
 
+        let title = `Ticket de matrícula ${ticket["registration"]}`
         
         let date = formatDate(ticket["created_at"].split(" ")[0])
-        let time = ticket["created_at"].split(" ")[1].substring(0, 5)
+        let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
 
         let ticket_data = ''
-        ticket_data += `Fecha: ${ date } \n`
-        ticket_data += `Hora: ${ time } h`
+        ticket_data += `Fecha: ${ date }\n`
+        ticket_data += `Hora: ${ time }\n`
+        ticket_data += `Duración: ${ ticket["duration"] }\n`
         
 
 
@@ -179,12 +181,12 @@ export default function RecordScreen({ navigation }) {
                     
                     let data_to_print = {
                         "Zona": ticket["zone_name"],
-                        "Duración": ticket["duration"] + " min",
+                        "Duración": ticket["duration"],
                         "Matrícula": ticket["registration"],
-                        "Precio": ticket["price"] + "0 eur",
-                        "Precepto": ticket["precept"],
-                        "Fecha": new Date().toLocaleDateString('es-ES'),
-                        "Hora": new Date().toLocaleTimeString('es-ES'),
+                        "Importe": ticket["price"] + " eur",
+                        "Fecha": date,
+                        "Hora": time,
+                        
                     }
                     printTicket(data_to_print)
                 }
@@ -195,7 +197,9 @@ export default function RecordScreen({ navigation }) {
     const RenderTicket = memo(({ ticket }) => {
         if(ticket == null || ticket == undefined)
             return
-
+        
+        ticket["price"] = parseFloat(ticket["price"]).toFixed(2)
+        
         let ticket_style = styles.green_box
         let date = formatDate(ticket["created_at"].split(" ")[0])
         let time = ticket["created_at"].split(" ")[1].substring(0, 5)
@@ -206,12 +210,12 @@ export default function RecordScreen({ navigation }) {
                 <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
                 <Text style={styles.ticket_important_text}>Id: { ticket["id"] }</Text>
-                <Text style={styles.ticket_text}>Matrícula { ticket["registration"] }</Text>
-                <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_important_text}>Hora: { time } h</Text>
-                <Text style={styles.ticket_text}>Zona: { ticket["zone_name"] }</Text>
-                <Text style={styles.ticket_text}>Duración { ticket["duration"] }</Text>
+                <Text style={styles.ticket_important_text}>Duración: { ticket["duration"] }</Text>
+                <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_text}>Precio: { ticket["price"] } €</Text>
+                <Text style={styles.ticket_text}>Matrícula { ticket["registration"] }</Text>
+                <Text style={styles.ticket_text}>Zona: { ticket["zone_name"] }</Text>
                 <Text style={styles.ticket_text}>Método de pago: { payment_method }</Text>
             </TouchableOpacity>
         </View>);
@@ -221,7 +225,9 @@ export default function RecordScreen({ navigation }) {
     const RenderedBulletin = memo(({ bulletin }) => {
         if (bulletin == null || bulletin == undefined)
             return null;
-    
+        
+        bulletin["price"] = parseFloat(bulletin["price"]).toFixed(2)
+        
         let date = formatDate(bulletin["created_at"].split(" ")[0]);
         let time = bulletin["created_at"].split(" ")[1].substring(0, 5);
     
@@ -235,20 +241,22 @@ export default function RecordScreen({ navigation }) {
                     <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image} />
                     <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
                     <Text style={styles.ticket_important_text}>Id: {bulletin["id"]}</Text>
-                    <Text style={styles.ticket_text}>Matrícula: {bulletin["registration"]}</Text>
-                    <Text style={styles.ticket_text}>Fecha: {date}</Text>
                     <Text style={styles.ticket_important_text}>Hora: {time} h</Text>
-                    <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
+
+                    {bulletin["price"] != null && bulletin["price"] > 0 ? (
+                        <Text style={styles.ticket_important_text}>Importe: {bulletin["price"]} €</Text>
+                    ) : (
+                        <></>
+                    )}
                     {bulletin["duration"] != null && bulletin["duration"].length > 0 ? (
                         <Text style={styles.ticket_text}>Duración: {bulletin["duration"]}</Text>
                     ) : (
                         <></>
                     )}
-                    {bulletin["price"] != null && bulletin["price"] > 0 ? (
-                        <Text style={styles.ticket_text}>Precio: {bulletin["price"]} €</Text>
-                    ) : (
-                        <></>
-                    )}
+                    <Text style={styles.ticket_text}>Matrícula: {bulletin["registration"]}</Text>
+                    <Text style={styles.ticket_text}>Fecha: {date}</Text>
+                    <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
+                    
                     {payment_method != null ? (
                         <Text style={styles.ticket_text}>Método de pago: {payment_method} €</Text>
                     ) : (
@@ -373,112 +381,102 @@ export default function RecordScreen({ navigation }) {
 }
 
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: "center",
-        zIndex: -20,
+        flex: 1,
         height: "100%",
+        justifyContent: 'center',
+        zIndex: -20,
     },
     input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 8,
-        width: "80%",
         alignSelf: "center",
         backgroundColor: colors.white,
+        borderRadius: 8,
+        borderWidth: 1,
+        height: 40,
+        margin: 12,
+        padding: 10,
+        width: "80%",
     },
+
+    label: {
+        alignItems: 'center',
+        color: colors.black,
+        fontSize: 14,
+        fontWeight: '400',
+        justifyContent: 'center',
+        marginTop: 20,
+        padding: 0,
+    },
+    no_elements_text: {
+        color: colors.black,
+        fontSize: 18,
+        fontWeight: '400',
+        padding: 20,
+        textAlign: 'center',
+    },
+
     selector: {
         flexDirection: "row",
         marginBottom: 20,
     },
     selector_button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        marginHorizontal: 6,
         borderColor: colors.dark_green,
+        borderRadius: 20,
         borderWidth: 1,
+        marginHorizontal: 6,
         marginTop: 20,
-        borderRadius: 20
+        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
-    no_elements_text: {
-        fontSize: 18,
-        fontWeight: '400',
-        textAlign: 'center',
-        padding: 20,
-        color: colors.black,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '400',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 0,
-        marginTop: 20,
-        color: colors.black,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '400',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 0,
-        marginTop: 20,
-        color: colors.black,
-    },
-    tickets_list: {
-        width: "80%",
-        height: "84%",
-        alignItems: "center",
-        marginTop: 10,
-        marginBottom: 0,
-        borderRadius: 12,
-        backgroundColor: colors.white,
-    },
+
     ticket: {
-        paddingVertical: 20,
-        paddingHorizontal: 14,
-        margin: 20,
-        borderRadius:  4,
-        justifyContent: 'center',
         alignItems: "center",
-        height: "auto",
         backgroundColor: colors.white,
+        borderRadius:  4,
+        height: "auto",
+        justifyContent: 'center',
+        margin: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 20,
     },
     ticket_image: {
-        width: 50,
         height: 50,
+        width: 50,
     },
-    ticket_title: {
+    
+    ticket_important_text: {
+        color: colors.black,
         fontSize: 18,
         fontWeight: 'bold',
         padding: 0,
-        marginTop: 20,
-        marginBottom: 20,
-        color: colors.black,
     },
     ticket_text: {
+        color: colors.black,
         fontSize: 16,
         fontWeight: '400',
         margin: 2,
         padding: 0,
-        color: colors.black,
     },
-
-    ticket_important_text: {
+    ticket_title: {
+        color: colors.black,
         fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 20,
+        marginTop: 20,
         padding: 0,
-        color: colors.black,
     },
-    ticket_selector_image: {
-        width: 280,
-        height: 160,
-        borderRadius: 8,
+    tickets_list: {
+        alignItems: "center",
+        backgroundColor: colors.white,
+        borderRadius: 12,
+        height: "84%",
+        marginBottom: 0,
+        marginTop: 10,
+        width: "80%",
     },
+    
     green_box: {
         /* Create a green border */
         borderColor: "rgba(58, 175, 25, 0.8)",
@@ -503,4 +501,4 @@ const styles = {
         borderColor: "rgba(63, 77, 202, 0.8)",
         borderWidth: 2,
     }
-}
+})

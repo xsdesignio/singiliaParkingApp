@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import { useState } from "react";
 
 
@@ -8,6 +8,7 @@ import { useLogin } from "../session/LoginProvider";
 import DefaultButton from "../components/atoms/default-button";
 
 import { colors } from "../styles/colorPalette";
+import Logo from "../components/atoms/logo";
 
 
 // eslint-disable-next-line react/prop-types
@@ -46,8 +47,7 @@ export default function LoginScreen() {
     return(
         <View style={styles.container}>
             {/* Create an image with a width and height of 50px */}  
-            
-            <Image source={require("../../assets/icons/logo.png")} style={styles.logo_image}></Image>
+            <Logo></Logo>
             <Text style={styles.title}>Inicio de sesión:</Text>
             
             <TextInput
@@ -83,56 +83,55 @@ export default function LoginScreen() {
     )
 }
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
+        alignItems: 'center',
         flex: 1,
         gap: 10,
         justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginTop: 10,
-        marginBottom: 20,
-        color: colors.black,
     },
     error: {
-        color: colors.error_color,
-        textAlign: "center",
-        fontSize: 14,
-        padding: 14,
-        borderRadius: 12,
-        margin: 10,
         backgroundColor: colors.white,
+        borderRadius: 12,
+        color: colors.error_color,
+        fontSize: 14,
+        margin: 10,
+        padding: 14,
+        textAlign: "center",
+    },
+    input: {
+        backgroundColor: colors.white,
+        borderColor: colors.dark_green,
+        borderRadius:  12,
+        borderWidth: 1, 
+        marginBottom: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        width: 280,
     },
     normal_text: {
         color: colors.dark_green,
         fontSize: 14,
-        textAlign: "center",
         paddingHorizontal: 20,
         paddingVertical: 6,
+        textAlign: "center",
     },
-    logo_image: {
-        width: 50, 
-        height: 50, 
-        justifyContent: "center"
-    },
+
     normal_text_small: {
         color: colors.dark_green,
         fontSize: 12,
-        textAlign: "center",
         paddingHorizontal: 20,
         paddingVertical: 6,
+        textAlign: "center",
     },
-    input: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        width: 280,
+
+    
+    title: {
+        color: colors.black,
+        fontSize: 22,
+        fontWeight: 'bold',
         marginBottom: 20,
-        borderWidth: 1, 
-        borderColor: colors.dark_green,
-        borderRadius:  12,
-        backgroundColor: colors.white,
+        marginTop: 10,
     },
-}
+    
+})

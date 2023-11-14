@@ -86,7 +86,6 @@ export function fetchAvailableBulletins() {
             return response.json()
         })
         .then(bulletins => {
-            console.log("Bulletins:")
             resolve(bulletins)
         })
         .catch((error) => {

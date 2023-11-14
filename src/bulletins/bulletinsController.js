@@ -2,7 +2,6 @@ import { Alert } from "react-native"
 import { getSession } from "../session/sessionStorage"
 import { saveBulletin, payBulletinLocally, addPendingBulletinToPayOnServer } from "./storage/bulletinsStorage";
 import { createBulletinOnServer, payBulletinOnServer } from "./api_conn/apiConn";
-import { obtainAvailableBulletins } from "./availableBulletins";
 import { getConfigValue } from "../configStorage";
 import { obtainAssignedZone } from "../zone_manager";
 
@@ -46,9 +45,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         
 
         // Print bulletin
-        let formatted_bulletin = formatBulletinToBePrinted(bulletin_dict)
-        let available_bulletins = await obtainAvailableBulletins()
-        await printBulletin(formatted_bulletin, available_bulletins)
+        await printBulletin(formatBulletinToBePrinted(bulletin_dict))
 
         // Save bulletin locally after printing
         let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
@@ -60,7 +57,9 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             [
                 {text: "Cancelar"}, 
                 {text: "Volver a imprimir", onPress: async () => {
-                    await printBulletin(formatted_bulletin, available_bulletins)
+                    console.log("Formatted Bulletin")
+                    console.log(formatBulletinToBePrinted(bulletin_dict))
+                    await printBulletin(formatBulletinToBePrinted(bulletin_dict))
                 }}
             ]
         );
@@ -73,14 +72,19 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 }
 
 
-function formatBulletinToBePrinted(bulletin) {
+export function formatBulletinToBePrinted(bulletin) {
+
+    let date = formatDate(bulletin["created_at"].split(" ")[0])
+    let time = `${ bulletin["created_at"].split(" ")[1].substring(0, 5) } h`
+
+
     return {
         "Id": bulletin["id"],
+        "Hora": time,
         "Zona": bulletin["zone_name"],
         "Matrícula": bulletin["registration"],
         "Precepto": bulletin["precept"],
-        "Fecha": bulletin["created_at"].split(" ")[0],
-        "Hora": bulletin["created_at"].split(" ")[1] +"h",
+        "Fecha": date,
     }
 }
 
@@ -131,16 +135,31 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
 
 
 
-function formatBulletinCancellationToBePrinted(bulletin) {
+export function formatBulletinCancellationToBePrinted(bulletin) {
+
+    let date = formatDate(bulletin["created_at"].split(" ")[0]);
+    let time = `${bulletin["created_at"].split(" ")[1].substring(0, 5)} h`;
+
+
     return  {
         "Id": bulletin["id"],
         "Matrícula": bulletin["registration"],
         "Duración": bulletin["duration"],
-        "Precio": bulletin["price"],
-        "Fecha": bulletin["created_at"],
+        "Importe": bulletin["price"] + " eur",
         "Estado": bulletin["paid"] ? "pagado" : "aún por pagar",
-        "Método de pago": bulletin["payment_method"]
+        "Método de pago": bulletin["payment_method"] === "CASH" ? "Efectivo" : "Tarjeta",
+        "Fecha": date,
+        "Hora": time
     }
+}
+
+function formatDate(date) {
+    let elements = date.split("-")
+    let day = elements[2]
+    let month = elements[1]
+    let year = elements[0]
+
+    return `${day}/${month}/${year}`
 }
 
 

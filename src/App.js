@@ -5,21 +5,16 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import { registerRootComponent } from 'expo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import { useEffect } from 'react';
-import { Keyboard } from 'react-native';
-
+import { Keyboard, Text, View, StyleSheet } from 'react-native';
 import { getSession } from './session/sessionStorage';
-
 import { LoginProvider, useLogin } from './session/LoginProvider';
 import { PrinterProvider } from './printing/PrintingProvider';
-
 
 import { initApp } from './init';
 import { colors } from './styles/colorPalette';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
 
 import TicketsScreen from './screens/TicketsScreen';
 import BulletinsScreen from './screens/BulletinsScreen';
@@ -30,6 +25,8 @@ import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import IndexScreen from './screens/IndexScreen';
 import { getServerSession } from './session/sessionControler';
+import HeaderLogo from './components/atoms/header-logo';
+
 
 
 const InitStack = createNativeStackNavigator();
@@ -39,7 +36,6 @@ const Tab = createBottomTabNavigator();
 
 
 const SettingsStack = createNativeStackNavigator()
-
 
 
 // eslint-disable-next-line react/prop-types
@@ -151,20 +147,52 @@ function DefaultNavigator() {
 							null
 						],
 						"headerStyle": [
-							{
-								height: 86,
-								borderBottomColor: colors.input_border,
-								borderBottomWidth: 1,
-							},
+							styles.header,
 							null
 						],
 
 					})
 				}>
-					<Tab.Screen name="Historial" component={RecordScreen} />
-					<Tab.Screen name="Tickets" component={TicketsScreen} />
-					<Tab.Screen name="Boletines" component={BulletinsScreen} />
-					<Tab.Screen name="Ajustes" >
+					<Tab.Screen name="Historial" component={RecordScreen} options={{
+						headerTitle: () => (
+							<View style={styles.header_content}>
+								<HeaderLogo></HeaderLogo> 
+								<Text style={styles.text_style}>
+									Historial
+								</Text>
+							</View>
+						)
+					}}/>
+					<Tab.Screen name="Tickets" component={TicketsScreen} options={{
+						headerTitle: () => (
+							<View style={styles.header_content}>
+								<HeaderLogo></HeaderLogo> 
+								<Text style={styles.text_style}>
+									Tickets
+								</Text>
+							</View>
+						)
+					}}/>
+					<Tab.Screen name="Boletines" component={BulletinsScreen} options={{
+						headerTitle: () => (
+							<View style={styles.header_content}>
+								<HeaderLogo></HeaderLogo> 
+								<Text style={styles.text_style}>
+									Boletines
+								</Text>
+							</View>
+						)
+					}}/>
+					<Tab.Screen name="Ajustes" options={{
+						headerTitle: () => (
+							<View style={styles.header_content}>
+								<HeaderLogo></HeaderLogo> 
+								<Text style={styles.text_style}>
+									Ajustes
+								</Text>
+							</View>
+						)
+					}}>
 						{() => (
 						<SettingsStack.Navigator initialRouteName="Settings">
 							<SettingsStack.Screen name="Settings" component={SettingsScreen} options={{title: 'General'}}/>
@@ -184,3 +212,23 @@ function DefaultNavigator() {
 }
 
 registerRootComponent(App);
+
+
+const styles = StyleSheet.create({
+	header: {
+		borderBottomColor: colors.input_border,
+		borderBottomWidth: 1,
+	},
+	header_content: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		paddingBottom: 8,
+		paddingTop: 8
+	},
+	text_style: { 
+		color: colors.dark_green,
+		fontSize: 18, 
+		fontWeight: 'bold',
+		marginLeft: 10, 
+	}
+})

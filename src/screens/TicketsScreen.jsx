@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Picker } from '@react-native-picker/picker';
 import { colors } from "../styles/colorPalette";
 
+// import { testPrint } from '../printing/ESCPOSCommands'
 import { createAndPrintTicket } from "../tickets/ticketsController";
 import { obtainAvailableTickets } from "../tickets/availableTickets";
 
@@ -40,6 +41,7 @@ export default function TicketsScreen() {
 
 
     useEffect(() => {
+        // testPrint()
         obtainAvailableTickets().then(available_tickets => {
             if (availableTickets.length == 0 && available_tickets != null) {
                 setAvailableTickets(available_tickets.reverse())

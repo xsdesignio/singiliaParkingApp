@@ -4,7 +4,7 @@ export const colors = {
     "primary": "#1E88E5",
     "white": "#ffffff",
     "black": "#000000",
-    "dark_green": "#35523e",
+    "dark_green": "#112e1a",
     "green": "#60826a",
     "light_green": "#d4faec",
     "light_green_selected": "#95e8c9",

@@ -2,13 +2,15 @@
 /* eslint-disable react/prop-types */
 import React, { createContext, useContext, useEffect, useState /*, Alert */ } from 'react';
 import { useMemo } from 'react';
-
 import { requestPermissions } from './PermissionsManager';
 import { BleManager } from "react-native-ble-plx";
+import { obtainAvailableBulletins } from "../bulletins/availableBulletins";
 
 // import { createEncodedTicketToBePrinted, encodedLegalInfoToBePrinted, encodedLogoToBePrinted, encodedSingiliaBarbaInfoToBePrinted } from './PrinterCommunication';
 
-import PrinterCommunicationEncoder from './PrinterCommunication';
+// import PrinterCommunicationEncoder from './PrinterCommunication';
+
+import { ticketTemplate, bulletinTemplate, bulletinCancellationTemplate } from './Templates';
 
 
 
@@ -18,8 +20,11 @@ const PrinterContext = createContext();
 export const PrinterProvider = ({ children }) => {
     const bleManager = useMemo(() => new BleManager(), [])
 
-    const communicationEncoder = useMemo(() => new PrinterCommunicationEncoder(), [])
+    // const communicationEncoder = useMemo(() => new PrinterCommunicationEncoder(), [])
+    // const communicationCreator = useMemo(() => new CommunicationCreator(sendDataToDevice), [])
 
+
+    const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
     const [connectedDevice, setConnectedDevice] = useState(null);
     const [allDevices, setAllDevices] = useState([])
 
@@ -39,6 +44,24 @@ export const PrinterProvider = ({ children }) => {
             
         }
     }, []);
+
+    const checkBluetoothStatus = async () => {
+        try {
+            if(bleManager == null)
+                return
+            const state = await bleManager.state();
+            setBluetoothEnabled(state === 'PoweredOn');
+
+            if(!bluetoothEnabled) {
+                setConnectedDevice(null)
+                setServiceUUID(null)
+                setCharacteristicUUID(null)
+            }
+            
+        } catch (error) {
+            console.error('Error checking Bluetooth status:', error);
+        }
+      };
 
     function isDuplicated (devices, nextDevice) {
         return devices.findIndex((device) => nextDevice.id === device.id) > -1;
@@ -70,7 +93,6 @@ export const PrinterProvider = ({ children }) => {
 
     // Return the connected device if successfully connected or return null otherwise
     async function connectToDevice(device) {
-
         bleManager.connectToDevice(device.id)
             .then(async (connDevice) => {
 
@@ -81,7 +103,6 @@ export const PrinterProvider = ({ children }) => {
                 
                 services.forEach(async (service) => {
                     const characteristicsOfService = await characteristics.characteristicsForService(service.uuid)
-                    
                     
                     let serviceFound = false
 
@@ -118,116 +139,40 @@ export const PrinterProvider = ({ children }) => {
 
 
     async function printTicket(ticket_data) {
-
-        try {
-            await printLogo()
-
-            const title = communicationEncoder.getEncodedTitle("Servicio Municipal \nEstacionamiento Regulado")
-            await sendDataToDevice(title)
-
-            const encoded_ticket_data = communicationEncoder.getEncodedDict(ticket_data)
-            await sendDataToDevice(encoded_ticket_data)
-
-            const singilia_barba_info =communicationEncoder. getSingiliaInfo()
-            await sendDataToDevice(singilia_barba_info)
-
-            const legal_info = communicationEncoder.getLegalInfo()
-            await sendDataToDevice(legal_info)
-
-            return true
-
-        } catch (error) {
-            console.log("Error sending data: ", error)
-            throw Error("Error enviando contenido a la impresora")
-        }
-
+        const ticket_template = await ticketTemplate(ticket_data)
+        await printTemplate(ticket_template)
     }
 
-    async function printLogo() {
-        // const logo = communicationEncoder.getAntequeraLogo()
-        const logo = communicationEncoder.getLogo()
-        await sendDataToDevice(logo)
+    async function printBulletin(bulletin_data) {
+        let available_bulletins = await obtainAvailableBulletins()
+        const bulletin_template = await bulletinTemplate(bulletin_data, available_bulletins)
+        await printTemplate(bulletin_template)
     }
-
-    async function printBulletin(bulletin_data, available_bulletins) {
-
-        try {
-            const logo = communicationEncoder.getSingiliaLogo()
-            await sendDataToDevice(logo)
-
-            const title = communicationEncoder.getEncodedTitle("Boletín \nEstacionamiento Regulado")
-            await sendDataToDevice(title)
-
-            const encoded_bulletin_data = communicationEncoder.getEncodedDict(bulletin_data)
-            await sendDataToDevice(encoded_bulletin_data)
-
-            const prices_table = communicationEncoder.getEncodedPricesTable(available_bulletins)
-            await sendDataToDevice(prices_table)
-
-            const singilia_barba_info = communicationEncoder.getSingiliaInfo()
-            await sendDataToDevice(singilia_barba_info)
-
-            const legal_info = communicationEncoder.getBulletinLegalInfo()
-            await sendDataToDevice(legal_info)
-
-            return true
-
-        } catch (error) {
-            console.log("Error sending data: ", error)
-            return false
-        }
-
-    }
-
 
     async function printBulletinCancellation(bulletin_data) {
-
-        try {
-            const logo = communicationEncoder.getSingiliaLogo()
-            await sendDataToDevice(logo)
-
-            const title = communicationEncoder.getEncodedTitle("Anulación de Boletín")
-            await sendDataToDevice(title)
-
-            const encoded_bulletin_data = communicationEncoder.getEncodedDict(bulletin_data)
-            await sendDataToDevice(encoded_bulletin_data)
-
-            const singilia_barba_info = communicationEncoder.getSingiliaInfo()
-            await sendDataToDevice(singilia_barba_info)
-
-            const legal_info = communicationEncoder.getBulletinLegalInfo()
-            await sendDataToDevice(legal_info)
-
-            return true
-
-        } catch (error) {
-            console.log("Error sending data: ", error)
-            return false
-        }
-
+        const bulletin_cancellation_template = await bulletinCancellationTemplate(bulletin_data)
+        await printTemplate(bulletin_cancellation_template)
     }
 
-
-    // type = "Bulletin" or "Ticket"
     async function sendDataToDevice(encoded_info) {
-        try {
-            await connectedDevice.writeCharacteristicWithResponseForService(
-                serviceUUID,
-                characteristicUUID,
-                encoded_info
-            )
-            return true
+        await connectedDevice.writeCharacteristicWithResponseForService(
+            serviceUUID,
+            characteristicUUID,
+            encoded_info
+        )
+    }
 
-        } catch (error) {
-            console.log("Error sending data to device: ", error)
-            return false
+    async function printTemplate(template) {
+        for(let chunk of template) {
+            await sendDataToDevice(chunk)
         }
+        return 
     }
 
 
     return (
         <PrinterContext.Provider
-            value={{ connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, printBulletinCancellation, scanForPeripherals, stopScan }}
+            value={{ bluetoothEnabled, checkBluetoothStatus, connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, printBulletinCancellation, scanForPeripherals, stopScan }}
         >
             {children}
         </PrinterContext.Provider>
