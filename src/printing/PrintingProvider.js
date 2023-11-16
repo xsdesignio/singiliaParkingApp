@@ -20,10 +20,6 @@ const PrinterContext = createContext();
 export const PrinterProvider = ({ children }) => {
     const bleManager = useMemo(() => new BleManager(), [])
 
-    // const communicationEncoder = useMemo(() => new PrinterCommunicationEncoder(), [])
-    // const communicationCreator = useMemo(() => new CommunicationCreator(sendDataToDevice), [])
-
-
     const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
     const [connectedDevice, setConnectedDevice] = useState(null);
     const [allDevices, setAllDevices] = useState([])
@@ -47,27 +43,30 @@ export const PrinterProvider = ({ children }) => {
 
     const checkBluetoothStatus = async () => {
         try {
-            if(bleManager == null)
-                return
-            const state = await bleManager.state();
+            let state = false;
+            if(bleManager)
+                state = await bleManager.state();
+
             setBluetoothEnabled(state === 'PoweredOn');
 
             if(!bluetoothEnabled) {
                 setConnectedDevice(null)
                 setServiceUUID(null)
                 setCharacteristicUUID(null)
+                setAllDevices([])
             }
             
         } catch (error) {
             console.error('Error checking Bluetooth status:', error);
         }
-      };
+    };
 
+    // Helper function to check if found devices are duplicated before pushing them to the "allDevices" array
     function isDuplicated (devices, nextDevice) {
         return devices.findIndex((device) => nextDevice.id === device.id) > -1;
     }   
 
-    const scanForPeripherals = () =>
+    const scanForPeripherals = () =>{
         bleManager.startDeviceScan(null, null, (error, device) => {
             if (error) {
                 console.log(error);
@@ -85,6 +84,8 @@ export const PrinterProvider = ({ children }) => {
                 });
             }
         });
+    }
+        
 
     async function stopScan() {
         setAllDevices([])
@@ -138,6 +139,18 @@ export const PrinterProvider = ({ children }) => {
     }
 
 
+    async function sendDataToDevice(encoded_info) {
+        await connectedDevice.writeCharacteristicWithResponseForService(
+            serviceUUID,
+            characteristicUUID,
+            encoded_info
+        )
+    }
+
+
+    // FUNCTIONS RELATED WITH PRINTING THE DIFFERENT TEMPLATES
+    // The templates returns an array of encoded chunks 
+    // These chunks contains the commands, logos and content provided by each template
     async function printTicket(ticket_data) {
         const ticket_template = await ticketTemplate(ticket_data)
         await printTemplate(ticket_template)
@@ -154,15 +167,10 @@ export const PrinterProvider = ({ children }) => {
         await printTemplate(bulletin_cancellation_template)
     }
 
-    async function sendDataToDevice(encoded_info) {
-        await connectedDevice.writeCharacteristicWithResponseForService(
-            serviceUUID,
-            characteristicUUID,
-            encoded_info
-        )
-    }
 
+    // send each chunk to the printer
     async function printTemplate(template) {
+        console.log("The problem may be here?")
         for(let chunk of template) {
             await sendDataToDevice(chunk)
         }

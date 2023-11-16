@@ -15,6 +15,7 @@ export async function obtainAssignedZone () {
                 throw new Error("Ha ocurrido un error obteniendo la zona asignada, inténtelo de nuevo.")
             
             let session_response = response_json.json()
+            
             return session_response
         })
         .then( async (response) =>  {

@@ -19,7 +19,11 @@ export default function PrintingSettingsScreen() {
 
 
     useEffect(() => {
-        checkBluetoothStatus()
+        try {
+            checkBluetoothStatus()
+        } catch(e) {
+            console.log("Error en el estaus")
+        }
         return () => {
             if(scanning)
                 stopScan();

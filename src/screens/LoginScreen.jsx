@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
 
     
     title: {
-        color: colors.black,
+        color: colors.dark_green,
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,

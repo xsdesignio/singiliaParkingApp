@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-//import "expo-router/entry";
-import React from 'react';
+import React, { useState } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import { registerRootComponent } from 'expo';
@@ -10,6 +9,8 @@ import { Keyboard, Text, View, StyleSheet } from 'react-native';
 import { getSession } from './session/sessionStorage';
 import { LoginProvider, useLogin } from './session/LoginProvider';
 import { PrinterProvider } from './printing/PrintingProvider';
+import NetInfo from "@react-native-community/netinfo"
+
 
 import { initApp } from './init';
 import { colors } from './styles/colorPalette';
@@ -26,6 +27,7 @@ import LoginScreen from './screens/LoginScreen';
 import IndexScreen from './screens/IndexScreen';
 import { getServerSession } from './session/sessionControler';
 import HeaderLogo from './components/atoms/header-logo';
+import NetworkErrorScreen from './screens/NetworkErrorScreen';
 
 
 
@@ -53,13 +55,37 @@ export default function App() {
 
 function DefaultNavigator() {
 	const { isLoggedIn, setIsLoggedIn } = useLogin();
+
+	const [ isConnected, setIsConnected ] = useState(false);
   
-	/* const [userName, setUserName] = useState(""); */
+	
+	// Effect for checking network connection status
+	useEffect(() => {
+
+		const unsubscribe = NetInfo.addEventListener(state => {
+			if (state.isConnected) {
+				setIsConnected(true);
+
+			} else {
+				setIsConnected(false);
+				// Alert.alert("Comprueba tu conexión a internet", "Hemos detectado problemas de conexción. La app necesita un correcto acceso a internet para poder funcionar.")
+			}
+		});
+
+		return () => {
+			// Unsubscribe from the network connectivity changes when the component unmounts
+			unsubscribe();
+		};
+	}, [isConnected]);
+
+
+
+	// Effect for checking status
 	useEffect(() => {
 		checkLogin().then(() => {
 			initApp();
 		})
-	}, []);
+	}, [])
 
 	async function checkLogin() {
 
@@ -106,107 +132,131 @@ function DefaultNavigator() {
 
 	return (
 		<NavigationContainer>
-			{isLoggedIn ? (
-				<Tab.Navigator
-					initialRouteName="Tickets"
-					screenOptions={
-						({ route }) => ({
-						tabBarIcon: ({ focused, color, size }) => {
-							let iconName;
-							let rn = route.name;
-
-							if (rn === "Tickets") {
-								iconName = focused ? 'document-text' : 'document-text-outline';
-
-							} else if (rn === "Boletines") {
-								iconName = focused ? 'documents' : 'documents-outline';
-
-							} else if (rn === "Historial") {
-								iconName = focused ? 'list' : 'list-outline';
-
-							}else if (rn === "Ajustes") {
-								iconName = focused ? 'settings' : 'settings-outline';
-							}
-
-							// You can return any component that you like here!
-							return <Ionicons name={iconName} size={size} color={color} />;
-						},
-						"tabBarActiveTintColor": colors.green_button,
-						"tabBarInactiveTintColor": "grey",
-						"tabBarLabelStyle": {
-							"paddingBottom": 10,
-							"fontSize": 10
-						},
-						"tabBarStyle": [
-							{
-								"display": isKeyboardOpen ? "none": "flex",
-								height: 72,
-								borderTopColor: colors.input_border,
-								borderTopWidth: 1,
+			{ isConnected ? 
+				(isLoggedIn ? (
+					<Tab.Navigator
+						initialRouteName="Tickets"
+						screenOptions={
+							({ route }) => ({
+							tabBarIcon: ({ focused, color, size }) => {
+								let iconName;
+								let rn = route.name;
+	
+								if (rn === "Tickets") {
+									iconName = focused ? 'document-text' : 'document-text-outline';
+	
+								} else if (rn === "Boletines") {
+									iconName = focused ? 'documents' : 'documents-outline';
+	
+								} else if (rn === "Historial") {
+									iconName = focused ? 'list' : 'list-outline';
+	
+								}else if (rn === "Ajustes") {
+									iconName = focused ? 'settings' : 'settings-outline';
+								}
+	
+								// You can return any component that you like here!
+								return <Ionicons name={iconName} size={size} color={color} />;
 							},
-							null
-						],
+							"tabBarActiveTintColor": colors.green_button,
+							"tabBarInactiveTintColor": "grey",
+							"tabBarLabelStyle": {
+								"paddingBottom": 10,
+								"fontSize": 10
+							},
+							"tabBarStyle": [
+								{
+									"display": isKeyboardOpen ? "none": "flex",
+									height: 72,
+									borderTopColor: colors.input_border,
+									borderTopWidth: 1,
+								},
+								null
+							],
+							"headerStyle": [
+								styles.header,
+								null
+							],
+	
+						})
+					}>
+						<Tab.Screen name="Historial" component={RecordScreen} options={{
+							headerTitle: () => (
+								<View style={styles.header_content}>
+									<HeaderLogo></HeaderLogo> 
+									<Text style={styles.text_style}>
+										Historial
+									</Text>
+								</View>
+							)
+						}}/>
+						<Tab.Screen name="Tickets" component={TicketsScreen} options={{
+							headerTitle: () => (
+								<View style={styles.header_content}>
+									<HeaderLogo></HeaderLogo> 
+									<Text style={styles.text_style}>
+										Tickets
+									</Text>
+								</View>
+							)
+						}}/>
+						<Tab.Screen name="Boletines" component={BulletinsScreen} options={{
+							headerTitle: () => (
+								<View style={styles.header_content}>
+									<HeaderLogo></HeaderLogo> 
+									<Text style={styles.text_style}>
+										Boletines
+									</Text>
+								</View>
+							)
+						}}/>
+						<Tab.Screen name="Ajustes" options={{
+							headerTitle: () => (
+								<View style={styles.header_content}>
+									<HeaderLogo></HeaderLogo> 
+									<Text style={styles.text_style}>
+										Ajustes
+									</Text>
+								</View>
+							)
+						}}>
+							{() => (
+							<SettingsStack.Navigator initialRouteName="Settings">
+								<SettingsStack.Screen name="Settings" component={SettingsScreen} options={{title: 'General'}}/>
+								<SettingsStack.Screen name="Printing Settings" component={PrintingSettingsScreen} options={{title: 'Impresión'}}/>
+							</SettingsStack.Navigator>
+							)}
+						</Tab.Screen>
+					</Tab.Navigator>
+				) : (
+					<InitStack.Navigator initialRouteName='Home' 
+					
+						screenOptions={{
+							"headerStyle": [
+								styles.header,
+								null
+							],
+						}}
+					
+					>
+						<InitStack.Screen name="Home" component={IndexScreen} options={{title: 'Inicio'}}/>
+						<InitStack.Screen name="Login" component={LoginScreen} options={{title: 'Inicia Sesión'}}/>
+					</InitStack.Navigator>
+				)) : 
+
+				<InitStack.Navigator initialRouteName='Network'
+				
+					screenOptions={{
 						"headerStyle": [
 							styles.header,
 							null
 						],
+					}}
 
-					})
-				}>
-					<Tab.Screen name="Historial" component={RecordScreen} options={{
-						headerTitle: () => (
-							<View style={styles.header_content}>
-								<HeaderLogo></HeaderLogo> 
-								<Text style={styles.text_style}>
-									Historial
-								</Text>
-							</View>
-						)
-					}}/>
-					<Tab.Screen name="Tickets" component={TicketsScreen} options={{
-						headerTitle: () => (
-							<View style={styles.header_content}>
-								<HeaderLogo></HeaderLogo> 
-								<Text style={styles.text_style}>
-									Tickets
-								</Text>
-							</View>
-						)
-					}}/>
-					<Tab.Screen name="Boletines" component={BulletinsScreen} options={{
-						headerTitle: () => (
-							<View style={styles.header_content}>
-								<HeaderLogo></HeaderLogo> 
-								<Text style={styles.text_style}>
-									Boletines
-								</Text>
-							</View>
-						)
-					}}/>
-					<Tab.Screen name="Ajustes" options={{
-						headerTitle: () => (
-							<View style={styles.header_content}>
-								<HeaderLogo></HeaderLogo> 
-								<Text style={styles.text_style}>
-									Ajustes
-								</Text>
-							</View>
-						)
-					}}>
-						{() => (
-						<SettingsStack.Navigator initialRouteName="Settings">
-							<SettingsStack.Screen name="Settings" component={SettingsScreen} options={{title: 'General'}}/>
-							<SettingsStack.Screen name="Printing Settings" component={PrintingSettingsScreen} options={{title: 'Impresión'}}/>
-						</SettingsStack.Navigator>
-						)}
-					</Tab.Screen>
-				</Tab.Navigator>
-			) : (
-				<InitStack.Navigator initialRouteName='Home'>
-					<InitStack.Screen name="Home" component={IndexScreen} options={{title: 'Inicio'}}/>
-					<InitStack.Screen name="Login" component={LoginScreen} options={{title: 'Inicia Sesión'}}/>
+				>
+					<InitStack.Screen name="Network" component={NetworkErrorScreen} options={{title: 'Network Error'}}/>
 				</InitStack.Navigator>
-			)}
+			}
 		</NavigationContainer>
 	);
 }

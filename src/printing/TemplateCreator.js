@@ -69,7 +69,6 @@ export default class TemplateCreator {
         return this
     }
 
-
     alignRight() {
         this.template.push(base64.encode(escPos.ALIGN_RIGHT));
         return this
@@ -77,33 +76,31 @@ export default class TemplateCreator {
 
     // Returns: list with the logo encoded content divided in two
     async Logo() {
-        let image_chunks = await loadAndEncodeImage()
+        let image = await loadAndEncodeImage()
         
         const IMAGE_WIDTH = 256;
         const IMAGE_HEIGHT = 128;
 
         const IMAGE_WIDTH_BYTES = Math.ceil(IMAGE_WIDTH / 8);
-        const IMAGE_HEIGHT_BYTES =  Math.ceil(IMAGE_HEIGHT / 8);
 
-        // Mode: This is just an example value; adjust as per your printer's specification.
+        
         const mode = "\x00";
 
 
-        const xL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0x00);
-        const xH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
-        const yL = String.fromCharCode(IMAGE_HEIGHT_BYTES & 0x00);
-        const yH = String.fromCharCode((IMAGE_HEIGHT_BYTES >> 8) & 0xFF);
+        const pL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0xFF);
+        const pH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
+        const hL = String.fromCharCode(IMAGE_HEIGHT & 0xFF);
+        const hH = String.fromCharCode((IMAGE_HEIGHT >> 8) & 0xFF);
+
+        let imageSetup = base64.encode( 
+                escPos.BITMAP_PRINT + 
+                mode + pL + pH + hL + hH)
+
+        this.template.push(imageSetup);
+
         
-        const imagePrintingSetup = base64.encode(
-            escPos.BITMAP_PRINT + 
-            mode + xL + xH + yL + yH
-        )
-
-        this.template.push(imagePrintingSetup);
-        for(let chunk of image_chunks) {
-            this.template.push(chunk);
-        }
-
+        this.template = [...this.template, ...image]
+        
         return this
     }
 
@@ -117,16 +114,17 @@ export default class TemplateCreator {
         const mode = "\x00";
 
         const pL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0xFF);
-        const pH = String.fromCharCode((IMAGE_WIDTH_BYTES >> (IMAGE_WIDTH/8)) & 0xFF);
+        const pH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
         const hL = String.fromCharCode(IMAGE_HEIGHT & 0xFF);
-        const hH = String.fromCharCode((IMAGE_HEIGHT >> (IMAGE_HEIGHT / 8)) & 0xFF);
+        const hH = String.fromCharCode((IMAGE_HEIGHT >> 8) & 0xFF);
 
         let imageSetup = base64.encode( 
                 escPos.BITMAP_PRINT + 
                 mode + pL + pH + hL + hH)
 
         this.template.push(imageSetup);
-        this.template.push(base64.encode(utils.LOGO_HEX))
+        let logo = base64.encode(utils.LOGO_HEX)
+        this.template.push(logo)
         
         return this;
     }
@@ -199,7 +197,7 @@ export default class TemplateCreator {
 
         dataToSend += "Por Singilia Barba: ";
         dataToSend += "C.I.F.G 29.642.444\n";
-        dataToSend += "Bda. Los Dólmenes (C.A.R), Bloque 1 - bajo\n";
+        dataToSend += "Bda. Los Dolmenes (C.A.R), Bloque 1 - bajo\n";
         dataToSend += "Tlf./Fax: 952 70 17 70 ";
         dataToSend += "www.singiliabarba.org\n";
 
@@ -257,7 +255,7 @@ export default class TemplateCreator {
 
         dataToSend += "-Pagar a ordenador de estacionamiento o en el C.C:\nIBAN ES 51 2103 3042 20 0030001171.\n";
         dataToSend += "-Como concepto el numero del boletin de denuncia y matricula.\n";
-        dataToSend += "-Importe según tabla:\n";
+        dataToSend += "-Importe segun tabla:\n";
         dataToSend += "Tiempo estaccionado: Hora fin Regulacion (u Hora Salida Confirmada por Ordenador\nde Estacionamiento)-Hora Boletin Denuncia.\n";
 
         dataToSend += escPos.EMPHASIZED_ON;
