@@ -48,7 +48,7 @@ export function payBulletinOnServer(bulletin_id, payment_method, price, duration
             // Throw an error when server returns an error
             console.log(response.status)
             if (response.status === 400) {
-                throw new Error(response.message);
+                throw new Error("Ha ocurrido un error al pagar el boletín.");
             }
             if (response.status !== 200) {
                 throw new Error("Ha ocurrido un error al pagar el boletín.");

@@ -2,6 +2,7 @@ import { createTicketOnServer } from "./apiConn.js"
 import { getTicketsWithoutReference, addReferenceToTicket } from "../storage/ticketsStorage.js"
 
 
+// TO BE DELETED. SYNCHRONIZATION REMOVED FROM APP
 
 export async function synchronizeTickets() {
     let tickets_without_reference = await getTicketsWithoutReference()

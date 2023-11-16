@@ -1,7 +1,7 @@
 import { getNotSynchronizedBulletins, getBulletinsWithoutReference, addReferenceToBulletin } from "../storage/bulletinsStorage"
 import { createBulletinOnServer, payBulletinOnServer } from "./apiConn"
 
-
+// TO BE DELETED. SYNCHRONIZATION REMOVED FROM APP
 
 export async function synchronizeBulletins() {
     //get pending bulletins
