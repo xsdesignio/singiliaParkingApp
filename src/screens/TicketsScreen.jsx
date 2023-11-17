@@ -16,6 +16,8 @@ import DefaultButton from "../components/atoms/default-button";
 
 export default function TicketsScreen() {
     const printer = usePrinter()
+
+    const [isPrinting, setIsPrinting] = useState(false);
     const [availableTickets, setAvailableTickets] = useState([])
     const payment_methods = Object.freeze({
         CASH: "CASH",
@@ -29,7 +31,6 @@ export default function TicketsScreen() {
         "price": undefined,
         "payment_method": undefined,
     })
-
 
     // Simple function to update the bulletinInfo state
     function updateTicketInfo(key, value) {
@@ -45,7 +46,6 @@ export default function TicketsScreen() {
         obtainAvailableTickets().then(available_tickets => {
             if (availableTickets.length == 0 && available_tickets != null) {
                 setAvailableTickets(available_tickets.reverse())
-                console.log(availableTickets)
                 updateTicketInfo("duration", availableTickets[0].duration)
                 updateTicketInfo("price", availableTickets[0].price)
             }
@@ -55,12 +55,21 @@ export default function TicketsScreen() {
         })
     }, [])
 
-    async function printManager() {
-        await createAndPrintTicket(printer, ticketInfo);
 
-        // Reset data
-        updateTicketInfo("registration", "");
-        updateTicketInfo("payment_method", undefined);
+    // Function that manages tickets printing to disactivate printing button during current printing and reset information
+    async function printManager() {
+
+        if(!isPrinting) {
+            setIsPrinting(true);
+
+            await createAndPrintTicket(printer, ticketInfo);
+
+            // Reset data
+            updateTicketInfo("registration", "");
+            updateTicketInfo("payment_method", undefined);
+
+            setIsPrinting(false)
+        }
     }
 
     

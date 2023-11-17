@@ -15,11 +15,11 @@ export async function ticketTemplate(ticket_data) {
     
     template.initialize()
         .alignCenter()
-        .margin()
 
     template = await template.Logo()
 
-    template.Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
+    template.margin()
+        .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
         .Title(created_at)
         .Title(duration)
@@ -44,11 +44,11 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
 
     template.initialize()
         .alignCenter()
-        .margin()
 
     template = await template.Logo()
 
-    template.Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
+    template.margin()
+        .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
         .margin()
         .Title(id)
         .Title(created_at)
@@ -74,18 +74,17 @@ export async function bulletinCancellationTemplate(bulletin_data) {
 
     template.initialize()
         .alignCenter()
-        .margin()
 
     template = await template.Logo()
 
-    template.Title("ANULACIÓN DE\nBOLETÍN")
+    template.margin()
+        .Title("ANULACIÓN DE\nBOLETÍN")
         .margin()
         .Title(id)
         .Title(created_at)
         .margin()
         .Dict(bulletin_data)
         .SingiliaInfo()
-        .BulletinLegalInfo()
         .margin(4)
         
     return template.obtainTemplateArray()

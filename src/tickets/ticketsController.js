@@ -70,7 +70,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
 
 
 function formatTicketToBePrinted(ticket) {
-    console.log(ticket["created_at"])
+    
     return{
         "Zona": ticket["zone"],
         "Duración": ticket["duration"],

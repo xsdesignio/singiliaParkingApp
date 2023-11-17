@@ -18,7 +18,6 @@ export async function loadAndEncodeImage() {
         });
 
         const invertedBase64 = invertLogo(base64_content, 256, 128)
-        console.log(invertedBase64)
         
         const result = sliceStringIntoChunks(invertedBase64, 128);
 

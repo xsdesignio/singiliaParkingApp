@@ -26,6 +26,9 @@ export default function BulletinsScreen() {
         "color": undefined,
     })
 
+    const [isPrinting, setIsPriting] = useState(false);
+
+
 
     // Simple function to update the bulletinInfo state
     function updateBulletinInfo(key, value) {
@@ -38,19 +41,22 @@ export default function BulletinsScreen() {
     const printer = usePrinter()
 
     async function printManager() {
-
-        await createAndPrintBulletin(printer, bulletinInfo);
         
-        setBulletinInfo({
-            "registration": "",
-            "price": undefined,
-            "paid": false,
-            "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-            "brand": undefined,
-            "model": undefined,
-            "color": undefined,
-        })
-
+        if(!isPrinting) {
+            setIsPriting(true);
+            await createAndPrintBulletin(printer, bulletinInfo);
+            
+            setBulletinInfo({
+                "registration": "",
+                "price": undefined,
+                "paid": false,
+                "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
+                "brand": undefined,
+                "model": undefined,
+                "color": undefined,
+            })
+            setIsPriting(false);
+        }
     }
 
 

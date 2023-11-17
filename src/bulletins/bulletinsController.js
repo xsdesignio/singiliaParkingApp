@@ -17,7 +17,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         const { connectedDevice, printBulletin } = printer
 
         if(connectedDevice == null) {
-            // console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
@@ -57,8 +56,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             [
                 {text: "Cancelar"}, 
                 {text: "Volver a imprimir", onPress: async () => {
-                    console.log("Formatted Bulletin")
-                    console.log(formatBulletinToBePrinted(bulletin_dict))
                     await printBulletin(formatBulletinToBePrinted(bulletin_dict))
                 }}
             ]
@@ -78,7 +75,7 @@ export function formatBulletinToBePrinted(bulletin) {
     let time = `${ bulletin["created_at"].split(" ")[1].substring(0, 5) } h`
 
 
-    return {
+    let result = {
         "Id": bulletin["id"],
         "Hora": time,
         "Zona": bulletin["zone_name"],
@@ -86,6 +83,18 @@ export function formatBulletinToBePrinted(bulletin) {
         "Precepto": bulletin["precept"],
         "Fecha": date,
     }
+
+    if(bulletin["brand"] != undefined) 
+        result["Marca"] = bulletin["brand"]
+
+    if(bulletin["model"] != undefined) 
+        result["Modelo"] = bulletin["model"]
+
+    if(bulletin["color"] != undefined) 
+        result["Color"] = bulletin["color"]
+
+    return result
+    
 }
 
 
@@ -98,7 +107,6 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         const { connectedDevice, printBulletinCancellation } = printer
         
         if (connectedDevice == null) {
-            // console.log("Simulando impresión: no se ha encontrado ninguna impresora conectada.")
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
         
@@ -123,7 +131,6 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         
         return true
     } catch (error) {
-        console.log(error)
         setTimeout(() => {
             Alert.alert("Error", "Ha ocurrido un error al pagar el boletín", [{
                 text: "Ok",

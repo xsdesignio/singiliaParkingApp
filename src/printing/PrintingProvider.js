@@ -170,7 +170,6 @@ export const PrinterProvider = ({ children }) => {
 
     // send each chunk to the printer
     async function printTemplate(template) {
-        console.log("The problem may be here?")
         for(let chunk of template) {
             await sendDataToDevice(chunk)
         }

@@ -236,7 +236,7 @@ export default class TemplateCreator {
         dataToSend += "Informacion legal:\n";
         dataToSend += "-Pago Obligatorio (Ordenanza Municipal num.20).\n";
         dataToSend += "-El boleto debera situarse en un lugar visible.\n";
-        dataToSend += "-No se garantizan los objetos dejados en el interior\ndel vehiculo, accesorios exteriores, robos, incendios,\nni daños causados con proposito de hurto.\n";
+        dataToSend += "-No se garantizan los objetos dejados en el interior\ndel vehiculo, accesorios exteriores, robos, incendios,\nni perjuicios causados con proposito de hurto.\n";
 
         dataToSend += utils.MARGIN;
 
@@ -255,12 +255,32 @@ export default class TemplateCreator {
 
         dataToSend += "-Pagar a ordenador de estacionamiento o en el C.C:\nIBAN ES 51 2103 3042 20 0030001171.\n";
         dataToSend += "-Como concepto el numero del boletin de denuncia y matricula.\n";
-        dataToSend += "-Importe segun tabla:\n";
-        dataToSend += "Tiempo estaccionado: Hora fin Regulacion (u Hora Salida Confirmada por Ordenador\nde Estacionamiento)-Hora Boletin Denuncia.\n";
+        dataToSend += "-Importe segun tabla.\n";
+        dataToSend += "Tiempo estaccionado: Hora fin Regulacion-Hora\nBoletin Denuncia.\n";
 
         dataToSend += escPos.EMPHASIZED_ON;
         dataToSend += "Ejemplar para la policia\n";
         dataToSend += escPos.EMPHASIZED_OFF;
+
+        dataToSend += utils.MARGIN;
+
+        
+        this.template.push(base64.encode(dataToSend))
+
+        return this
+    }
+
+    BulletinCancellationLegalInfo() {
+        let dataToSend = escPos.CHARACTER_SIZE_0;
+
+        dataToSend += escPos.EMPHASIZED_ON;
+        dataToSend += "ANULACION DE BOLETIN (ANTES DE 48 HORAS)\n";
+        dataToSend += escPos.EMPHASIZED_OFF;
+
+        dataToSend += "-Pagar a ordenador de estacionamiento o en el C.C:\nIBAN ES 51 2103 3042 20 0030001171.\n";
+        dataToSend += "-Como concepto el numero del boletin de denuncia y matricula.\n";
+        dataToSend += "-Importe segun tabla:\n";
+        dataToSend += "Tiempo estaccionado: Hora fin Regulacion-Hora\nBoletin Denuncia.";
 
         dataToSend += utils.MARGIN;
 
