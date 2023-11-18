@@ -10,10 +10,32 @@
         "buildType": "apk"
       }
     },
+    "android": {
+      "buildType": "app-bundle",
+      "gradleCommand": ":app:bundleRelease"
+    },
     "production": {}
   }
 }
 
+/* 
+{
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "developmentClient": true
+    },
+    "production": {
+      "distribution": "internal"
+    },
+    "android": {
+      "buildType": "app-bundle",
+      "gradleCommand": ":app:bundleRelease"
+    }
+  }
+}
+
+*/
 /* {
   "build": {
     "preview": {
