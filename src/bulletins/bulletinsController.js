@@ -84,13 +84,13 @@ export function formatBulletinToBePrinted(bulletin) {
         "Fecha": date,
     }
 
-    if(bulletin["brand"] != undefined) 
+    if(bulletin["brand"] != undefined && bulletin["brand"] != "") 
         result["Marca"] = bulletin["brand"]
 
-    if(bulletin["model"] != undefined) 
+    if(bulletin["model"] != undefined && bulletin["model"] != "") 
         result["Modelo"] = bulletin["model"]
 
-    if(bulletin["color"] != undefined) 
+    if(bulletin["color"] != undefined && bulletin["color"] != "") 
         result["Color"] = bulletin["color"]
 
     return result

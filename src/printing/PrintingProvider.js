@@ -20,7 +20,7 @@ const PrinterContext = createContext();
 export const PrinterProvider = ({ children }) => {
     const bleManager = useMemo(() => new BleManager(), [])
 
-    const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
+    // const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
     const [connectedDevice, setConnectedDevice] = useState(null);
     const [allDevices, setAllDevices] = useState([])
 
@@ -41,7 +41,7 @@ export const PrinterProvider = ({ children }) => {
         }
     }, []);
 
-    const checkBluetoothStatus = async () => {
+    /* const checkBluetoothStatus = async () => {
         try {
             let state = false;
             if(bleManager)
@@ -60,7 +60,7 @@ export const PrinterProvider = ({ children }) => {
             console.error('Error checking Bluetooth status:', error);
         }
     };
-
+ */
     // Helper function to check if found devices are duplicated before pushing them to the "allDevices" array
     function isDuplicated (devices, nextDevice) {
         return devices.findIndex((device) => nextDevice.id === device.id) > -1;
@@ -179,7 +179,7 @@ export const PrinterProvider = ({ children }) => {
 
     return (
         <PrinterContext.Provider
-            value={{ bluetoothEnabled, checkBluetoothStatus, connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, printBulletinCancellation, scanForPeripherals, stopScan }}
+            value={{ /* bluetoothEnabled, checkBluetoothStatus, */ connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, printBulletinCancellation, scanForPeripherals, stopScan }}
         >
             {children}
         </PrinterContext.Provider>
