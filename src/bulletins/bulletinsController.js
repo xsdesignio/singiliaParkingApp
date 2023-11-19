@@ -40,8 +40,12 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             throw new Error("Error al crear el boletín en el servidor. Inténtalo de nuevo o Revisa la conexión a internet.")
         }
 
+        /* -------------- */
+
         bulletin_dict["id"] = server_bulletin["id"]
+        Alert.alert(bulletin_dict["id"])
         bulletin_dict["created_at"] = server_bulletin["created_at"]
+        Alert.alert(bulletin_dict["created_at"])
         
 
         // Print bulletin
@@ -84,7 +88,7 @@ export function formatBulletinToBePrinted(bulletin) {
         "Precepto": bulletin["precept"],
         "Fecha": date,
     }
-/* 
+
     if(bulletin["brand"] != undefined && bulletin["brand"] != "") 
         result["Marca"] = bulletin["brand"]
 
@@ -93,7 +97,8 @@ export function formatBulletinToBePrinted(bulletin) {
 
     if(bulletin["color"] != undefined && bulletin["color"] != "") 
         result["Color"] = bulletin["color"]
- */
+
+    Alert.alert("El error no está aquí")
     return result
     
 }
@@ -144,10 +149,8 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
 
 
 export function formatBulletinCancellationToBePrinted(bulletin) {
-
     let date = formatDate(bulletin["created_at"].split(" ")[0]);
     let time = `${bulletin["created_at"].split(" ")[1].substring(0, 5)} h`;
-
 
     return  {
         "Id": bulletin["id"],
