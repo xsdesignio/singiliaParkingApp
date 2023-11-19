@@ -20,16 +20,17 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
+        let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
 
 
         let bulletin_dict = {
-            ...bulletinInfo,
-            "responsible_id": (await getSession())["id"],
+            "responsible_id": session["id"],
             "zone_name": zone,
-            "created_at": obtainDateTime()
+            "created_at": obtainDateTime(),
+            ...bulletinInfo,
         }
 
          // Check if ticket_info has all required information and crete the ticket on server
@@ -83,7 +84,7 @@ export function formatBulletinToBePrinted(bulletin) {
         "Precepto": bulletin["precept"],
         "Fecha": date,
     }
-
+/* 
     if(bulletin["brand"] != undefined && bulletin["brand"] != "") 
         result["Marca"] = bulletin["brand"]
 
@@ -92,7 +93,7 @@ export function formatBulletinToBePrinted(bulletin) {
 
     if(bulletin["color"] != undefined && bulletin["color"] != "") 
         result["Color"] = bulletin["color"]
-
+ */
     return result
     
 }
