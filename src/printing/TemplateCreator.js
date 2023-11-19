@@ -170,8 +170,8 @@ export default class TemplateCreator {
         return this;
     }
 
+    // Print a dict with the format "key: value"
     Dict(data) {
-
         let dataToSend = escPos.CHARACTER_SIZE_1;
         dataToSend += escPos.EMPHASIZED_ON;
         dataToSend += escPos.CHARACTER_SPACING_2;
@@ -190,6 +190,7 @@ export default class TemplateCreator {
         return this
     }
 
+    // Print the information related to Singilia Barba
     SingiliaInfo() {
         let dataToSend = escPos.CHARACTER_SIZE_0;
         dataToSend += escPos.LINE_HEIGHT_NORMAL;
@@ -210,6 +211,8 @@ export default class TemplateCreator {
         return this
     }
 
+
+    // Show the prices table provided
     PricesTable(prices_table) {
         let dataToSend = escPos.CHARACTER_SIZE_0;
 
@@ -230,6 +233,7 @@ export default class TemplateCreator {
         return this
     }
 
+    // Show the legal information related to the ticket
     LegalInfo() {
         let dataToSend = escPos.CHARACTER_SIZE_0;
 

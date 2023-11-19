@@ -39,7 +39,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         
-        printTicket(formatTicketToBePrinted(ticket_dict))
+        await printTicket(formatTicketToBePrinted(ticket_dict))
         
         let server_ticket = await createTicketOnServer(ticket_dict)
 
@@ -49,6 +49,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
             throw new Error("Error al crear el ticket")
 
          
+        // Obtaining required informtion from server
         ticket_dict["created_at"] = server_ticket["created_at"]
         ticket_dict["id"] = server_ticket["id"]
 

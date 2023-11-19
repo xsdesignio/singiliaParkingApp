@@ -2,7 +2,6 @@ import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
 import { toByteArray, fromByteArray } from 'base64-js';
 
-
 export async function loadAndEncodeImage() {
     try {
         // Load the image from the assets folder using Expo Asset

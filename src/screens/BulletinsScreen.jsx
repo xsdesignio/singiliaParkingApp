@@ -21,9 +21,9 @@ export default function BulletinsScreen() {
         "registration": "",
         /* "payment_method": undefined, */
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-        "brand": undefined,
-        "model": undefined,
-        "color": undefined,
+        "brand": "",
+        "model": "",
+        "color": "",
     })
 
     const [isPrinting, setIsPriting] = useState(false);
@@ -48,12 +48,11 @@ export default function BulletinsScreen() {
             
             setBulletinInfo({
                 "registration": "",
-                "price": undefined,
                 "paid": false,
                 "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-                "brand": undefined,
-                "model": undefined,
-                "color": undefined,
+                "brand": "",
+                "model": "",
+                "color": "",
             })
             setIsPriting(false);
         }
