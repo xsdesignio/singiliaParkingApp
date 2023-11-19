@@ -40,17 +40,14 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             throw new Error("Error al crear el boletín en el servidor. Inténtalo de nuevo o Revisa la conexión a internet.")
         }
 
-        /* -------------- */
-
         bulletin_dict["id"] = server_bulletin["id"]
-        Alert.alert(bulletin_dict["id"])
         bulletin_dict["created_at"] = server_bulletin["created_at"]
-        Alert.alert(bulletin_dict["created_at"])
         
 
         // Print bulletin
         await printBulletin(formatBulletinToBePrinted(bulletin_dict))
 
+        
         // Save bulletin locally after printing
         let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
         if(result == null) {
@@ -98,7 +95,6 @@ export function formatBulletinToBePrinted(bulletin) {
     if(bulletin["color"] != undefined && bulletin["color"] != "") 
         result["Color"] = bulletin["color"]
 
-    Alert.alert("El error no está aquí")
     return result
     
 }
