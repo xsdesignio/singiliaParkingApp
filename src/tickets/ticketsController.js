@@ -39,12 +39,9 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         
-        await printTicket(formatTicketToBePrinted(ticket_dict))
-        
         let server_ticket = await createTicketOnServer(ticket_dict)
 
         // If the ticket has been created on the server, save it on the local storage with the server id
-        // If not, save it with a negative id so it can be identified as a local ticket that has not been created on the server yet
         if (!server_ticket) 
             throw new Error("Error al crear el ticket")
 
@@ -54,6 +51,8 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         ticket_dict["id"] = server_ticket["id"]
 
 
+        await printTicket(formatTicketToBePrinted(ticket_dict))
+        
         // Saving ticket locally
         let result_ticket = await saveTicket(ticket_dict)
 
