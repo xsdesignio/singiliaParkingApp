@@ -27,7 +27,6 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
 
-
         let ticket_dict = {
             "responsible_id": session["id"],
             "zone": zone,
@@ -39,21 +38,19 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         
+        // Create the ticket on server
         let server_ticket = await createTicketOnServer(ticket_dict)
-
-        // If the ticket has been created on the server, save it on the local storage with the server id
         if (!server_ticket) 
             throw new Error("Error al crear el ticket")
 
-         
-        // Obtaining required informtion from server
+        // Adding information reveived from server
         ticket_dict["created_at"] = server_ticket["created_at"]
         ticket_dict["id"] = server_ticket["id"]
 
-
+        // Print the ticket
         await printTicket(formatTicketToBePrinted(ticket_dict))
         
-        // Saving ticket locally
+        // Once printed, save the ticket locally
         let result_ticket = await saveTicket(ticket_dict)
 
         if(result_ticket == null) 
@@ -70,20 +67,25 @@ export async function createAndPrintTicket(printer, ticketInfo) {
 
 
 function formatTicketToBePrinted(ticket) {
-    
+
+    let date = formatDate(ticket["created_at"].split(" ")[0])
+    let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
+
+    console.log("Date: ", date)
+    console.log("Time: ", time)
     return{
         "Zona": ticket["zone"],
         "Duración": ticket["duration"],
         "Matrícula": ticket["registration"],
         "Importe": ticket["price"] + " eur",
-        "Fecha": formatDate(ticket["created_at"].split(" ")[0]),
-        "Hora": ticket["created_at"].split(" ")[1].substring(0, 5) + " h",
+        "Fecha": date,
+        "Hora":time,
     }
 
 }
 
 function formatDate(date) {
-    let elements = date.split("/")
+    let elements = date.split(/[/-]/)
     let day = elements[2]
     let month = elements[1]
     let year = elements[0]

@@ -2,7 +2,17 @@ import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
 import { toByteArray, fromByteArray } from 'base64-js';
 
+
+let image_chunks = null;
+
+
+// Load and encode the image.
+// Save it into image_chunks so it doesn't have to repeat the loading process at every call
 export async function loadAndEncodeImage() {
+    // Check the image has already been load and return it if so
+    if(image_chunks != null)
+        return image_chunks;
+
     try {
         // Load the image from the assets folder using Expo Asset
         const asset = Asset.fromModule(require('../../assets/logos.bmp'));
@@ -16,11 +26,13 @@ export async function loadAndEncodeImage() {
             encoding: FileSystem.EncodingType.Base64,
         });
 
-        const invertedBase64 = invertLogo(base64_content, 256, 128)
-        
-        const result = sliceStringIntoChunks(invertedBase64, 128);
+        const invertedImage = invertLogo(base64_content, 256, 128);
+        const slicedImage = sliceStringIntoChunks(invertedImage, 256);
 
-        return result;
+        // Set image chunks to return next time the function is called
+        image_chunks = slicedImage;
+
+        return slicedImage;
 
     } catch (e) {
         console.error(e);
@@ -28,12 +40,13 @@ export async function loadAndEncodeImage() {
 }
 
 
-function invertLogo(base64_content, width = 64, height = 64) {
-    let bytesArray = toByteArray(base64_content);
+function invertLogo(base64_image, width = 64, height = 64) {
+    // Obtaining the pixels from the base64_image
+    let bytesArray = toByteArray(base64_image);
 
-    width = width/8;
+    width = width/8; // As it is devided by bytes
 
-    bytesArray = bytesArray.slice(-(width*height))
+    bytesArray = bytesArray.slice(-(width*height)) // Obtain the image pixels acording to size
 
     let resultArray = new Uint8Array(bytesArray.length);
     
@@ -46,6 +59,7 @@ function invertLogo(base64_content, width = 64, height = 64) {
         }
     }
 
+    // Coming back to base64 encoding after logo inverted
     const base64Result = fromByteArray(resultArray);
     return base64Result;
 }

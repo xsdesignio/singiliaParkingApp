@@ -6,16 +6,15 @@ import { getConfigValue } from "../configStorage";
 import { obtainAssignedZone } from "../zone_manager";
 
 
-// Pay a certain bulletin, updating it's paid status on the server and locally
+// Create a bulletin (such in server as locally) and print it
 // Create an alert with the result of the operation
 // @param printer, printer provider containing functions to work with the printer
-// @param bulletinInfo, dictionary with the bulletin  information
+// @param bulletinInfo, dictionary with the bulletin information
 export async function createAndPrintBulletin(printer, bulletinInfo) {
     try {
 
         // obtain required functions from printer provider
         const { connectedDevice, printBulletin } = printer
-
         if(connectedDevice == null) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
@@ -24,7 +23,6 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
-
 
         let bulletin_dict = {
             "responsible_id": session["id"],
@@ -35,25 +33,26 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
          // Check if ticket_info has all required information and crete the ticket on server
         check_information(bulletin_dict)
+        
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
         if(!server_bulletin) {
             throw new Error("Error al crear el boletín en el servidor. Inténtalo de nuevo o Revisa la conexión a internet.")
         }
 
+        // Adding information reveived from server
         bulletin_dict["id"] = server_bulletin["id"]
         bulletin_dict["created_at"] = server_bulletin["created_at"]
         
-
         // Print bulletin
         await printBulletin(formatBulletinToBePrinted(bulletin_dict))
 
-        
-        // Save bulletin locally after printing
+        // Once printed, save the bulletin locally
         let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
         if(result == null) {
             throw new Error("Error al guardar el boletín")
         } 
 
+        // If everything went well, show a success message
         Alert.alert("Boletín Creado", "El boletín ha sido creado he impreso con éxito", 
             [
                 {text: "Cancelar"}, 
@@ -120,7 +119,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         
         let paid_locally = await payBulletinLocally(id, payment_method, duration, price)
 
-        printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
+        await printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
 
         if(!paid_locally)
             throw new Error("Error al pagar el boletín")
@@ -161,7 +160,7 @@ export function formatBulletinCancellationToBePrinted(bulletin) {
 }
 
 function formatDate(date) {
-    let elements = date.split("-")
+    let elements = date.split(/[/-]/)
     let day = elements[2]
     let month = elements[1]
     let year = elements[0]
