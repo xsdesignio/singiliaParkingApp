@@ -34,15 +34,14 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
          // Check if ticket_info has all required information and crete the ticket on server
         check_information(bulletin_dict)
         
+        // Creating the ticket in the server
         let server_bulletin = await createBulletinOnServer(bulletin_dict)
-        if(!server_bulletin) {
+        if(!server_bulletin) 
             throw new Error("Error al crear el boletín en el servidor. Inténtalo de nuevo o Revisa la conexión a internet.")
-        }
-
-        // Adding information reveived from server
-        bulletin_dict["id"] = server_bulletin["id"]
-        bulletin_dict["created_at"] = server_bulletin["created_at"]
+        else
+            bulletin_dict["id"] = server_bulletin["id"] // Adding id reveived from server
         
+
         // Print bulletin
         await printBulletin(formatBulletinToBePrinted(bulletin_dict))
 

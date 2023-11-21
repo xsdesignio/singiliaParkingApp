@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
+import { useFocusEffect } from '@react-navigation/native';
+
 import { StyleSheet, View, Text, Alert } from "react-native";
 import { useState } from "react";
 import { Picker } from '@react-native-picker/picker';
@@ -26,11 +28,16 @@ export default function SettingsScreen({ navigation }) {
     const [zone, setZone] = useState(null)
     const [availableZones, setAvailableZones] = useState([])
 
+    useFocusEffect(React.useCallback(() => {
+            getZone();
+            getAvailableZones();
+            return () => {
+                // Your cleanup code when the screen is unfocused
+              };
+        }, [])
+    )
+
     useEffect(() => {
-
-        getZone();
-        getAvailableZones();
-
         getSession().then(session => {
             // setSession(session)
             setSessionName(session["name"])
@@ -55,14 +62,13 @@ export default function SettingsScreen({ navigation }) {
 
 
     async function getZone() {
-        let obtained_zone = await getConfigValue("zone")
-
-        if (obtained_zone != null)  {
-            setZone(obtained_zone)
+        let zone = await obtainAssignedZone()
+        if (zone != null)  {
+            setZone(zone)
         } else {
-            let assigned_zone = await obtainAssignedZone()
-            if(assigned_zone != null) {
-                setZone(assigned_zone)
+            zone = await getConfigValue("zone")
+            if(zone != null) {
+                setZone(zone)
             }
         }
 

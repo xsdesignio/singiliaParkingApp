@@ -8,7 +8,7 @@ import { getConfigValue } from "../configStorage"
 import { Alert } from "react-native";
 
 
-// Print a ticket
+// Create the ticket (such in server as locally) and Print it
 // @param duration, duration of the ticket
 // @param registration, registration of the vehicle
 // @param paymentMethod, payment method used to pay the ticket ('CASH' or 'CARD')
@@ -21,7 +21,6 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         if(connectedDevice == null) 
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         
-
         let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
@@ -41,20 +40,19 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Create the ticket on server
         let server_ticket = await createTicketOnServer(ticket_dict)
         if (!server_ticket) 
-            throw new Error("Error al crear el ticket")
+            throw new Error("Error al crear el ticket en el servidor")
+        else
+            ticket_dict["id"] = server_ticket["id"]  // Adding the id received from server
 
-        // Adding information reveived from server
-        ticket_dict["created_at"] = server_ticket["created_at"]
-        ticket_dict["id"] = server_ticket["id"]
 
         // Print the ticket
         await printTicket(formatTicketToBePrinted(ticket_dict))
+
         
         // Once printed, save the ticket locally
-        let result_ticket = await saveTicket(ticket_dict)
-
-        if(result_ticket == null) 
-            throw new Error("Error al guardar el ticket")
+        let saved_ticket = await saveTicket(ticket_dict)
+        if(saved_ticket == null) 
+            throw new Error("Error al guardar el ticket en el dispositivo")
         
         // If everything went well, show a success message
         Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
@@ -71,8 +69,6 @@ function formatTicketToBePrinted(ticket) {
     let date = formatDate(ticket["created_at"].split(" ")[0])
     let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
 
-    console.log("Date: ", date)
-    console.log("Time: ", time)
     return{
         "Zona": ticket["zone"],
         "Duración": ticket["duration"],

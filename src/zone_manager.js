@@ -22,8 +22,8 @@ export async function obtainAssignedZone () {
             // Store the session returned
             // Resolve with the session if stored successfully or reject with an error message otherwise
             if (!(response.zone == null || response.zone == undefined)){
-                await setConfigValue("zone", response.zone)
-                resolve(response.zone)
+                await setConfigValue("zone", response.zone.name)
+                resolve(response.zone.name)
             }
         })
         .catch(error => {
