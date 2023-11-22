@@ -16,8 +16,6 @@ export async function ticketTemplate(ticket_data) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
-
     template.margin()
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
@@ -27,7 +25,11 @@ export async function ticketTemplate(ticket_data) {
         .Dict(ticket_data)
         .SingiliaInfo()
         .LegalInfo()
-        .margin(5)
+
+
+    template = await template.Logo()
+
+    template.margin(5)
 
     return template.obtainTemplateArray()
 
