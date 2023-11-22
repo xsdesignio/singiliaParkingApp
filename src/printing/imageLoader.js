@@ -27,7 +27,7 @@ export async function loadAndEncodeImage() {
         });
 
         const invertedImage = invertLogo(base64_content, 256, 128);
-        const slicedImage = sliceStringIntoChunks(invertedImage, 256);
+        const slicedImage = sliceStringIntoChunks(invertedImage, 32);
 
         // Set image chunks to return next time the function is called
         image_chunks = slicedImage;
