@@ -16,12 +16,13 @@ export async function loadAndEncodeImage() {
     try {
         // Load the image from the assets folder using Expo Asset
         let imageUrl = '../../assets/logos.bmp';
+        /* 
         const asset = Asset.fromModule(require(imageUrl));
         await asset.downloadAsync();
 
         // Get the local URI of the downloaded file
-        const localUri = asset.localUri;
-
+        const localUri = asset.localUri; */
+        const [{ localUri }] = await Asset.loadAsync(require(imageUrl));
         if(!localUri)
             throw Error("Error obteniendo la ruta de la imagen de los logos")
 
