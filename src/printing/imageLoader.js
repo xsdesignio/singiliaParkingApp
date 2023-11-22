@@ -10,25 +10,28 @@ let image_chunks = [];
 // Save it into image_chunks so it doesn't have to repeat the loading process at every call
 export async function loadAndEncodeImage() {
     // Check the image has already been load and return it if so
-    if(image_chunks != [])
+    if(image_chunks.length > 0)
         return image_chunks;
 
     try {
         // Load the image from the assets folder using Expo Asset
-        let imageUrl = '../../assets/printer-logo.bmp';
+        let imageUrl = '../../assets/logos.bmp';
         const asset = Asset.fromModule(require(imageUrl));
         await asset.downloadAsync();
 
         // Get the local URI of the downloaded file
         const localUri = asset.localUri;
 
+        if(!localUri)
+            throw Error("Error obteniendo la ruta de la imagen de los logos")
+
         // Read the file using Expo FileSystem
         let base64_content = await FileSystem.readAsStringAsync(localUri, {
             encoding: FileSystem.EncodingType.Base64,
         });
 
-        const invertedImage = invertLogo(base64_content);
-        const slicedImage = sliceStringIntoChunks(invertedImage, 32);
+        const invertedImage = invertLogo(base64_content, 256, 128);
+        const slicedImage = sliceStringIntoChunks(invertedImage, 64);
 
         // Set image chunks to return next time the function is called
         image_chunks = slicedImage;
