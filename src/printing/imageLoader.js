@@ -40,7 +40,7 @@ export async function loadAndEncodeImage() {
 
     } catch (e) {
         console.error(e);
-        throw Error("Error obteniendo la imagen de los logotipos")
+        throw Error(e.message)
     }
 }
 

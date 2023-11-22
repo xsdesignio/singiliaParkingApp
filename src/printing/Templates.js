@@ -12,7 +12,6 @@ export async function ticketTemplate(ticket_data) {
     let duration = ticket_data["Duración"]
     delete ticket_data["Duración"];
 
-    
     template.initialize()
         .alignCenter()
 
