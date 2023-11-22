@@ -16,7 +16,7 @@ export async function ticketTemplate(ticket_data) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
+    template = template.SingiliaLogo()
 
     template.margin()
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
@@ -45,7 +45,7 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
+    template = template.SingiliaLogo()
 
     template.margin()
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")

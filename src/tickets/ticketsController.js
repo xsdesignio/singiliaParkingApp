@@ -37,9 +37,6 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         // Check if ticket_info has all required information and create the ticket on the server
         check_information(ticket_dict)
         
-        // Print the ticket
-        await printTicket(formatTicketToBePrinted(ticket_dict))
-
         // Create the ticket on server
         let server_ticket = await createTicketOnServer(ticket_dict)
         if (!server_ticket) 
@@ -48,6 +45,9 @@ export async function createAndPrintTicket(printer, ticketInfo) {
             ticket_dict["id"] = server_ticket["id"]  // Adding the id received from server
 
         
+        // Print the ticket
+        await printTicket(formatTicketToBePrinted(ticket_dict))
+
         // Once printed, save the ticket locally
         let saved_ticket = await saveTicket(ticket_dict)
         if(saved_ticket == null) 
