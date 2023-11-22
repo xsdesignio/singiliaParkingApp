@@ -15,7 +15,7 @@ export async function loadAndEncodeImage() {
 
     try {
         // Load the image from the assets folder using Expo Asset
-        const asset = Asset.fromModule(require('../../assets/logos.bmp'));
+        const asset = Asset.fromModule(require('../../assets/printer-logo.bmp'));
         await asset.downloadAsync();
 
         // Get the local URI of the downloaded file
@@ -26,7 +26,7 @@ export async function loadAndEncodeImage() {
             encoding: FileSystem.EncodingType.Base64,
         });
 
-        const invertedImage = invertLogo(base64_content, 256, 128);
+        const invertedImage = invertLogo(base64_content);
         const slicedImage = sliceStringIntoChunks(invertedImage, 32);
 
         // Set image chunks to return next time the function is called

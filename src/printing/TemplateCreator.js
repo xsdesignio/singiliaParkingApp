@@ -78,8 +78,8 @@ export default class TemplateCreator {
     async Logo() {
         let image = await loadAndEncodeImage()
         
-        const IMAGE_WIDTH = 256;
-        const IMAGE_HEIGHT = 128;
+        const IMAGE_WIDTH = 64;
+        const IMAGE_HEIGHT = 64;
 
         const IMAGE_WIDTH_BYTES = Math.ceil(IMAGE_WIDTH / 8);
 
