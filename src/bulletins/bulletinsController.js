@@ -132,7 +132,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         return true
     } catch (error) {
         setTimeout(() => {
-            Alert.alert("Error", "Ha ocurrido un error al pagar el boletín", [{
+            Alert.alert("Error", error.message, [{
                 text: "Ok",
             }]);
         }, 100);

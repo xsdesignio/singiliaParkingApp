@@ -75,7 +75,7 @@ export async function bulletinCancellationTemplate(bulletin_data) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
+    template = template.SingiliaLogo()
 
     template.margin()
         .Title("ANULACIÓN DE\nBOLETÍN")

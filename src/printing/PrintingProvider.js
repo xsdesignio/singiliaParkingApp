@@ -151,6 +151,7 @@ export const PrinterProvider = ({ children }) => {
     // FUNCTIONS RELATED WITH PRINTING THE DIFFERENT TEMPLATES
     // The templates returns an array of encoded chunks 
     // These chunks contains the commands, logos and content provided by each template
+    
     async function printTicket(ticket_data) {
         const ticket_template = await ticketTemplate(ticket_data)
         await printTemplate(ticket_template)
