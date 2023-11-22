@@ -64,7 +64,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         return bulletin_dict
     }
     catch(error) {
-        Alert.alert("Error al imprimir el boletín", error.message)
+        Alert.alert("Error al imprimir el boletín", error.captureStackTrace())
     }
 }
 
