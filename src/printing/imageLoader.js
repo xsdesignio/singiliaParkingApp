@@ -3,19 +3,20 @@ import { Asset } from 'expo-asset';
 import { toByteArray, fromByteArray } from 'base64-js';
 
 
-let image_chunks = null;
+let image_chunks = [];
 
 
 // Load and encode the image.
 // Save it into image_chunks so it doesn't have to repeat the loading process at every call
 export async function loadAndEncodeImage() {
     // Check the image has already been load and return it if so
-    if(image_chunks != null)
+    if(image_chunks != [])
         return image_chunks;
 
     try {
         // Load the image from the assets folder using Expo Asset
-        const asset = Asset.fromModule(require('../../assets/printer-logo.bmp'));
+        let imageUrl = '../../assets/logos.bmp';
+        const asset = Asset.fromModule(require(imageUrl));
         await asset.downloadAsync();
 
         // Get the local URI of the downloaded file
@@ -26,8 +27,8 @@ export async function loadAndEncodeImage() {
             encoding: FileSystem.EncodingType.Base64,
         });
 
-        const invertedImage = invertLogo(base64_content);
-        const slicedImage = sliceStringIntoChunks(invertedImage, 32);
+        const invertedImage = invertLogo(base64_content, 256, 128);
+        const slicedImage = sliceStringIntoChunks(invertedImage, 256);
 
         // Set image chunks to return next time the function is called
         image_chunks = slicedImage;
@@ -36,6 +37,7 @@ export async function loadAndEncodeImage() {
 
     } catch (e) {
         console.error(e);
+        throw Error("Error obteniendo la imagen de los logotipos")
     }
 }
 
