@@ -15,7 +15,6 @@ export async function ticketTemplate(ticket_data) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
     template.margin()
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
@@ -25,7 +24,10 @@ export async function ticketTemplate(ticket_data) {
         .Dict(ticket_data)
         .SingiliaInfo()
         .LegalInfo()
-        .margin(5)
+
+    
+    template = await template.Logo()
+    template.margin(5)
 
     return template.obtainTemplateArray()
 
@@ -43,8 +45,6 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
-
     template.margin()
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
         .margin()
@@ -55,7 +55,9 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
         .PricesTable(available_bulletins)
         .SingiliaInfo()
         .BulletinLegalInfo()
-        .margin(5)
+    
+    template = await template.Logo()
+    template.margin(5)
         
     return template.obtainTemplateArray()
 }
@@ -73,8 +75,6 @@ export async function bulletinCancellationTemplate(bulletin_data) {
     template.initialize()
         .alignCenter()
 
-    template = await template.Logo()
-
     template.margin()
         .Title("ANULACIÓN DE\nBOLETÍN")
         .margin()
@@ -83,7 +83,9 @@ export async function bulletinCancellationTemplate(bulletin_data) {
         .margin()
         .Dict(bulletin_data)
         .SingiliaInfo()
-        .margin(4)
+    
+    template = await template.Logo()
+    template.margin(5)
         
     return template.obtainTemplateArray()
 }
