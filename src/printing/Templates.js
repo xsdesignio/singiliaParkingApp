@@ -43,7 +43,7 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
     template.initialize()
         .alignCenter()
 
-    template = template.SingiliaLogo()
+    template = await template.Logo()
 
     template.margin()
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
@@ -73,7 +73,7 @@ export async function bulletinCancellationTemplate(bulletin_data) {
     template.initialize()
         .alignCenter()
 
-    template = template.SingiliaLogo()
+    template = await template.Logo()
 
     template.margin()
         .Title("ANULACIÓN DE\nBOLETÍN")
