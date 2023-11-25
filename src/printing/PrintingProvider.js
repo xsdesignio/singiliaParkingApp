@@ -44,10 +44,18 @@ export const PrinterProvider = ({ children }) => {
     const checkBluetoothStatus = async () => {
         try {
             let state = false;
-            if(bleManager)
+            let location = false;
+            if(bleManager) {
                 state = await bleManager.state();
-
-            setBluetoothEnabled(state === 'PoweredOn');
+                bleManager.startDeviceScan(null, null, (error) => {
+                    if (error) {
+                        location = false;
+                    } else {
+                        location = true;
+                    }
+                    setBluetoothEnabled(state === 'PoweredOn' && location);
+                })
+            }
 
             if(!bluetoothEnabled) {
                 setConnectedDevice(null)
@@ -69,7 +77,7 @@ export const PrinterProvider = ({ children }) => {
     const scanForPeripherals = () =>{
         bleManager.startDeviceScan(null, null, (error, device) => {
             if (error) {
-                console.log(error);
+                return
             }
             if (device) {
                 if(device.name == null)
