@@ -98,7 +98,7 @@ export default function PrintingSettingsScreen() {
                                 Escanea para mostrar dispositivos cercanos
                             </Text> :
                             <Text style={ styles.advice_text }>
-                                    Activa el blutooth y la localizacióno y vuelve a entrar a esta pantalla para poder escanear en busca de impresoras.
+                                    Activa el blutooth y la localización y vuelve a entrar a esta pantalla para poder escanear en busca de impresoras.
                             </Text>
                         }</>
                         
