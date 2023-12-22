@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
+import { fetchBulletinById } from "../bulletins/api_conn/apiConn"
 
 import BulletinCancellationModel from "../components/bulletinCancellationModel";
 
@@ -314,15 +315,31 @@ export default function RecordScreen({ navigation }) {
 
     const [filterId, setFilterId] = useState(null)
 
-    
-    function filterBulletins(id) {
+    let filtering = false;
+    async function filterBulletins(id) {
+        if(filtering) return
+
+        filtering = true
         setFilterId(id);
         
         let updated_bulletins = bulletins.filter((bulletin) => {
             return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(id);
         });
-    
+        
+        if(updated_bulletins.length == 0) {
+            let bulletin = await fetchBulletinById(id)
+            console.log("bulletin")
+            console.log(bulletin)
+
+            if(bulletin != null)
+                updated_bulletins = [bulletin]
+            else
+                updated_bulletins = []
+        }
+
         setFilteredBulletins(updated_bulletins);
+
+        filtering = false
     }
 
 
@@ -365,9 +382,9 @@ export default function RecordScreen({ navigation }) {
                         <TextInput
                                 style={styles.input}
                                 value = {filterId}
-                                keyboardType="numeric"
+                                autoCapitalize="characters"
                                 onChangeText={(value) => filterBulletins(value)}
-                                placeholder="000">
+                                placeholder="XX/00000">
                         </TextInput>
                     </>
                     
@@ -476,29 +493,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: "80%",
     },
-    
     green_box: {
-        /* Create a green border */
         borderColor: "rgba(58, 175, 25, 0.8)",
-        borderWidth: 2,
-    },
-    yellow_box: {
-        /* Create a green border */
-        borderColor: "rgba(253, 246, 50, 0.8)",
-        borderWidth: 2,
-    },
-    orange_box: {
-        /* Create a green border */
-        borderColor: "rgba(255, 141, 3, 0.8)",
-        borderWidth: 2,
-    },
-    pink_box: {
-        /* Create a green border */
-        borderColor: "rgba(228, 68, 121, 0.8)",
         borderWidth: 2,
     },
     bulletin_box: {
         borderColor: "rgba(63, 77, 202, 0.8)",
         borderWidth: 2,
-    }
+    } 
 })

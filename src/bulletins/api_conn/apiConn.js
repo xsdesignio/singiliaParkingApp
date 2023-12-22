@@ -69,6 +69,32 @@ export function payBulletinOnServer(bulletin_id, payment_method, price, duration
 
 
 
+export function fetchBulletinById(id) {
+    return new Promise((resolve) => {
+
+        fetch( `${ apiHost }/bulletins/get-bulletin/${id}` , {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then( response => {
+            if(response.status != 200)
+                throw new Error("Los datos introducidos son incorrectos o no se encuentra conectado a internet.")
+            
+            return response.json()
+        })
+        .then(bulletin => {
+            resolve(Object.keys(bulletin).length === 0 ? null : bulletin)
+        })
+        .catch((error) => {
+            console.log("Error here on bulletins api conn:")
+            console.log(error)
+            resolve(null)
+        })
+    })
+}
+
 
 export function fetchAvailableBulletins() {
     return new Promise((resolve) => {

@@ -69,35 +69,35 @@ export function getBulletinsByDuration(duration = null) {
 // @throws an error if the bulletins doesn't exist or the bulletin is already paid
 export function payBulletinLocally(id, payment_method, duration, price) {
 	return new Promise((resolve, reject) => {
-		let db = getDatabase();
-		db.transaction((tx) => {
-			// Check if the bulletin exists and is not paid
-			tx.executeSql(
-				"SELECT * FROM bulletins WHERE id = ?",
-				[id],
-				(_, result) => {
-					if (result.rows.length === 0) {
-						resolve(null);
-					} else if (result.rows.item(0)["paid"] === 1) {
-						reject("Bulletin already paid");
-					} else {
-						// Bulletin exists and is not paid, proceed with the update
-						tx.executeSql(
-							"UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ? WHERE id = ?",
-							[payment_method, duration, price, id],
-							() => {
-								resolve(true);
-							},
-							(_, error) => {
-								console.log(error)
-								resolve(false);
-							}
-						);
-					}
-				},
-				(_, error) => {
-					reject(error);
-				}
+    let db = getDatabase();
+    db.transaction((tx) => {
+        // Check if the bulletin exists and is not paid
+        tx.executeSql(
+            "SELECT * FROM bulletins WHERE id = ?",
+            [id],
+            (_, result) => {
+                if (result.rows.length === 0) {
+                    resolve(null);
+                } else if (result.rows.item(0)["paid"] === 1) {
+                    reject("Bulletin already paid");
+                } else {
+                // Bulletin exists and is not paid, proceed with the update
+                tx.executeSql(
+                    "UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ? WHERE id = ?",
+                    [payment_method, duration, price, id],
+                    () => {
+                        resolve(true);
+                    },
+                    (_, error) => {
+                        console.log(error)
+                        resolve(false);
+                    }
+                );
+                }
+            },
+          (_, error) => {
+            reject(error);
+          }
 			);
 		}, (_, error) => {
 			reject(error);

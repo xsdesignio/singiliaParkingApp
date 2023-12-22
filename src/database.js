@@ -18,7 +18,7 @@ export function createSQLTables() {
         // Create the 'tickets' table
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS tickets (
-                id INTEGER,
+                id TEXT NOT NULL,
                 responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
                 duration TEXT NOT NULL,
@@ -35,7 +35,7 @@ export function createSQLTables() {
         // Create the 'bulletins' table
         transaction.executeSql(`
             CREATE TABLE IF NOT EXISTS bulletins (
-                id INTEGER,
+                id TEXT NOT NULL,
                 responsible_id INTEGER NOT NULL,
                 zone_name TEXT NOT NULL,
                 duration TEXT,

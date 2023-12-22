@@ -6,6 +6,8 @@ import { getConfigValue } from "../configStorage";
 import { obtainAssignedZone } from "../zone_manager";
 
 
+
+
 // Create a bulletin (such in server as locally) and print it
 // Create an alert with the result of the operation
 // @param printer, printer provider containing functions to work with the printer
@@ -15,9 +17,9 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         // obtain required functions from printer provider
         const { connectedDevice, printBulletin } = printer
-        if(connectedDevice == null) {
+        /* if(connectedDevice == null) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
-        }
+        } */
 
         let session = await getSession()
         let zone = await getConfigValue("zone")
@@ -106,9 +108,9 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
 
         const { connectedDevice, printBulletinCancellation } = printer
         
-        if (connectedDevice == null) {
+        /* if (connectedDevice == null) {
             throw new Error("No se ha encontrado ninguna impresora conectada.")
-        }
+        } */
         
         let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
 
@@ -116,12 +118,10 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
             throw new Error("Error al pagar el boletín")
             //await addBulletinToUploadQueue(id, payment_method, duration, price)
         
-        let paid_locally = await payBulletinLocally(id, payment_method, duration, price)
+            
+        await payBulletinLocally(id, payment_method, duration, price)
 
         await printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
-
-        if(!paid_locally)
-            throw new Error("Error al pagar el boletín")
 
         setTimeout(() => {
             Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito", [{
