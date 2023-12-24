@@ -161,20 +161,17 @@ export const PrinterProvider = ({ children }) => {
     // These chunks contains the commands, logos and content provided by each template
     
     async function printTicket(ticket_data) {
-        return
         const ticket_template = await ticketTemplate(ticket_data)
         await printTemplate(ticket_template)
     }
 
     async function printBulletin(bulletin_data) {
-        return
         let available_bulletins = await obtainAvailableBulletins()
         const bulletin_template = await bulletinTemplate(bulletin_data, available_bulletins)
         await printTemplate(bulletin_template)
     }
 
     async function printBulletinCancellation(bulletin_data) {
-        return
         const bulletin_cancellation_template = await bulletinCancellationTemplate(bulletin_data)
         await printTemplate(bulletin_cancellation_template)
     }

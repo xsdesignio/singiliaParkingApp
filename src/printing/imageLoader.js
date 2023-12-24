@@ -37,11 +37,11 @@ export async function loadAndEncodeImage() {
         image_chunks = slicedImage;
     
         return slicedImage;
-        } catch (e) {
+    } catch (e) {
         console.error(e);
         throw new Error(e.message);
-        }
-  }
+    }
+}
 
   
 /* 
