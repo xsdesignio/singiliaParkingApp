@@ -11,8 +11,9 @@ export async function obtainAvailableBulletins() {
         if(availableTickets == null) 
             return null
 
-        await saveAvailableBulletinsDict(availableTickets)
         return availableTickets
+    } else {
+        await saveAvailableBulletinsDict(availableTickets)
     }
 
     return availableTickets

@@ -4,16 +4,17 @@ import { getAvailableTicketsDict, saveAvailableTicketsDict } from "./storage/ava
 
 export async function obtainAvailableTickets() {
 
-    let availableTickets = await getAvailableTicketsDict()
+    let availableTickets = await fetchAvailableTickets()
 
     if(availableTickets==null) {
-        availableTickets = await fetchAvailableTickets()
+        availableTickets = await getAvailableTicketsDict()
         
         if(availableTickets == null) 
             return null
 
-        await saveAvailableTicketsDict(availableTickets)
         return availableTickets
+    } else {
+        await saveAvailableTicketsDict(availableTickets)
     }
 
     return availableTickets
