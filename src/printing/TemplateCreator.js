@@ -1,9 +1,10 @@
 import base64 from "react-native-base64";
-import { loadAndEncodeImage } from "./imageLoader";
+// import { loadAndEncodeImage } from "./imageLoader";
 
 
 const escPos = Object.freeze({
     INIT: '\x1B\x40',
+    PRINTER_LOGO: '\x1C\x70',
     MOVE_LEFT: '\x1b\x61\x00',
     MOVE_RIGH: '\x1b\x5c',
     EMPHASIZED_ON: '\x1B\x45\x01',
@@ -76,6 +77,12 @@ export default class TemplateCreator {
 
     // Returns: list with the logo encoded content divided in two
     async Logo() {
+        const encodedCommand = base64.encode(escPos.PRINTER_LOGO);
+        this.template.push(encodedCommand)
+        return this
+
+        /*
+
         let image = await loadAndEncodeImage()
         
         const IMAGE_WIDTH = 256;
@@ -102,57 +109,9 @@ export default class TemplateCreator {
             this.template.push(chunk);
         
         return this
+
+        */
     }
-
-    SingiliaLogo() {
-        const IMAGE_WIDTH = 64;
-        const IMAGE_HEIGHT = 64;
-
-        const IMAGE_WIDTH_BYTES = Math.ceil(IMAGE_WIDTH / 8);
-
-        // Mode: This is just an example value; adjust as per your printer's specification.
-        const mode = "\x00";
-
-        const pL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0xFF);
-        const pH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
-        const hL = String.fromCharCode(IMAGE_HEIGHT & 0xFF);
-        const hH = String.fromCharCode((IMAGE_HEIGHT >> 8) & 0xFF);
-
-        let imageSetup = base64.encode( 
-                escPos.BITMAP_PRINT + 
-                mode + pL + pH + hL + hH)
-
-        this.template.push(imageSetup);
-        let logo = base64.encode(utils.LOGO_HEX)
-        this.template.push(logo)
-        
-        return this;
-    }
-   
-    AntequeraLogo() {
-        const IMAGE_WIDTH = 64;
-        const IMAGE_HEIGHT = 64;
-
-        const IMAGE_WIDTH_BYTES = Math.ceil(IMAGE_WIDTH / 8);
-
-        // Mode: This is just an example value; adjust as per your printer's specification.
-        const mode = "\x00";
-
-        const pL = String.fromCharCode(IMAGE_WIDTH_BYTES & 0xFF);
-        const pH = String.fromCharCode((IMAGE_WIDTH_BYTES >> 8) & 0xFF);
-        const hL = String.fromCharCode(IMAGE_HEIGHT & 0xFF);
-        const hH = String.fromCharCode((IMAGE_HEIGHT >> 8) & 0xFF);
-
-        let imageSetup = base64.encode( 
-                escPos.BITMAP_PRINT + 
-                mode + pL + pH + hL + hH);
-
-        this.template.push(imageSetup)
-        this.template.push(base64.encode(utils.ATQR_LOGO_HEX))
-
-        return this;
-    }
-
 
     // @param title, the title to encode. Add \n to separate the title if needed (so words can't get splitted wrong).
     // @return the encoded title.
