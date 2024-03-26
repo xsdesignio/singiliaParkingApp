@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { saveConfigDict } from "./configStorage";
-import { createSQLTables, deleteAllTables } from "./database";
+import { createSQLTables } from "./database";
 
 import { deleteOldBulletins } from "./bulletins/storage/bulletinsStorage";
 import { deleteOldTickets } from "./tickets/storage/ticketsStorage";
@@ -14,6 +14,7 @@ import { obtainAssignedZone, obtainAvailableZones } from "./zone_manager";
 // Function to start all background processes required to run the app
 export async function initApp() {
     
+    createSQLTables()
     let app_already_started = await firstTimeAppStarts()
 
 
@@ -24,13 +25,11 @@ export async function initApp() {
             // Save default config object and set app_already_started as true for the next time
             await saveConfigDict({})
             await AsyncStorage.setItem("@started", "true")
-            deleteAllTables()
         } catch(error) {
             console.log(error)
         }
     } 
     
-    createSQLTables()
     await obtainAssignedZone()
     await obtainAvailableZones()
     await deleteOldTickets()
