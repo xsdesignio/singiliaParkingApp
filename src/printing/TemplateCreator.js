@@ -4,7 +4,7 @@ import base64 from "react-native-base64";
 
 const escPos = Object.freeze({
     INIT: '\x1B\x40',
-    PRINTER_LOGO: "\x1C\x70\x01",
+    PRINTER_LOGO: "\x1C\x70\x01\x00",
     MOVE_LEFT: '\x1b\x61\x00',
     MOVE_RIGH: '\x1b\x5c',
     EMPHASIZED_ON: '\x1B\x45\x01',
