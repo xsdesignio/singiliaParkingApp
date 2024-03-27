@@ -2,7 +2,7 @@ import TemplateCreator from "./TemplateCreator";
 
 
 
-export async function ticketTemplate(ticket_data) {
+export function ticketTemplate(ticket_data) {
 
     let template = new TemplateCreator();
 
@@ -30,7 +30,7 @@ export async function ticketTemplate(ticket_data) {
 
 }
 
-export async function bulletinTemplate(bulletin_data, available_bulletins) {
+export function bulletinTemplate(bulletin_data, available_bulletins) {
 
     let template = new TemplateCreator();
 
@@ -59,7 +59,7 @@ export async function bulletinTemplate(bulletin_data, available_bulletins) {
 
 
 
-export async function bulletinCancellationTemplate(bulletin_data) {
+export function bulletinCancellationTemplate(bulletin_data) {
     let template = new TemplateCreator();
 
     let id = bulletin_data["Id"];
