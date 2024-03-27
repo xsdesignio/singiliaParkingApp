@@ -13,8 +13,8 @@ export function ticketTemplate(ticket_data) {
     delete ticket_data["Duración"];
 
     template.initialize()
-        .alignCenter()
         .Logo()
+        .alignCenter()
         .margin()
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
@@ -40,8 +40,8 @@ export function bulletinTemplate(bulletin_data, available_bulletins) {
     delete bulletin_data["Hora"];
 
     template.template.initialize()
-        .alignCenter()
         .Logo()
+        .alignCenter()
         .margin()
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
         .margin()
@@ -68,8 +68,8 @@ export function bulletinCancellationTemplate(bulletin_data) {
     delete bulletin_data["Hora"];
 
     template.initialize()
-        .alignCenter()
         .Logo()
+        .alignCenter()
         .margin()
         .Title("ANULACIÓN DE\nBOLETÍN")
         .margin()

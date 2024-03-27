@@ -77,8 +77,14 @@ export default class TemplateCreator {
 
     // Returns: list with the logo encoded content divided in two
     Logo() {
-        const encodedCommand = base64.encode(escPos.PRINTER_LOGO);
-        this.template.push(encodedCommand)
+        this.template.push(base64.encode('\x1c\x79\x00\x00'))
+        this.template.push(base64.encode("\x1c\x79\x01\x00"))
+        this.template.push(base64.encode("\x1c\x70\x00\x00"))
+        this.template.push(base64.encode("\x1C\x70\x01\x00"))
+        this.template.push(base64.encode('\x1C\x79\x00\x00'))
+        this.template.push(base64.encode("\x1C\x79\x01\x00"))
+        this.template.push(base64.encode("\x1C\x70\x00\x00"))
+        this.template.push(base64.encode("\x1C\x70\x01\x00"))
         return this
 
         /*
