@@ -4,7 +4,7 @@ import base64 from "react-native-base64";
 
 const escPos = Object.freeze({
     INIT: '\x1B\x40',
-    PRINTER_LOGO: '\x1c\x79\x01\x00',
+    PRINTER_LOGO: "\x1C\x70\x01",
     MOVE_LEFT: '\x1b\x61\x00',
     MOVE_RIGH: '\x1b\x5c',
     EMPHASIZED_ON: '\x1B\x45\x01',
@@ -77,7 +77,7 @@ export default class TemplateCreator {
 
     // Returns: list with the logo encoded content divided in two
     Logo() {
-        this.template.push(base64.encode("\x1C\x70\x01\x00"))
+        this.template.push(base64.encode(escPos.PRINTER_LOGO))
         return this
 
         /*
