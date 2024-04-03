@@ -46,6 +46,7 @@ export function bulletinTemplate(bulletin_data, available_bulletins) {
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
         .margin()
         .Title(id)
+        .margin()
         .Title(created_at)
         .margin()
         .Dict(bulletin_data)
