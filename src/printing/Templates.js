@@ -39,7 +39,7 @@ export function bulletinTemplate(bulletin_data, available_bulletins) {
     let created_at = bulletin_data["Hora"];
     delete bulletin_data["Hora"];
 
-    template.template.initialize()
+    template.initialize()
         .alignCenter()
         .Logo()
         .margin()
