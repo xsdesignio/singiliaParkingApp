@@ -167,7 +167,7 @@ export const PrinterProvider = ({ children }) => {
 
     async function printBulletin(bulletin_data) {
         let available_bulletins = obtainAvailableBulletins()
-        const bulletin_template = await bulletinTemplate(bulletin_data, available_bulletins)
+        const bulletin_template = bulletinTemplate(bulletin_data, available_bulletins)
         await printTemplate(bulletin_template)
     }
 
