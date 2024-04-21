@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
-import { fetchBulletinById } from "../bulletins/api_conn/apiConn"
+import { fetchBulletinsByRegistration } from "../bulletins/api_conn/apiConn"
 
 import BulletinCancellationModel from "../components/bulletinCancellationModel";
 
@@ -53,9 +53,9 @@ export default function RecordScreen({ navigation }) {
             if (obtained_bulletins.length > 0) {
                 setBulletins(obtained_bulletins.reverse());
                 // Filter bulletins based on filterId
-                if (filterId !== null) {
+                if (filterRegistration !== null) {
                     const updated_bulletins = obtained_bulletins.filter((bulletin) => {
-                        return bulletin.id && bulletin.id.toString().includes(filterId);
+                        return bulletin.id && bulletin.id.toString().includes(filterRegistration);
                     });
                     setFilteredBulletins(updated_bulletins);
                 } else {
@@ -313,26 +313,24 @@ export default function RecordScreen({ navigation }) {
 
     const [bulletinPayment, setBulletinPayment] = useState(false)
 
-    const [filterId, setFilterId] = useState(null)
+    const [filterRegistration, setFilterRegistration] = useState(null)
 
     let filtering = false;
-    async function filterBulletins(id) {
+    async function filterBulletins(registration) {
         if(filtering) return
 
         filtering = true
-        setFilterId(id);
+        setFilterRegistration(registration);
         
         let updated_bulletins = bulletins.filter((bulletin) => {
-            return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(id);
+            return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(filterRegistration);
         });
         
         if(updated_bulletins.length == 0) {
-            let bulletin = await fetchBulletinById(id)
-            console.log("bulletin")
-            console.log(bulletin)
+            let bulletins = await fetchBulletinsByRegistration(registration)
 
-            if(bulletin != null)
-                updated_bulletins = [bulletin]
+            if(bulletins != null)
+                updated_bulletins = [...bulletins]
             else
                 updated_bulletins = []
         }
@@ -378,10 +376,10 @@ export default function RecordScreen({ navigation }) {
                 {/* If tickets are not active, it means that bulletins are active */}
                 { !ticketsActive ? (
                     <>
-                        <Text style={styles.label}>Filtrar boletines mediante id:</Text>
+                        <Text style={styles.label}>Obtener boletines por Matrícula:</Text>
                         <TextInput
                                 style={styles.input}
-                                value = {filterId}
+                                value = {filterRegistration}
                                 autoCapitalize="characters"
                                 onChangeText={(value) => filterBulletins(value)}
                                 placeholder="XX/00000">
@@ -493,6 +491,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: "80%",
     },
+    /* 
     green_box: {
         borderColor: "rgba(58, 175, 25, 0.8)",
         borderWidth: 2,
@@ -500,5 +499,6 @@ const styles = StyleSheet.create({
     bulletin_box: {
         borderColor: "rgba(63, 77, 202, 0.8)",
         borderWidth: 2,
-    } 
+    }  
+    */
 })
