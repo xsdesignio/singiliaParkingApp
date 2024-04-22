@@ -382,7 +382,7 @@ export default function RecordScreen({ navigation }) {
                                 value = {filterRegistration}
                                 autoCapitalize="characters"
                                 onChangeText={(value) => filterBulletins(value)}
-                                placeholder="XX/00000">
+                                placeholder="0000XXX">
                         </TextInput>
                     </>
                     

@@ -95,10 +95,10 @@ export function fetchBulletinById(id) {
     })
 }
 
-export function fetchBulletinByRegistration(registration) {
+export function fetchBulletinsByRegistration(registration) {
     return new Promise((resolve) => {
 
-        fetch( `${ apiHost }/bulletins/get-bulletin-by-registration/${registration}` , {
+        fetch( `${ apiHost }/bulletins/get-bulletins-by-registration/${registration}` , {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
