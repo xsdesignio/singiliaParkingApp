@@ -13,28 +13,29 @@ import { getSession } from "../session/sessionStorage";
 // import DefaultButton from "../components/atoms/default-button";
 import SecondaryButton from "../components/atoms/secondary-button";
 
-import { logoutUser,  } from "../session/sessionControler";
+import { logoutUser, } from "../session/sessionControler";
 import { useLogin } from "../session/LoginProvider";
 import { usePrinter } from "../printing/PrintingProvider";
 import { colors } from "../styles/colorPalette";
 import { setConfigValue, getConfigValue } from "../configStorage";
+import { printDailyReport } from "../reports/dailyReportController";
 
 
 export default function SettingsScreen({ navigation }) {
 
     const { setIsLoggedIn } = useLogin()
-    const { connectedDevice } = usePrinter()
-    const [ sessionName, setSessionName ] = useState("")
+    const Printer = usePrinter()
+    const [sessionName, setSessionName] = useState("")
     const [zone, setZone] = useState(null)
     const [availableZones, setAvailableZones] = useState([])
 
     useFocusEffect(React.useCallback(() => {
-            getZone();
-            getAvailableZones();
-            return () => {
-                // Your cleanup code when the screen is unfocused
-              };
-        }, [])
+        getZone();
+        getAvailableZones();
+        return () => {
+            // Your cleanup code when the screen is unfocused
+        };
+    }, [])
     )
 
     useEffect(() => {
@@ -49,13 +50,13 @@ export default function SettingsScreen({ navigation }) {
     function logout() {
         logoutUser().then(logout_successfull => {
             setIsLoggedIn(false)
-            
-            if(logout_successfull) {
+
+            if (logout_successfull) {
                 setIsLoggedIn(false)
             }
             else throw Error("Ha ocurrido un error a la hora de cerrar la sesión")
         }).catch(error => {
-            Alert.alert("Error al cerrar la sesión", error, [{text: "OK"}])
+            Alert.alert("Error al cerrar la sesión", error, [{ text: "OK" }])
         })
     }
 
@@ -63,11 +64,11 @@ export default function SettingsScreen({ navigation }) {
 
     async function getZone() {
         let zone = await obtainAssignedZone()
-        if (zone != null)  {
+        if (zone != null) {
             setZone(zone)
         } else {
             zone = await getConfigValue("zone")
-            if(zone != null) {
+            if (zone != null) {
                 setZone(zone)
             }
         }
@@ -78,15 +79,15 @@ export default function SettingsScreen({ navigation }) {
 
         let available_zones = await getConfigValue("available_zones")
 
-        if(available_zones != null) {
+        if (available_zones != null) {
             setAvailableZones(available_zones)
         } else {
             let server_available_zones = await obtainAvailableZones()
 
-            if(server_available_zones != null)
+            if (server_available_zones != null)
                 setAvailableZones(server_available_zones)
         }
-        
+
 
     }
 
@@ -95,10 +96,10 @@ export default function SettingsScreen({ navigation }) {
         setZone(newZone)
         let zoneUpdated = await setConfigValue("zone", newZone)
 
-        
-        if(zoneUpdated) {
+
+        if (zoneUpdated) {
             let assignZoneToUser = assignZone(newZone)
-            if(assignZoneToUser) {
+            if (assignZoneToUser) {
                 Alert.alert("Zona actualizada con éxito", `Tu nueva zona asignada es ${newZone}`);
                 return;
             }
@@ -110,77 +111,86 @@ export default function SettingsScreen({ navigation }) {
 
 
 
-    return(
+    return (
         <View style={styles.container}>
 
             <View style={styles.section}>
-                <Text style={styles.subtitle}>Administrar Sesión</Text>
-                
+                <Text style={styles.subtitle}>Sesión</Text>
+
                 <Text style={styles.normal_text}>
-                    Usuario: <Text style={styles.bold_text}>{ sessionName }</Text>
+                    Usuario: <Text style={styles.bold_text}>{sessionName}</Text>
                 </Text>
-                
-                <Text style={styles.normal_text}>
-                    Actualmente en: <Text style={styles.bold_text}>{ zone }</Text>
-                </Text>
-                <Text style={styles.small_text}>
-                    Cambiar zona:
-                </Text>
-                <View style={styles.picker_wraper}>
-                    { zone != null ? (
-                        <Picker
-                            style={styles.picker}
-                            selectedValue={zone}
-                            onValueChange={
-                                (new_Zone) =>  {
-                                    saveNewZone(new_Zone)
+
+                <View style={styles.zone_wrapper}>
+                    <Text style={styles.normal_text}>
+                        Zona:
+                    </Text>
+                    <View style={styles.picker_wraper}>
+                        {zone != null ? (
+                            <Picker
+                                style={styles.picker}
+                                selectedValue={zone}
+                                onValueChange={
+                                    (new_Zone) => {
+                                        saveNewZone(new_Zone)
+                                    }
                                 }
-                            }
-                            itemStyle={styles.picker_item}
-                        >
-                            {/* Iterate the available tickets to get a picker item for each available ticket duration */}
-                            {availableZones.map ? availableZones.map((available_zone) => {
-                                return(
+                                itemStyle={styles.picker_item}
+                            >
+                                {/* Iterate the available tickets to get a picker item for each available ticket duration */}
+                                {availableZones.map ? availableZones.map((available_zone) => {
+                                    return (
+                                        <Picker.Item
+                                            style={styles.picker_item}
+                                            key={available_zone.id}
+                                            label={available_zone.name}
+                                            value={available_zone.name}
+                                        />
+                                    )
+                                }) : (
                                     <Picker.Item
-                                        style={styles.picker_item}
-                                        key={available_zone.id}
-                                        label={available_zone.name}
-                                        value={available_zone.name}
+                                        key={0}
+                                        label={zone}
+                                        value={zone}
                                     />
-                                )
-                            }) :  (
-                                <Picker.Item
-                                    key={0}
-                                    label={zone}
-                                    value={zone}
-                                />
-                            )}
-                        </Picker>
-                    ) : <></>}
-                    
+                                )}
+                            </Picker>
+                        ) : <></>}
+
+                    </View>
                 </View>
-                
+
                 <SecondaryButton onPress={logout} text={"Cerrar sesión"} />
             </View>
             <View style={styles.section}>
-                <Text style={styles.subtitle}>Administrar Impresión</Text>
-                            {
-                                connectedDevice ? (
-                                    <View>
-                                        <Text style={styles.normal_text}>Impresora contectada: </Text>
-                                        <Text style={styles.bold_text}>{connectedDevice.name}</Text>
-                                    </View>
-                                ) : (
-                                    <Text style={styles.normal_text}>Actualmente no tienes ninguna impresora contectada </Text>
-                                )
-                            }
-                        
-                    
+                <Text style={styles.subtitle}>Impresión</Text>
+                {
+                    Printer.connectedDevice ? (
+                        <View>
+                            <Text style={styles.normal_text}>Impresora contectada: </Text>
+                            <Text style={styles.bold_text}>{Printer.connectedDevice.name}</Text>
+                        </View>
+                    ) : (
+                        <Text style={styles.normal_text}>Actualmente no tienes ninguna impresora contectada </Text>
+                    )
+                }
+
+
                 <View>
                     <SecondaryButton onPress={() => navigation.navigate("Printing Settings")} text={"Administrar impresora"} />
                 </View>
             </View>
 
+            <View style={styles.section}>
+                <Text style={styles.subtitle}>Reporte Diario</Text>
+                <Text style={styles.normal_text}>
+                    Generar reporte con actividad diaria.
+                </Text>
+
+                <View>
+                    <SecondaryButton onPress={() => printDailyReport(Printer, sessionName)} text={"Imprimir Reporte"} />
+                </View>
+            </View>
 
         </View>)
 }
@@ -191,13 +201,13 @@ const styles = StyleSheet.create({
     bold_text: {
         fontSize: 16,
         fontWeight: 'bold',
-        textAlign: "left",
+        textAlign: "center",
     },
-    
+
     container: {
         alignItems: 'center',
         flex: 1,
-        gap: 12,
+        gap: 10,
         justifyContent: 'center',
         width: "100%",
     },
@@ -205,11 +215,11 @@ const styles = StyleSheet.create({
     normal_text: {
         color: colors.dark_green,
         fontSize: 16,
-        textAlign: "left",
+        textAlign: "center",
     },
 
     picker: {
-        width: 280,
+        width: "100%",
     },
     picker_item: {
         color: colors.dark_green,
@@ -223,21 +233,16 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         padding: 0,
-        width: "100%",
+        width: 220,
     },
     section: {
         backgroundColor: colors.white,
-        borderColor: colors.input_border,
-        borderWidth: 1,
-        gap: 12,
-        justifyContent: "left",
-        padding: 16,
-        width: 320,
-    },
-    small_text: {
-        color: colors.dark_green,
-        fontSize: 12,
-        textAlign: "left",
+        borderRadius: 8,
+        gap: 8,
+        justifyContent: "center",
+        padding: 8,
+        textAlign: "center",
+        width: 340,
     },
     /* selector: {
         flexDirection: "row"
@@ -252,7 +257,16 @@ const styles = StyleSheet.create({
         color: colors.dark_green,
         fontSize: 22,
         fontWeight: 'bold',
-        textAlign: "left",
-    }, 
+        textAlign: "center",
+    },
+    zone_wrapper: {
+        alignItems: "center",
+        backgroundColor: colors.light_bg,
+        borderRadius: 8,
+        flexDirection: "row",
+        gap: 8,
+        justifyContent: "center",
+        padding: 10,
+    }
 })
 

@@ -17,7 +17,7 @@ export async function storeSession(session) {
 export async function getSession() {
     try {
         let session = await AsyncStorage.getItem("@session")
-        if(session != null)
+        if(session)
           return JSON.parse(session)
         return session
     } catch(e) {

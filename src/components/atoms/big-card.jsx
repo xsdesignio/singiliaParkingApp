@@ -1,3 +1,4 @@
+import React from "react"
 import { StyleSheet, View, Image } from "react-native"
 
 
@@ -15,9 +16,9 @@ export default function BigCard({imageUrl}) {
 
 const styles = StyleSheet.create({
     ticket: {
+        alignItems: "center",
         borderRadius:  4,
         justifyContent: 'center',
-        alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
             width: 0,

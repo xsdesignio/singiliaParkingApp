@@ -153,6 +153,7 @@ export default function RecordScreen({ navigation }) {
 
         let title = `Ticket de matrícula ${ticket["registration"]}`
         
+        console.log("Created at in open ticket: ", ticket["created_at"])
         let date = formatDate(ticket["created_at"].split(" ")[0])
         let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
 
@@ -195,15 +196,21 @@ export default function RecordScreen({ navigation }) {
         ])
     }
     
+    // Using memo to improve speed
     const RenderTicket = memo(({ ticket }) => {
         if(ticket == null || ticket == undefined)
             return
         
         ticket["price"] = parseFloat(ticket["price"]).toFixed(2)
-        
+
         let ticket_style = styles.green_box
+        
         let date = formatDate(ticket["created_at"].split(" ")[0])
-        let time = ticket["created_at"].split(" ")[1].substring(0, 5)
+        let timeParts = ticket["created_at"].split(" ")[1].split(":"); // Splitting time into hours, minutes, and seconds
+        let hours = timeParts[0].padStart(2, '0'); // Ensuring hours always have leading zeros
+        let minutes = timeParts[1].padStart(2, '0'); // Ensuring minutes always have leading zeros
+        let time = `${hours}:${minutes}`;
+        
         let payment_method = ticket["payment_method"] == "CASH"? "efectivo":"tarjeta"
 
         return (<View style={[styles.ticket, ticket_style]}>
@@ -211,9 +218,9 @@ export default function RecordScreen({ navigation }) {
                 <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image}></Image>
                 <Text style={styles.ticket_title}>Ticket Estacionamiento Regulado</Text>
                 <Text style={styles.ticket_important_text}>Id: { ticket["id"] }</Text>
-                <Text style={styles.ticket_important_text}>Hora: { time } h</Text>
+                <Text style={styles.ticket_important_text}>Fecha: {date}</Text>
+                <Text style={styles.ticket_important_text}>Hora: {time} h</Text>
                 <Text style={styles.ticket_important_text}>Duración: { ticket["duration"] }</Text>
-                <Text style={styles.ticket_text}>Fecha: { date } </Text>
                 <Text style={styles.ticket_text}>Precio: { ticket["price"] } €</Text>
                 <Text style={styles.ticket_text}>Matrícula { ticket["registration"] }</Text>
                 <Text style={styles.ticket_text}>Zona: { ticket["zone_name"] }</Text>
@@ -242,6 +249,7 @@ export default function RecordScreen({ navigation }) {
                     <Image source={require("../../assets/icons/logo.png")} style={styles.ticket_image} />
                     <Text style={styles.ticket_title}>Boletín Estacionamiento Regulado</Text>
                     <Text style={styles.ticket_important_text}>Id: {bulletin["id"]}</Text>
+                    <Text style={styles.ticket_important_text}>Fecha: {date}</Text>
                     <Text style={styles.ticket_important_text}>Hora: {time} h</Text>
 
                     {bulletin["price"] != null && bulletin["price"] > 0 ? (
@@ -255,7 +263,6 @@ export default function RecordScreen({ navigation }) {
                         <></>
                     )}
                     <Text style={styles.ticket_text}>Matrícula: {bulletin["registration"]}</Text>
-                    <Text style={styles.ticket_text}>Fecha: {date}</Text>
                     <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
                     
                     {payment_method != null ? (
@@ -397,12 +404,20 @@ export default function RecordScreen({ navigation }) {
 
 
 const styles = StyleSheet.create({
+
+    bulletin_box: {
+        borderColor: colors.blue,
+        borderWidth: 2,
+    },
     container: {
         alignItems: "center",
         flex: 1,
         height: "100%",
         justifyContent: 'center',
         zIndex: -20,
+    },
+    green_box: {
+        borderColor: colors.green,
     },
     input: {
         alignSelf: "center",
@@ -449,7 +464,8 @@ const styles = StyleSheet.create({
     ticket: {
         alignItems: "center",
         backgroundColor: colors.white,
-        borderRadius:  4,
+        borderRadius:  8,
+        borderWidth: 2,
         height: "auto",
         justifyContent: 'center',
         margin: 20,
@@ -491,14 +507,5 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: "80%",
     },
-    /* 
-    green_box: {
-        borderColor: "rgba(58, 175, 25, 0.8)",
-        borderWidth: 2,
-    },
-    bulletin_box: {
-        borderColor: "rgba(63, 77, 202, 0.8)",
-        borderWidth: 2,
-    }  
-    */
+    
 })

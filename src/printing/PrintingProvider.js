@@ -10,7 +10,7 @@ import { obtainAvailableBulletins } from "../bulletins/availableBulletins";
 
 // import PrinterCommunicationEncoder from './PrinterCommunication';
 
-import { ticketTemplate, bulletinTemplate, bulletinCancellationTemplate } from './Templates';
+import { ticketTemplate, bulletinTemplate, bulletinCancellationTemplate, dailyReportTemplate } from './Templates';
 
 
 
@@ -133,7 +133,7 @@ export const PrinterProvider = ({ children }) => {
     }
 
     async function disconnectFromDevice() {
-        if(connectedDevice)
+        if(connectedDevice){
             bleManager.cancelDeviceConnection(connectedDevice.id)
                 .then(() => {
                     setConnectedDevice(null)
@@ -144,6 +144,13 @@ export const PrinterProvider = ({ children }) => {
                 .catch((error) => {
                     console.log(error)
                 })
+        } else {
+            await bleManager.disconnectFromDevice()
+            setConnectedDevice(null)
+            setServiceUUID(null)
+            setCharacteristicUUID(null)
+        }
+                
     }
 
 
@@ -176,6 +183,11 @@ export const PrinterProvider = ({ children }) => {
         await printTemplate(bulletin_cancellation_template)
     }
 
+    async function printDailyReport(report_info) {
+        const bulletin_cancellation_template = dailyReportTemplate(report_info)
+        await printTemplate(bulletin_cancellation_template)
+    }
+
 
     // send each chunk to the printer
     async function printTemplate(template) {
@@ -188,7 +200,20 @@ export const PrinterProvider = ({ children }) => {
 
     return (
         <PrinterContext.Provider
-            value={{ bluetoothEnabled, checkBluetoothStatus, connectedDevice, connectToDevice, allDevices, disconnectFromDevice, printTicket, printBulletin, printBulletinCancellation, scanForPeripherals, stopScan }}
+            value={{ 
+                bluetoothEnabled, 
+                checkBluetoothStatus, 
+                connectedDevice, 
+                connectToDevice, 
+                allDevices, 
+                disconnectFromDevice, 
+                printTicket, 
+                printBulletin, 
+                printBulletinCancellation, 
+                printDailyReport, 
+                scanForPeripherals, 
+                stopScan 
+            }}
         >
             {children}
         </PrinterContext.Provider>

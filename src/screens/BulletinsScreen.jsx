@@ -1,59 +1,62 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
-import { useState } from "react";
+import { Picker } from '@react-native-picker/picker';
 
 import { createAndPrintBulletin } from "../bulletins/bulletinsController";
-
 import { usePrinter } from "../printing/PrintingProvider";
 
-
-import { Picker } from '@react-native-picker/picker';
 import DefaultButton from "../components/atoms/default-button";
 import SecondaryButton from "../components/atoms/secondary-button";
 import { colors } from "../styles/colorPalette";
 
+import FormDate from "../components/forms/FormDate";
+import FormRegistration from "../components/forms/FormRegistration";
+
 // import { getConfigValue } from "../configStorage";
 
 export default function BulletinsScreen() {
-    
+
+
     const [bulletinInfo, setBulletinInfo] = useState({
-        "registration": "",
-        /* "payment_method": undefined, */
+        "registration": "-",
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
         "brand": "",
         "model": "",
         "color": "",
     })
+    
 
     const [isPrinting, setIsPriting] = useState(false);
-
-
 
     // Simple function to update the bulletinInfo state
     function updateBulletinInfo(key, value) {
         setBulletinInfo((prevBulletinInfo) => ({
-          ...prevBulletinInfo,
-          [key]: value,
+            ...prevBulletinInfo,
+            [key]: value,
         }));
     }
 
     const printer = usePrinter()
 
     async function printManager() {
-        
-        if(!isPrinting) {
+
+        if (!isPrinting) {
             setIsPriting(true);
-            await createAndPrintBulletin(printer, bulletinInfo);
-            
-            setBulletinInfo({
-                "registration": "",
-                "paid": false,
-                "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
-                "brand": "",
-                "model": "",
-                "color": "",
-            })
+
+            let info = bulletinInfo
+
+            const bulletin_created = await createAndPrintBulletin(printer, info);
+            if(bulletin_created) {
+                setBulletinInfo({
+                    "registration": "-",
+                    "paid": false,
+                    "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
+                    "brand": "",
+                    "model": "",
+                    "color": "",
+                })
+            }
             setIsPriting(false);
         }
     }
@@ -61,98 +64,98 @@ export default function BulletinsScreen() {
 
     const [showOptionalData, setShowOptionalData] = useState(false)
 
+    function setRegistration(registration) {
+        updateBulletinInfo("registration", registration)
+    }
 
-    return(
+    
+    function setDate(date) {
+        updateBulletinInfo("created_at", date)
+    }
+
+
+
+    return (
         <View style={styles.container}>
-            
+
             <View style={styles.bulletin_info_form}>
                 <Text style={styles.title}>Creación de Boletines</Text>
-                
+
                 {/* --------- Required Information --------- */}
                 <View style={styles.bulletin_info_section}>
 
-                    <Text style={styles.label}>Matrícula</Text>
-                    <TextInput
-                        style={styles.input}
-                        autoCapitalize="characters"
-                        value = {bulletinInfo["registration"]}
-                        onChangeText={(registration) => 
-                            updateBulletinInfo("registration", registration)
-                        }
-                        onFocus={() => setShowOptionalData(false)}
-                        placeholder="0000BBB"
-                    />
+                    <FormRegistration setRegistration={setRegistration} registration={bulletinInfo["registration"]}></FormRegistration>
 
                     {/* --------- Precept --------- */}
                     <Text style={styles.label}>Precepto Infringido:</Text>
 
-                        <View style={styles.picker_wraper}>
-                            <Picker
-                                style={styles.picker}
-                                selectedValue={bulletinInfo["precept"]}
-                                onValueChange={(precept) => 
-                                    updateBulletinInfo("precept", precept)
-                                }
-                                itemStyle={styles.picker_item}
-                            >
-                                <Picker.Item
-                                    style={styles.picker_item}
-                                    label="Estacionar sin ticket de aparcamiento"
-                                    value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
-                                />
-                                <Picker.Item
-                                    style={styles.picker_item}
-                                    label="Rebosar el horario de permanencia asociado"
-                                    value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
-                                />
-                                <Picker.Item
-                                    style={styles.picker_item}
-                                    label="No colocar el ticket de forma visible"
-                                    value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
-                                />
-                            </Picker>
+                    <View style={styles.picker_wraper}>
+                        <Picker
+                            style={styles.picker}
+                            selectedValue={bulletinInfo["precept"]}
+                            onValueChange={(precept) =>
+                                updateBulletinInfo("precept", precept)
+                            }
+                            onFocus={() => setShowOptionalData(false)}
+                            itemStyle={styles.picker_item}
+                        >
+                            <Picker.Item
+                                label="Estacionar sin ticket de aparcamiento"
+                                value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
+                            />
+                            <Picker.Item
+                                label="Rebosar el horario de permanencia asociado"
+                                value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
+                            />
+                            <Picker.Item
+                                label="No colocar el ticket de forma visible"
+                                value="No colocar el ticket de forma visible. Art. 14 Ordenanza."
+                            />
+                        </Picker>
                     </View>
+
+                    <FormDate setDate={setDate} daysActive={false}></FormDate>
                 </View>
 
 
                 {/* --------- Vehicle Details (Not required) --------- */}
                 <View style={styles.centered_element}>
-                    { showOptionalData ? 
-                    (<>
-                        <TextInput
-                            style={styles.input}
-                            value={bulletinInfo["brand"]}
-                            onChangeText={(brand) => 
-                                updateBulletinInfo("brand", brand)}
-                            placeholder="Marca"
-                        />
+                    {showOptionalData ?
+                        (<>
+                            <TextInput
+                                style={styles.input}
+                                value={bulletinInfo["brand"]}
+                                onChangeText={(brand) =>
+                                    updateBulletinInfo("brand", brand)}
+                                placeholder="Marca"
+                            />
 
-                        <TextInput
-                            style={styles.input}
-                            value={bulletinInfo["model"]}
-                            onChangeText={(model) => 
-                                updateBulletinInfo("model", model)}
-                            placeholder="Modelo"
-                        />
+                            <TextInput
+                                style={styles.input}
+                                value={bulletinInfo["model"]}
+                                onChangeText={(model) =>
+                                    updateBulletinInfo("model", model)}
+                                placeholder="Modelo"
+                            />
 
-                        <TextInput
-                            style={styles.input}
-                            value={bulletinInfo["color"]}
-                            onChangeText={(color) => 
-                                updateBulletinInfo("color", color)}
-                            placeholder="Color"
-                        />
-                        <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)}/>
-                        <View style={styles.margin}/>
+                            <TextInput
+                                style={styles.input}
+                                value={bulletinInfo["color"]}
+                                onChangeText={(color) =>
+                                    updateBulletinInfo("color", color)}
+                                placeholder="Color"
+                            />
+                            <SecondaryButton text={"Cerrar"} onPress={() => setShowOptionalData(!showOptionalData)} />
+                            <View style={styles.margin} />
 
-                    </>
-                    ) : (
-                        <SecondaryButton text={"Añadir datos opcionales"} onPress={() => setShowOptionalData(!showOptionalData)}/>
-                    ) }
-                    
+                        </>
+                        ) : (
+                            <SecondaryButton text={"Añadir datos opcionales"} onPress={() => setShowOptionalData(!showOptionalData)} />
+                        )}
+
                 </View>
             </View>
-    
+
             <DefaultButton onPress={(printManager)} text="Imprimir" />
         </View>
     )
@@ -164,14 +167,14 @@ let styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         marginBottom: 20,
-        marginTop: 0,
+        marginTop: 80,
     },
     bulletin_info_section: {
         alignItems: "center",
         justifyContent: "center",
     },
     centered_element: {
-        alignItems:"center",
+        alignItems: "center",
         paddingVertical: 10
     },
 
@@ -182,7 +185,6 @@ let styles = StyleSheet.create({
         justifyContent: 'flex-start',
         paddingVertical: 20,
     },
-
 
     input: {
         backgroundColor: colors.white,
@@ -208,13 +210,10 @@ let styles = StyleSheet.create({
         width: 280,
     },
 
-
     picker_item: {
         color: colors.dark_green,
         fontSize: 16,
     },
-
-    
     picker_wraper: {
         alignItems: "center",
         backgroundColor: colors.white,
@@ -228,10 +227,10 @@ let styles = StyleSheet.create({
     },
     title: {
         color: colors.dark_green,
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: "bold",
         marginBottom: 10,
         marginTop: 10,
     },
-    
+
 })

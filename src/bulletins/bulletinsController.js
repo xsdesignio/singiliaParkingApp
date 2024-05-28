@@ -4,6 +4,7 @@ import { saveBulletin, payBulletinLocally, addPendingBulletinToPayOnServer } fro
 import { createBulletinOnServer, payBulletinOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage";
 import { obtainAssignedZone } from "../zone_manager";
+import { obtainDateTime } from "../date_utils"
 
 
 
@@ -19,7 +20,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         const { connectedDevice, printBulletin } = printer
         
         if(connectedDevice == null) {
-            throw new Error("No se ha encontrado ninguna impresora conectada.")
+             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
 
         let session = await getSession()
@@ -30,7 +31,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         let bulletin_dict = {
             "responsible_id": session["id"],
             "zone_name": zone,
-            "created_at": obtainDateTime(),
+            "created_at": bulletinInfo["created_at"] || obtainDateTime(),
             ...bulletinInfo,
         }
 
@@ -64,19 +65,25 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
             ]
         );
  
-        return bulletin_dict
+        return true
     }
     catch(error) {
         Alert.alert("Error al imprimir el boletín", error.message)
+        return false
     }
 }
 
 
 export function formatBulletinToBePrinted(bulletin) {
 
-    let date = formatDate(bulletin["created_at"].split(" ")[0])
-    let time = `${ bulletin["created_at"].split(" ")[1].substring(0, 5) } h`
+    let date = formatDate(bulletin["created_at"]?.split(" ")[0]);
 
+    // Extracting hours and minutes separately and ensuring leading zeros
+    let timeParts = bulletin["created_at"]?.split(" ")[1]?.split(":") || [];
+    let hours = timeParts[0]?.padStart(2, '0') || '00'; // Defaulting to '00' if hours are not available
+    let minutes = timeParts[1]?.padStart(2, '0') || '00'; // Defaulting to '00' if minutes are not available
+
+    let time = `${hours}:${minutes} h`;
 
     let result = {
         "Id": bulletin["id"],
@@ -110,14 +117,14 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         const { connectedDevice, printBulletinCancellation } = printer
         
         if (connectedDevice == null) {
-            throw new Error("No se ha encontrado ninguna impresora conectada.")
+             throw new Error("No se ha encontrado ninguna impresora conectada.")
         }
         
         let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
 
         if(paid_bulletin == null) 
             throw new Error("Error al pagar el boletín")
-            //await addBulletinToUploadQueue(id, payment_method, duration, price)
+            await addBulletinToUploadQueue(id, payment_method, duration, price)
         
             
         await payBulletinLocally(id, payment_method, duration, price)
@@ -131,6 +138,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         }, 100); // Show the second alert after a 100ms delay
         
         return true
+        
     } catch (error) {
         setTimeout(() => {
             Alert.alert("Error", error.message, [{
@@ -195,10 +203,3 @@ export async function addBulletinToUploadQueue(bulletin_id) {
 }
 
 
-
-function obtainDateTime() {
-    let date = new Date().toLocaleString('es-ES').replace(",", "")
-    const [day, month, yearTime] = date.split('/');
-    const [year, time] = yearTime.split(' ');
-    return `${year}/${month}/${day} ${time}`;
-}

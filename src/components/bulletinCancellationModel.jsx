@@ -13,7 +13,7 @@ import { cancelBulletin } from '../bulletins/bulletinsController';
 
 
 export default function BulletinCancellationModel({ bulletin, closeModal }) {
-    
+
     const printer = usePrinter()
 
 

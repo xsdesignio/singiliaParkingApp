@@ -16,5 +16,5 @@ export async function obtainAvailableBulletins() {
         await saveAvailableBulletinsDict(availableTickets)
     }
 
-    return availableTickets
+    return availableTickets.reverse()
 }

@@ -2,11 +2,49 @@ import TemplateCreator from "./TemplateCreator";
 
 
 
+
+export function dailyReportTemplate(report_info) {
+
+    let template = new TemplateCreator();
+
+
+    let day = report_info["date"];
+
+
+    let title = "REPORTE USUARIO\n "+report_info["user_name"]
+    delete report_info["user_name"];
+
+
+    template.initialize()
+        .alignCenter()
+        .Logo()
+        .margin()
+        .Title(title)
+        .margin()
+        .Title(day)
+        .margin()
+        .Title("Tickets")
+        .Dict(report_info["tickets"])
+        .margin()
+        .Title("Boletines")
+        .Dict(report_info["bulletins"])
+        .margin()
+        .Title("Total")
+        .Dict(report_info["total"])
+        .margin(5)
+
+    return template.obtainTemplateArray()
+
+}
+
+
 export function ticketTemplate(ticket_data) {
 
     let template = new TemplateCreator();
 
-    let created_at = ticket_data["Hora"];
+    let date = ticket_data["Fecha"];
+    delete ticket_data["Fecha"];
+    let time = ticket_data["Hora"];
     delete ticket_data["Hora"];
 
     let duration = ticket_data["Duración"]
@@ -18,7 +56,8 @@ export function ticketTemplate(ticket_data) {
         .margin()
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
-        .Title(created_at)
+        .Title(date)
+        .Title(time)
         .Title(duration)
         .margin()
         .Dict(ticket_data)
@@ -36,7 +75,11 @@ export function bulletinTemplate(bulletin_data, available_bulletins) {
 
     let id = bulletin_data["Id"];
     delete bulletin_data["Id"];
-    let created_at = bulletin_data["Hora"];
+
+    let date = bulletin_data["Fecha"];
+    delete bulletin_data["Fecha"];
+
+    let time = bulletin_data["Hora"];
     delete bulletin_data["Hora"];
 
     template.initialize()
@@ -46,8 +89,8 @@ export function bulletinTemplate(bulletin_data, available_bulletins) {
         .Title("BOLETÍN\nESTACIONAMIENTO\nREGULADO")
         .margin()
         .Title(id)
-        .margin()
-        .Title(created_at)
+        .Title(date)
+        .Title(time)
         .margin()
         .Dict(bulletin_data)
         .PricesTable(available_bulletins)
@@ -65,7 +108,11 @@ export function bulletinCancellationTemplate(bulletin_data) {
 
     let id = bulletin_data["Id"];
     delete bulletin_data["Id"];
-    let created_at = bulletin_data["Hora"];
+
+    let date = bulletin_data["Fecha"];
+    delete bulletin_data["Fecha"];
+
+    let time = bulletin_data["Hora"];
     delete bulletin_data["Hora"];
 
     template.initialize()
@@ -75,7 +122,8 @@ export function bulletinCancellationTemplate(bulletin_data) {
         .Title("ANULACIÓN DE\nBOLETÍN")
         .margin()
         .Title(id)
-        .Title(created_at)
+        .Title(date)
+        .Title(time)
         .margin()
         .Dict(bulletin_data)
         .SingiliaInfo()

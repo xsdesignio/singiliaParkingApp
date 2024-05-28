@@ -7,6 +7,8 @@ import { createTicketOnServer } from "./api_conn/apiConn";
 import { getConfigValue } from "../configStorage"
 import { Alert } from "react-native";
 
+import { obtainDateTime } from "../date_utils";
+
 
 // Create the ticket (such in server as locally) and Print it
 // @param duration, duration of the ticket
@@ -28,11 +30,14 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
 
+        // console.log("Creation time ", ticketInfo["created_at"])
+        // console.log("Finalization time ", ticketInfo["finalization_time"])
+        
         let ticket_dict = {
             "responsible_id": session["id"],
             "zone": zone,
             "paid": true,
-            "created_at": obtainDateTime(),
+            "created_at": ticketInfo["created_at"] || obtainDateTime(),
             ...ticketInfo,
         }
 
@@ -57,18 +62,24 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         
         // If everything went well, show a success message
         Alert.alert(`Ticket Creado`, "El ticket ha sido creado he impreso con éxito")
+        return true
     }
     catch(error) {
-        console.log(error)
         Alert.alert(`Ha ocurrido un error al crear el ticket`, error.message)
+        return false
     }
 }
 
 
-function formatTicketToBePrinted(ticket) {
+export function formatTicketToBePrinted(ticket) {
 
-    let date = formatDate(ticket["created_at"].split(" ")[0])
-    let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
+    let date = formatDate(ticket["finalization_time"]?.split(" ")[0]);
+    // Extracting hours and minutes separately and ensuring leading zeros
+    let timeParts = ticket["finalization_time"]?.split(" ")[1]?.split(":") || [];
+    let hours = timeParts[0]?.padStart(2, '0') || '00'; // Defaulting to '00' if hours are not available
+    let minutes = timeParts[1]?.padStart(2, '0') || '00'; // Defaulting to '00' if minutes are not available
+
+    let time = `${hours}:${minutes} h`;
 
     return{
         "Id": ticket["id"],
@@ -76,7 +87,7 @@ function formatTicketToBePrinted(ticket) {
         "Duración": ticket["duration"],
         "Matrícula": ticket["registration"],
         "Importe": ticket["price"] + " eur",
-        "Fecha": date,
+        "Finalización": date,
         "Hora":time,
     }
 
@@ -118,11 +129,3 @@ function check_information(ticket_info) {
         throw new Error("Aún no eres responsable de ninguna zona.")
 }
 
-
-
-function obtainDateTime() {
-    let date = new Date().toLocaleString('es-ES').replace(",", "")
-    const [day, month, yearTime] = date.split('/');
-    const [year, time] = yearTime.split(' ');
-    return `${year}/${month}/${day} ${time}`;
-}
