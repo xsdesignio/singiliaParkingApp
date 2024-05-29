@@ -266,7 +266,7 @@ export default function RecordScreen({ navigation }) {
                     <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
                     
                     {payment_method != null ? (
-                        <Text style={styles.ticket_text}>Método de pago: {payment_method} €</Text>
+                        <Text style={styles.ticket_text}>Método de pago: {payment_method}</Text>
                     ) : (
                         <></>
                     )}
