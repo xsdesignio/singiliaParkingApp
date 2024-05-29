@@ -57,7 +57,7 @@ export function ticketTemplate(ticket_data) {
         .Title("SERVICIO MUNICIPAL\nESTACIONAMIENTO\nREGULADO")
         .margin()
         .Title(date)
-        .Title(time)
+        .Title(`Hasta: ${time}`)
         .Title(duration)
         .margin()
         .Dict(ticket_data)

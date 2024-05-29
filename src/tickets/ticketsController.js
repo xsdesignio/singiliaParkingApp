@@ -87,7 +87,7 @@ export function formatTicketToBePrinted(ticket) {
         "Duración": ticket["duration"],
         "Matrícula": ticket["registration"],
         "Importe": ticket["price"] + " eur",
-        "Finalización": date,
+        "Fecha": date,
         "Hora":time,
     }
 
