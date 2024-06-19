@@ -19,9 +19,9 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         // obtain required functions from printer provider
         const { connectedDevice, printBulletin } = printer
         
-        /* if(connectedDevice == null) {
+        if(connectedDevice == null) {
              throw new Error("No se ha encontrado ninguna impresora conectada.")
-        } */
+        } 
 
         let session = await getSession()
         let zone = await getConfigValue("zone")
@@ -47,7 +47,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         
 
         // Print bulletin
-        // await printBulletin(formatBulletinToBePrinted(bulletin_dict))
+        await printBulletin(formatBulletinToBePrinted(bulletin_dict))
 
         // Once printed, save the bulletin locally
         let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
@@ -116,9 +116,9 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
 
         const { connectedDevice, printBulletinCancellation } = printer
         
-        /* if (connectedDevice == null) {
+        if (connectedDevice == null) {
              throw new Error("No se ha encontrado ninguna impresora conectada.")
-        } */
+        } 
         
         let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
 
@@ -129,7 +129,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
             
         await payBulletinLocally(id, payment_method, duration, price)
 
-        // await printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
+        await printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
 
         setTimeout(() => {
             Alert.alert("Boletín Pagado", "El boletín ha sido pagado con éxito", [{
