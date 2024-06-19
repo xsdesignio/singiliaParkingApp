@@ -21,8 +21,8 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         
         const { connectedDevice, printTicket } = printer
         
-        if(connectedDevice == null) 
-            throw new Error("No se ha encontrado ninguna impresora conectada.")
+        // if(connectedDevice == null) 
+        //     throw new Error("No se ha encontrado ninguna impresora conectada.")
         
         
         let session = await getSession()
@@ -53,7 +53,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
 
         
         // Print the ticket
-        await printTicket(formatTicketToBePrinted(ticket_dict))
+        // await printTicket(formatTicketToBePrinted(ticket_dict))
 
         // Once printed, save the ticket locally
         let saved_ticket = await saveTicket(ticket_dict)

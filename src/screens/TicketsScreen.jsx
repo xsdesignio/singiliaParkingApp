@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { Picker } from '@react-native-picker/picker';
@@ -21,7 +21,7 @@ export default function TicketsScreen() {
 
     const [isPrinting, setIsPrinting] = useState(false);
     const [availableTickets, setAvailableTickets] = useState([])
-    const [availableTicket, setAvailableTicket] = useState()
+    const [availableTicketMinutes, setAvailableTicketMinutes] = useState()
 
 
     const payment_methods = Object.freeze({
@@ -35,6 +35,15 @@ export default function TicketsScreen() {
         "price": undefined,
         "payment_method": undefined,
     })
+
+
+    // elements required to reset date
+    const formDateRef = useRef();
+    const handleReset = () => {
+        if (formDateRef.current) {
+            formDateRef.current.resetTimeInputs();
+        } 
+    };
 
     // Simple function to update the bulletinInfo state
     function updateTicketInfo(key, value) {
@@ -52,7 +61,7 @@ export default function TicketsScreen() {
                 setAvailableTickets(available_tickets.reverse())
                 updateTicketInfo("duration", availableTickets[0].duration)
                 updateTicketInfo("price", availableTickets[0].price)
-                setAvailableTicket(availableTickets[0])
+                setAvailableTicketMinutes(availableTickets[0].duration_minutes)
             }
             else
                 setAvailableTickets([])
@@ -70,25 +79,32 @@ export default function TicketsScreen() {
 
     // Function that manages tickets printing to disactivate printing button during current printing and reset information
     async function printManager() {
+        // Check it is not already printing any ticket
         if (!isPrinting) {
             setIsPrinting(true);
 
             const creation_date = new Date(ticketInfo["created_at"])
 
+            // Obtain  info to modify without affect original
             let info = ticketInfo
 
-            creation_date.setMinutes(creation_date.getMinutes() + availableTicket.duration_minutes)
+            creation_date.setMinutes(creation_date.getMinutes() + availableTicketMinutes)
             
             info["finalization_time"] = formatDate(creation_date)
 
             let ticket_printed = await createAndPrintTicket(printer, info);
 
+            // If the ticket is printed successfully the data is reset
             if (ticket_printed) {
-                // Reset data
+                if(availableTickets[0]) {
+                    updateTicketInfo("duration", availableTickets[0].duration);
+                    updateTicketInfo("price", availableTickets[0].price);
+                }
                 updateTicketInfo("registration", "-");
                 updateTicketInfo("payment_method", undefined);
+                handleReset();
             }
-
+            
             setIsPrinting(false)
         }
     }
@@ -112,20 +128,22 @@ export default function TicketsScreen() {
 
                 <View style={styles.ticket_info_section}>
 
+                    {/* REGISTRATION */}
                     <FormRegistration registration={ticketInfo["registration"]} setRegistration={setRegistration} />
 
+                    {/* DURATION */}
                     <Text style={styles.label}>Duración</Text>
                     <View style={styles.duration_picker_wraper}>
                         <Picker
                             style={styles.picker}
                             selectedValue={ticketInfo["duration"]}
-                            onValueChange={(ticket) => {
-                                if(ticket){
+                            onValueChange={(ticket_duration) => {
+                                ticket = availableTickets.find(el => el.duration == ticket_duration)
+                                if(ticket) {
                                     updateTicketInfo("duration", ticket.duration)
-                                    setAvailableTicket(ticket)
+                                    setAvailableTicketMinutes(ticket.duration_minutes)
                                     updateTicketInfo("price", ticket.price)
-                                }
-                                
+                                } 
                             }}
                             itemStyle={styles.picker_item}
                         >
@@ -135,18 +153,26 @@ export default function TicketsScreen() {
                                     <Picker.Item
                                         key={ticket.id}
                                         label={ticket.duration}
-                                        value={ticket}
+                                        value={ticket.duration}
                                     />
                                 )
                             })}
                         </Picker>
                     </View>
+
+                    {/* DATE */}
+                    <FormDate ref={formDateRef} setDate={setDate}></FormDate>
                     
-                    <FormDate setDate={setDate}></FormDate>
 
-                    <Text style={styles.label}>Precio:</Text>
-                    <Text style={styles.price_text}>{ticketInfo["price"]}€</Text>
+                    {/* PRICE */}
+                    <View style={styles.price_wrapper}>
+                            
+                        <Text>Precio:</Text>
+                        <Text style={styles.price_text}>{ticketInfo["price"]}€</Text>
+                    </View>
 
+
+                    {/* PAYMENT METHOD */}
                     <Text style={styles.label}>Métodos de pago:</Text>
 
                     <View style={styles.selector}>
@@ -186,7 +212,7 @@ let styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         flex: 1,
-        gap: 20,
+        gap: 10,
         justifyContent: 'flex-start',
         paddingVertical: 20,
     },
@@ -208,7 +234,7 @@ let styles = StyleSheet.create({
         color: colors.dark_green,
         fontSize: 16,
         marginBottom: 6,
-        marginTop: 18,
+        marginTop: 10,
     },
 
     picker: {
@@ -223,11 +249,17 @@ let styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
     },
-
+    price_wrapper: {
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 10,
+        marginTop: 10,
+    },
 
     selector: {
         flexDirection: "row",
-        marginTop: 10
+        marginTop: 8
     },
 
     selector_button: {

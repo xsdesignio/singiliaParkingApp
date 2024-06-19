@@ -265,7 +265,7 @@ export default function RecordScreen({ navigation }) {
                     <Text style={styles.ticket_text}>Matrícula: {bulletin["registration"]}</Text>
                     <Text style={styles.ticket_text}>Pagado: {payment_status}</Text>
                     
-                    {payment_method != null ? (
+                    {bulletin["paid"] == true ? (
                         <Text style={styles.ticket_text}>Método de pago: {payment_method}</Text>
                     ) : (
                         <></>
@@ -286,7 +286,7 @@ export default function RecordScreen({ navigation }) {
                     ) : (
                         <></>
                     )}
-                    <Text style={styles.ticket_text}>Precept: {bulletin["precept"]}</Text>
+                    <Text style={styles.ticket_text}>Precepto: {bulletin["precept"]}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -317,24 +317,23 @@ export default function RecordScreen({ navigation }) {
 
 
     const [selectedBulletin, setSelectedBulletin] = useState()
-
     const [bulletinPayment, setBulletinPayment] = useState(false)
+    
 
     const [filterRegistration, setFilterRegistration] = useState(null)
 
     let filtering = false;
     async function filterBulletins(registration) {
         if(filtering) return
-
         filtering = true
         setFilterRegistration(registration);
         
         let updated_bulletins = bulletins.filter((bulletin) => {
-            return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(filterRegistration);
+            return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(registration.trim());
         });
         
         if(updated_bulletins.length == 0) {
-            let bulletins = await fetchBulletinsByRegistration(registration)
+            let bulletins = await fetchBulletinsByRegistration(registration.trim())
 
             if(bulletins != null)
                 updated_bulletins = [...bulletins]
@@ -392,7 +391,6 @@ export default function RecordScreen({ navigation }) {
                                 placeholder="0000XXX">
                         </TextInput>
                     </>
-                    
                     
                 ) : (<></>) }
 

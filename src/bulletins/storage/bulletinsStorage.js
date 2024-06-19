@@ -1,5 +1,5 @@
 import { getDatabase } from "../../database";
-// import { AsyncStorage } from "react-native";
+import { AsyncStorage } from "react-native";
 
 
 
@@ -289,7 +289,7 @@ export function saveBulletin(bulletin_info) {
 	})
 }
 
-/* 
+
 
 // ASYNC STORAGE FUNCTIONS
 
@@ -318,4 +318,4 @@ export async function getNotSynchronizedBulletins() {
 	} catch (error) {
 		return []
 	}
-} */
+}

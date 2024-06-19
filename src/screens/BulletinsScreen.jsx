@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 
@@ -17,7 +17,6 @@ import FormRegistration from "../components/forms/FormRegistration";
 
 export default function BulletinsScreen() {
 
-
     const [bulletinInfo, setBulletinInfo] = useState({
         "registration": "-",
         "precept": "Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza.",
@@ -26,7 +25,6 @@ export default function BulletinsScreen() {
         "color": "",
     })
     
-
     const [isPrinting, setIsPriting] = useState(false);
 
     // Simple function to update the bulletinInfo state
@@ -36,6 +34,14 @@ export default function BulletinsScreen() {
             [key]: value,
         }));
     }
+
+    // elements required to reset date
+    const formDateRef = useRef();
+    const handleReset = () => {
+        if (formDateRef.current) {
+            formDateRef.current.resetTimeInputs();
+        } 
+    };
 
     const printer = usePrinter()
 
@@ -56,6 +62,7 @@ export default function BulletinsScreen() {
                     "model": "",
                     "color": "",
                 })
+                handleReset()
             }
             setIsPriting(false);
         }
@@ -104,8 +111,8 @@ export default function BulletinsScreen() {
                                 value="Estacionar sin ticket de aparcamiento. Art. 14 Ordenanza."
                             />
                             <Picker.Item
-                                label="Rebosar el horario de permanencia asociado"
-                                value="Rebosar el horario de permanencia asociado. Art. 14 Ordenanza."
+                                label="Rebasar el horario de permanencia asociado"
+                                value="Rebasar el horario de permanencia asociado. Art. 14 Ordenanza."
                             />
                             <Picker.Item
                                 label="No colocar el ticket de forma visible"
@@ -114,7 +121,7 @@ export default function BulletinsScreen() {
                         </Picker>
                     </View>
 
-                    <FormDate setDate={setDate} daysActive={false}></FormDate>
+                    <FormDate ref={formDateRef} setDate={setDate} daysActive={false}></FormDate>
                 </View>
 
 
