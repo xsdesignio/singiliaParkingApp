@@ -76,8 +76,8 @@ export default function RecordScreen({ navigation }) {
 
         let title = `Boletín de matrícula ${bulletin["registration"]}`
 
-        let date = formatDate(bulletin["created_at"].split(" ")[0])
-        let time = `${bulletin["created_at"].split(" ")[1].substring(0, 5)} h`
+        let date = formatDate(bulletin["created_at"]?.split(" ")[0])
+        let time = `${bulletin["created_at"]?.split(" ")[1].substring(0, 5)} h`
 
         let bulletin_data = ''
         bulletin_data += `Fecha: ${ date } \n`
@@ -154,8 +154,8 @@ export default function RecordScreen({ navigation }) {
         let title = `Ticket de matrícula ${ticket["registration"]}`
         
         console.log("Created at in open ticket: ", ticket["created_at"])
-        let date = formatDate(ticket["created_at"].split(" ")[0])
-        let time = `${ ticket["created_at"].split(" ")[1].substring(0, 5) } h`
+        let date = formatDate(ticket["created_at"]?.split(" ")[0])
+        let time = `${ ticket["created_at"]?.split(" ")[1].substring(0, 5) } h`
 
         let ticket_data = ''
         ticket_data += `Fecha: ${ date }\n`
@@ -198,15 +198,16 @@ export default function RecordScreen({ navigation }) {
     
     // Using memo to improve speed
     const RenderTicket = memo(({ ticket }) => {
-        if(ticket == null || ticket == undefined)
+        console.log(ticket)
+        if(!ticket || !ticket["price"] || !ticket["created_at"] || !ticket["payment_method"])
             return
         
         ticket["price"] = parseFloat(ticket["price"]).toFixed(2)
 
         let ticket_style = styles.green_box
-        
-        let date = formatDate(ticket["created_at"].split(" ")[0])
-        let timeParts = ticket["created_at"].split(" ")[1].split(":"); // Splitting time into hours, minutes, and seconds
+        console.log(ticket)
+        let date = formatDate(ticket["created_at"]?.split(" ")[0])
+        let timeParts = ticket["created_at"]?.split(" ")[1]?.split(":"); // Splitting time into hours, minutes, and seconds
         let hours = timeParts[0].padStart(2, '0'); // Ensuring hours always have leading zeros
         let minutes = timeParts[1].padStart(2, '0'); // Ensuring minutes always have leading zeros
         let time = `${hours}:${minutes}`;
@@ -236,8 +237,8 @@ export default function RecordScreen({ navigation }) {
         
         bulletin["price"] = parseFloat(bulletin["price"]).toFixed(2)
         
-        let date = formatDate(bulletin["created_at"].split(" ")[0]);
-        let time = bulletin["created_at"].split(" ")[1].substring(0, 5);
+        let date = formatDate(bulletin["created_at"]?.split(" ")[0]);
+        let time = bulletin["created_at"]?.split(" ")[1].substring(0, 5);
     
         let payment_method = bulletin["payment_method"] ? (bulletin["payment_method"] == "CASH" ? "efectivo" : "tarjeta") : null;
     

@@ -37,7 +37,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
             "responsible_id": session["id"],
             "zone": zone,
             "paid": true,
-            "created_at": ticketInfo["created_at"] || obtainDateTime(),
+            "created_at": formatDate(ticketInfo["created_at"]) || obtainDateTime(),
             ...ticketInfo,
         }
 

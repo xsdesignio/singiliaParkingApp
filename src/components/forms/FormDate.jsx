@@ -59,6 +59,7 @@ const FormDate = forwardRef(({ setDate, daysActive = true }, ref) => {
         currentDate.setHours(hour, minute)
 
         let stringDate = currentDate.toLocaleString('es-ES').replace(",", "")
+        console.log("String date: ", stringDate)
         const [day, month, yearTime] = stringDate.split('/');
         let [year, time] = yearTime.split(' ');
         

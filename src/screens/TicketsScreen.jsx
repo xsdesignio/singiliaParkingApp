@@ -14,7 +14,7 @@ import { usePrinter } from "../printing/PrintingProvider";
 import DefaultButton from "../components/atoms/default-button";
 import FormDate from "../components/forms/FormDate";
 import FormRegistration from "../components/forms/FormRegistration";
-import { formatDate } from "../date_utils";
+import { formatDate, obtainDateTime } from "../date_utils";
 
 export default function TicketsScreen() {
     const printer = usePrinter()
@@ -34,16 +34,10 @@ export default function TicketsScreen() {
         "duration": "",
         "price": undefined,
         "payment_method": undefined,
+        "created_at": undefined,
     })
 
 
-    // elements required to reset date
-    const formDateRef = useRef();
-    const handleReset = () => {
-        if (formDateRef.current) {
-            formDateRef.current.resetTimeInputs();
-        } 
-    };
 
     // Simple function to update the bulletinInfo state
     function updateTicketInfo(key, value) {
@@ -82,11 +76,21 @@ export default function TicketsScreen() {
         // Check it is not already printing any ticket
         if (!isPrinting) {
             setIsPrinting(true);
+            let info = {...ticketInfo}
 
-            const creation_date = new Date(ticketInfo["created_at"])
+            if(info["created_at"] == undefined) {
+                info["created_at"] = obtainDateTime().replace(/\//g, "-")
+            }
+    
+            
+            const creation_date = new Date(info["created_at"]);
+
+            console.log("Date information: ");
+            console.log(info["created_at"]); // Original string
+            console.log(creation_date.toString()); // Local time
+            console.log(creation_date.toISOString()); // UTC time
 
             // Obtain  info to modify without affect original
-            let info = ticketInfo
 
             creation_date.setMinutes(creation_date.getMinutes() + availableTicketMinutes)
             
@@ -115,9 +119,23 @@ export default function TicketsScreen() {
     }
 
 
+    // Date related inputs
     function setDate(date) {
         updateTicketInfo("created_at", date)
     }
+
+    // elements required to reset date
+    const formDateRef = useRef();
+    const handleReset = () => {
+        if (formDateRef.current) {
+            formDateRef.current.resetTimeInputs();
+        } 
+
+        setTicketInfo(prevState => ({
+            ...prevState,
+            created_at: undefined
+        }));
+    };
 
 
 

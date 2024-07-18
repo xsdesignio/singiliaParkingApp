@@ -11,7 +11,7 @@ export function getDailyBulletinsSummary() {
 
         db.transaction((tx) => {
             tx.executeSql(
-                "SELECT * FROM bulletins WHERE created_at >= date('now')",
+                "SELECT * FROM bulletins WHERE date(paid_at, 'localtime') = date('now', 'localtime')",
                 [],
                 (_, result) => {
                     const bulletins = result.rows._array;
@@ -133,6 +133,11 @@ export function getBulletinsByDuration(duration = null) {
 // @returns a promise with the bulletin paid
 // @throws an error if the bulletins doesn't exist or the bulletin is already paid
 export function payBulletinLocally(id, payment_method, duration, price) {
+
+	let payment_date = new Date().toISOString()
+	console.log("Payment date: ")
+	console.log(payment_date)
+
 	return new Promise((resolve, reject) => {
 		let db = getDatabase();
 		db.transaction((tx) => {
@@ -148,8 +153,8 @@ export function payBulletinLocally(id, payment_method, duration, price) {
 					} else {
 						// Bulletin exists and is not paid, proceed with the update
 						tx.executeSql(
-							"UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ? WHERE id = ?",
-							[payment_method, duration, price, id],
+							"UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ?, paid_at = ? WHERE id = ?",
+							[payment_method, duration, price, , id],
 							() => {
 								resolve(true);
 							},
@@ -203,49 +208,6 @@ export function deleteAllBulletins() {
 }
 
 
-
-export function addReferenceToBulletin(id, reference_id) {
-	return new Promise((resolve, reject) => {
-		let db = getDatabase()
-		db.transaction((tx) => {
-			tx.executeSql(
-				"UPDATE bulletins SET reference_id = ? WHERE id = ?",
-				[reference_id, id],
-				(_, result) => resolve(result.rows._array),
-				(_, error) => reject(error.message)
-			)
-		},
-			(error) => {
-				reject(error.message)
-			}, null)
-	})
-}
-
-// get all bulletins with reference_id = -1
-// @returns a promise with the bulletins array
-export function getBulletinsWithoutReference() {
-	return new Promise((resolve, reject) => {
-		let db = getDatabase();
-
-		db.transaction(
-			(tx) => {
-				tx.executeSql(
-					"SELECT * FROM bulletins WHERE reference_id = -1;",
-					[],
-					(_, result) => {
-						resolve(result.rows._array);
-					},
-					(_, error) => {
-						reject(error.message)
-						return true
-					}
-				);
-			},
-			(error) => reject(error.message),
-			() => { }
-		);
-	});
-}
 
 
 
