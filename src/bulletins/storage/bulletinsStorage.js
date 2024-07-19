@@ -3,6 +3,10 @@ import { AsyncStorage } from "react-native";
 
 
 
+function roundDecimals(num) {
+    return Math.round(num * 100) / 100;
+}
+
 
 // Function to get bulletins created today and categorize them
 export function getDailyBulletinsSummary() {
@@ -19,7 +23,6 @@ export function getDailyBulletinsSummary() {
                     // Initialize summary structure
                     const summary = {
                         "Cantidad": 0,
-                        "Pagados": 0,
                         "Tarjeta": 0,
                         "Efectivo": 0,
                         "Recaudación": 0,
@@ -28,36 +31,21 @@ export function getDailyBulletinsSummary() {
                     };
 
                     bulletins.forEach(bulletin => {
-                        const { price, paid, payment_method } = bulletin;
-
+                        const { price, payment_method } = bulletin;
+						
                         // Update total count
                         summary["Cantidad"] += 1;
 
-                        if (paid) {
-							summary["Pagados"] += 1;
-                            /* const income_duration_key = `Recaudación ${duration}`;
-
-                            // Update count for duration
-                            if (!summary[duration]) {
-                                summary[duration] = 0;
-                                summary[income_duration_key] = 0;
-                            }
-
-                            summary[duration] += 1;
-                            summary[income_duration_key] += price;
- 							*/
-                            // Update payment method counts and revenues
-                            if (payment_method === 'CASH') {
-                                summary["Efectivo"] += 1;
-                                summary["Recaudación Efectivo"] += price;
-                            } else if (payment_method === 'CARD') {
-                                summary["Tarjeta"] += 1;
-                                summary["Recaudación Tarjeta"] += price;
-                            }
-
-                            // Update total revenue
-                            summary["Recaudación"] += price;
+                        if (payment_method === 'CASH') {
+                            summary["Efectivo"] += 1;
+                            summary["Recaudación Efectivo"] = roundDecimals(summary["Recaudación Efectivo"] + parseFloat(price));
+                        } else if (payment_method === 'CARD') {
+                            summary["Tarjeta"] += 1;
+                            summary["Recaudación Tarjeta"] = roundDecimals(summary["Recaudación Tarjeta"] += parseFloat(price));
                         }
+
+                        // Update total revenue
+                        summary["Recaudación"] = roundDecimals(summary["Recaudación"] + parseFloat(price));
                     });
 
                     resolve(summary);
@@ -135,8 +123,6 @@ export function getBulletinsByDuration(duration = null) {
 export function payBulletinLocally(id, payment_method, duration, price) {
 
 	let payment_date = new Date().toISOString()
-	console.log("Payment date: ")
-	console.log(payment_date)
 
 	return new Promise((resolve, reject) => {
 		let db = getDatabase();
@@ -154,7 +140,7 @@ export function payBulletinLocally(id, payment_method, duration, price) {
 						// Bulletin exists and is not paid, proceed with the update
 						tx.executeSql(
 							"UPDATE bulletins SET paid = 1, payment_method = ?, duration = ?, price = ?, paid_at = ? WHERE id = ?",
-							[payment_method, duration, price, , id],
+							[payment_method, duration, price, payment_date, id],
 							() => {
 								resolve(true);
 							},

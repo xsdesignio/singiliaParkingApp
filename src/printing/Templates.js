@@ -26,7 +26,7 @@ export function dailyReportTemplate(report_info) {
         .Title("Tickets")
         .Dict(report_info["tickets"])
         .margin()
-        .Title("Boletines")
+        .Title("Boletines (Pagados)")
         .Dict(report_info["bulletins"])
         .margin()
         .Title("Total")

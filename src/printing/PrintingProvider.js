@@ -184,8 +184,8 @@ export const PrinterProvider = ({ children }) => {
     }
 
     async function printDailyReport(report_info) {
-        const bulletin_cancellation_template = dailyReportTemplate(report_info)
-        await printTemplate(bulletin_cancellation_template)
+        const daily_report_template = dailyReportTemplate(report_info)
+        await printTemplate(daily_report_template)
     }
 
 
