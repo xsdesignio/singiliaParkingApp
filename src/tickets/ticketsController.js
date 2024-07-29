@@ -54,6 +54,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         
         // Print the ticket
         await printTicket(formatTicketToBePrinted(ticket_dict))
+        // console.log(formatTicketToBePrinted(ticket_dict))
 
         // Once printed, save the ticket locally
         let saved_ticket = await saveTicket(ticket_dict)

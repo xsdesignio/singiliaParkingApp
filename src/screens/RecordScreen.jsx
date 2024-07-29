@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {memo} from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, Image, TextInput, StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import { getTicketsSaved } from "../tickets/storage/ticketsStorage"
 import { getBulletinsSaved } from "../bulletins/storage/bulletinsStorage"
@@ -153,7 +153,6 @@ export default function RecordScreen({ navigation }) {
 
         let title = `Ticket de matrícula ${ticket["registration"]}`
         
-        console.log("Created at in open ticket: ", ticket["created_at"])
         let date = formatDate(ticket["created_at"]?.split(" ")[0])
         let time = `${ ticket["created_at"]?.split(" ")[1].substring(0, 5) } h`
 
@@ -198,14 +197,14 @@ export default function RecordScreen({ navigation }) {
     
     // Using memo to improve speed
     const RenderTicket = memo(({ ticket }) => {
-        console.log(ticket)
+        
         if(!ticket || !ticket["price"] || !ticket["created_at"] || !ticket["payment_method"])
             return
         
         ticket["price"] = parseFloat(ticket["price"]).toFixed(2)
 
         let ticket_style = styles.green_box
-        console.log(ticket)
+        
         let date = formatDate(ticket["created_at"]?.split(" ")[0])
         let timeParts = ticket["created_at"]?.split(" ")[1]?.split(":"); // Splitting time into hours, minutes, and seconds
         let hours = timeParts[0].padStart(2, '0'); // Ensuring hours always have leading zeros
@@ -323,11 +322,7 @@ export default function RecordScreen({ navigation }) {
 
     const [filterRegistration, setFilterRegistration] = useState(null)
 
-    let filtering = false;
     async function filterBulletins(registration) {
-        if(filtering) return
-        filtering = true
-        setFilterRegistration(registration);
         
         let updated_bulletins = bulletins.filter((bulletin) => {
             return bulletin && bulletin.id !== undefined && bulletin.id.toString().includes(registration.trim());
@@ -343,12 +338,27 @@ export default function RecordScreen({ navigation }) {
         }
 
         setFilteredBulletins(updated_bulletins);
-
-        filtering = false
     }
 
+    const debounceDelay = 1000 // milliseconds
 
-    return(<View style={styles.container}>
+    const debounceTimeout = useRef(null);
+
+    // Debounce function to handle input changes
+    const handleFilterChange = (text) => {
+        setFilterRegistration(text);
+        
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+
+        debounceTimeout.current = setTimeout(() => {
+            filterBulletins(text);
+        }, debounceDelay);
+    };
+
+    return(
+        <View style={styles.container}>
 
             {/* Bulletin Modal to manage bulletin cancellation and printing */}
             { bulletinPayment ? <BulletinCancellationModel bulletin={selectedBulletin} closeModal={() => setBulletinPayment(false)}></BulletinCancellationModel> : <></>}
@@ -381,14 +391,19 @@ export default function RecordScreen({ navigation }) {
             <View style={styles.tickets_list}>
                 
                 {/* If tickets are not active, it means that bulletins are active */}
-                { !ticketsActive ? (
+                { !ticketsActive ? ( // bulletins active
                     <>
                         <Text style={styles.label}>Obtener boletines por Matrícula:</Text>
                         <TextInput
                                 style={styles.input}
                                 value = {filterRegistration}
                                 autoCapitalize="characters"
-                                onChangeText={(value) => filterBulletins(value)}
+                                onChangeText={(value) => {
+                                    handleFilterChange(value)
+                                    /* setFilterRegistration(value);
+                                    if(!value) return
+                                    debouncedFilterBulletins(value) */
+                                }}
                                 placeholder="0000XXX">
                         </TextInput>
                     </>
@@ -398,7 +413,8 @@ export default function RecordScreen({ navigation }) {
                 { ticketsActive? tickets_list: bulletins_list }
 
             </View>
-        </View>)
+        </View>
+    )
 }
 
 

@@ -22,7 +22,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         if(connectedDevice == null) {
              throw new Error("No se ha encontrado ninguna impresora conectada.")
         } 
-
+        
         let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
@@ -48,6 +48,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
 
         // Print bulletin
         await printBulletin(formatBulletinToBePrinted(bulletin_dict))
+        // console.log(formatBulletinToBePrinted(bulletin_dict))
 
         // Once printed, save the bulletin locally
         let result = await saveBulletin(bulletin_dict) // Save bulletin on local db
@@ -118,7 +119,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
         
         if (connectedDevice == null) {
              throw new Error("No se ha encontrado ninguna impresora conectada.")
-        } 
+        }  
         
         let paid_bulletin = await payBulletinOnServer(id, payment_method, price, duration)
 

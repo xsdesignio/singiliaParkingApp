@@ -84,12 +84,12 @@ export default function TicketsScreen() {
     
             
             const creation_date = new Date(info["created_at"]);
-
+            /* 
             console.log("Date information: ");
             console.log(info["created_at"]); // Original string
             console.log(creation_date.toString()); // Local time
             console.log(creation_date.toISOString()); // UTC time
-
+             */
             // Obtain  info to modify without affect original
 
             creation_date.setMinutes(creation_date.getMinutes() + availableTicketMinutes)
@@ -102,6 +102,7 @@ export default function TicketsScreen() {
             if (ticket_printed) {
                 if(availableTickets[0]) {
                     updateTicketInfo("duration", availableTickets[0].duration);
+                    setAvailableTicketMinutes(availableTickets[0].duration_minutes)
                     updateTicketInfo("price", availableTickets[0].price);
                 }
                 updateTicketInfo("registration", "-");
