@@ -23,7 +23,7 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         
         if(connectedDevice == null) 
             throw new Error("No se ha encontrado ninguna impresora conectada.")
-        
+         
         
         let session = await getSession()
         let zone = await getConfigValue("zone")

@@ -12,7 +12,8 @@ export function getDailyTicketsSummary() {
         let db = getDatabase();
         db.transaction((tx) => {
             tx.executeSql(
-                "SELECT * FROM tickets WHERE date(created_at, 'localtime') = date('now', 'localtime')",
+                "SELECT * FROM tickets WHERE created_at >= date('now', 'localtime')",
+                // "SELECT * FROM tickets WHERE date(created_at, 'localtime') = date('now', 'localtime')",
                 [],
                 (_, result) => {
                     const tickets = result.rows._array;

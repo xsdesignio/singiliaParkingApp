@@ -22,7 +22,7 @@ export async function createAndPrintBulletin(printer, bulletinInfo) {
         if(connectedDevice == null) {
              throw new Error("No se ha encontrado ninguna impresora conectada.")
         } 
-        
+         
         let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
@@ -130,6 +130,7 @@ export async function cancelBulletin(printer, id, payment_method, duration, pric
             
         await payBulletinLocally(id, payment_method, duration, price)
 
+        // console.log(formatBulletinCancellationToBePrinted(paid_bulletin))
         await printBulletinCancellation(formatBulletinCancellationToBePrinted(paid_bulletin))
 
         setTimeout(() => {

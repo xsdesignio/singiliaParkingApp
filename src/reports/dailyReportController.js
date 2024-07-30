@@ -10,13 +10,14 @@ export async function printDailyReport(printer, sessionName) {
             
         if(connectedDevice == null) 
             throw new Error("No se ha encontrado ninguna impresora conectada.")
-            
+        
         const report_info = await getReportInfo(sessionName)
     
+
         // Print the Report
         await printDailyReport(report_info)
     
-        // Alert.alert(`Reporte Diario`, JSON.stringify(report_info))
+        Alert.alert(`Reporte Diario`, JSON.stringify(report_info))
     
         Alert.alert(`Reporte Creado`, "El reporte ha sido creado e impreso con éxito")
         

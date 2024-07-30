@@ -14,8 +14,6 @@ export function formatDate(date_to_format) {
         return obtainDateTime()
     }
 
-    console.log("Date to format: ", date_to_format)
-
     let date = date_to_format.toLocaleString('es-ES').replace(",", "")
     const [day, month, yearTime] = date.split('/');
     const [year, time] = yearTime.split(' ');

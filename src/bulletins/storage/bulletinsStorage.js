@@ -239,6 +239,55 @@ export function saveBulletin(bulletin_info) {
 
 
 
+// Save a bulletin into database
+// @param bulletin_info : dictionary with all bulletin information
+// (responsible, duration, registration, price, paid, precept, brand, model, color, signature, reference_id, location)
+export function savePaidBulletin(bulletin_info) {
+
+	let created_at = bulletin_info["created_at"]?.replace(/\//g, '-') || new Date(Date.now()).toISOString()
+	let paid_at = new Date().toISOString()
+
+	return new Promise((resolve, reject) => {
+		let db = getDatabase()
+
+		db.transaction(
+			(tx) => {
+				tx.executeSql(
+					`INSERT INTO bulletins 
+					(id, responsible_id, zone_name, registration, paid, price, payment_method, precept, brand, model, color, created_at, paid_at) 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+					[
+						bulletin_info["id"],
+						-1,
+						bulletin_info["zone"] || bulletin_info["zone_name"],
+						bulletin_info["registration"],
+						true,
+						bulletin_info["price"],
+						bulletin_info["payment_method"],
+						bulletin_info["precept"],
+						bulletin_info["brand"] || "",
+						bulletin_info["model"] || "",
+						bulletin_info["color"] || "",
+						created_at,
+						paid_at,
+					],
+					(_, result) => {
+						resolve(result.rows._array)
+					},
+					(_, error) => {
+						reject(error.message)
+					});
+			},
+			(error) => {
+				reject(error.message)
+			},
+			null
+		);
+	})
+}
+
+
+
 // ASYNC STORAGE FUNCTIONS
 
 // Save the list of bulletins pending to be paid on Server

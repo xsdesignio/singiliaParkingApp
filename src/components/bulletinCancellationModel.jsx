@@ -9,6 +9,8 @@ import DefaultButton from '../components/atoms/default-button';
 import { colors } from '../styles/colorPalette';
 import { usePrinter } from '../printing/PrintingProvider';
 import { cancelBulletin } from '../bulletins/bulletinsController';
+import { savePaidBulletin } from '../bulletins/storage/bulletinsStorage';
+import { getSession } from '../session/sessionStorage';
 
 
 
@@ -32,12 +34,20 @@ export default function BulletinCancellationModel({ bulletin, closeModal }) {
 
     async function handlePayment() {
         let cancelled_bulletin = await cancelBulletin(printer, bulletin["id"], paymentMethod, duration, price)
+        
         if(!cancelled_bulletin)
             return
+
         bulletin["paid"] = true
         bulletin["payment_method"] = paymentMethod
         bulletin["duration"] = duration
         bulletin["price"] = price
+        
+        let session = await getSession()
+
+        if(!bulletin["responsible_id"] || bulletin["responsible_id"] != session["id"])
+            await savePaidBulletin(bulletin)
+
         closeModal()
 
     }
