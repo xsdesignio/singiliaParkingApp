@@ -17,7 +17,7 @@ export async function printDailyReport(printer, sessionName) {
         // Print the Report
         await printDailyReport(report_info)
     
-        Alert.alert(`Reporte Diario`, JSON.stringify(report_info))
+        // Alert.alert(`Reporte Diario`, JSON.stringify(report_info))
     
         Alert.alert(`Reporte Creado`, "El reporte ha sido creado e impreso con éxito")
         
