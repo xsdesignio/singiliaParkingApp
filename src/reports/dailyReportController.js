@@ -7,7 +7,7 @@ import { obtainDateTime } from "../date_utils";
 export async function printDailyReport(printer, sessionName) {
     try {
         const { connectedDevice, printDailyReport } = printer
-            
+          
         if(connectedDevice == null) 
             throw new Error("No se ha encontrado ninguna impresora conectada.")
         
@@ -17,6 +17,7 @@ export async function printDailyReport(printer, sessionName) {
         // Print the Report
         await printDailyReport(report_info)
     
+        // console.log(JSON.stringify(report_info))
         // Alert.alert(`Reporte Diario`, JSON.stringify(report_info))
     
         Alert.alert(`Reporte Creado`, "El reporte ha sido creado e impreso con éxito")

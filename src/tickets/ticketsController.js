@@ -23,15 +23,13 @@ export async function createAndPrintTicket(printer, ticketInfo) {
         
         if(connectedDevice == null) 
             throw new Error("No se ha encontrado ninguna impresora conectada.")
-         
+        
         
         let session = await getSession()
         let zone = await getConfigValue("zone")
         if (zone == null || zone == undefined)
             zone = await obtainAssignedZone()
 
-        // console.log("Creation time ", ticketInfo["created_at"])
-        // console.log("Finalization time ", ticketInfo["finalization_time"])
         
         let ticket_dict = {
             "responsible_id": session["id"],

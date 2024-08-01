@@ -8,12 +8,14 @@ function roundDecimals(num) {
 
 // Function to get bulletins created today and categorize them
 export function getDailyTicketsSummary() {
+    
     return new Promise((resolve, reject) => {
         let db = getDatabase();
         db.transaction((tx) => {
             tx.executeSql(
-                "SELECT * FROM tickets WHERE created_at >= date('now', 'localtime')",
-                // "SELECT * FROM tickets WHERE date(created_at, 'localtime') = date('now', 'localtime')",
+                `SELECT * FROM tickets WHERE SUBSTR(created_at, 1, INSTR(created_at, ' ') -1) = strftime('%Y-', 'now', 'localtime') || 
+                    CAST(CAST(strftime('%m', 'now', 'localtime') AS INTEGER) AS TEXT) || '-' ||
+                    CAST(CAST(strftime('%d', 'now', 'localtime') AS INTEGER) AS TEXT)`,
                 [],
                 (_, result) => {
                     const tickets = result.rows._array;
